@@ -1,0 +1,52 @@
+# ── Dependencies ───────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+# ── Secrets / environment ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+**/.env
+!**/.env.example
+
+# ── Database & runtime data (contains employee PII) ────────────
+data/
+**/data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+backups/
+
+# ── Build output ───────────────────────────────────────────────
+dist/
+web/dist/
+*.tsbuildinfo
+
+# ── Installers / large local artifacts ────────────────────────
+*.msi
+node-lts.msi
+
+# ── Logs ───────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+logs/
+
+# ── Test / coverage / build tool temp files ───────────────────
+coverage/
+.vitest/
+*.timestamp-*.mjs
+*.err
+
+# ── Local one-off dev utilities (not part of the app) ─────────
+server/reset-admin.mjs
+
+# ── Editor / OS cruft ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json

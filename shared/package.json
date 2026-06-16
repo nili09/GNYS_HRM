@@ -1,0 +1,17 @@
+{
+  "name": "@hrms/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./schemas": "./src/schemas.js",
+    "./import": "./src/import.js",
+    "./attendance": "./src/attendance.js",
+    "./leave": "./src/leave.js",
+    "./payroll": "./src/payroll.js"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}

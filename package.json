@@ -1,0 +1,22 @@
+{
+  "name": "genesys-hrms",
+  "private": true,
+  "workspaces": [
+    "server",
+    "web",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c cyan,magenta \"npm run dev --workspace=server\" \"npm run dev --workspace=web\"",
+    "test": "npm run test --workspace=server",
+    "seed": "npm run seed --workspace=server",
+    "import:v1": "npm run import:v1 --workspace=server --",
+    "build": "npm run build --workspace=web"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.62.0"
+  }
+}

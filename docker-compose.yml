@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  hrms:
+    build: .
+    container_name: genesys-hrms
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8321}:8321"
+    environment:
+      - NODE_ENV=production
+      - PORT=8321
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in .env}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@genesys.example}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-ChangeMe@123}
+      - ADMIN_NAME=${ADMIN_NAME:-HR Admin}
+      - TRUST_PROXY=${TRUST_PROXY:-0}
+      - DB_PATH=/app/data/hrms.db
+    volumes:
+      - hrms-data:/app/data
+      - hrms-backups:/app/backups
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8321/api/health').then(r=>{if(!r.ok)throw 1})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  hrms-data:
+    driver: local
+  hrms-backups:
+    driver: local

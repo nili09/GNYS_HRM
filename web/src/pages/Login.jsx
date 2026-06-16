@@ -1,0 +1,126 @@
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth.jsx";
+
+export default function Login() {
+  const { login } = useAuth();
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0,
+        background: "var(--ink)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      {/* Subtle lime accent shape */}
+      <div style={{
+        position: "absolute", top: -120, right: -80,
+        width: 420, height: 420,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(223,241,64,.07) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      <div
+        style={{
+          width: 380,
+          background: "rgba(255,255,255,.04)",
+          border: "1px solid rgba(255,255,255,.1)",
+          borderRadius: 4,
+          padding: "40px 36px",
+          color: "#fff",
+          animation: "fadeIn .4s ease",
+          position: "relative",
+        }}
+      >
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+          <div
+            style={{
+              width: 40, height: 40, borderRadius: "var(--r-pill)",
+              background: "var(--lime)", color: "var(--ink)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontWeight: 800, fontSize: 18, fontFamily: "var(--font-display)",
+            }}
+          >G</div>
+          <h1 style={{ fontSize: 20, color: "#fff", fontFamily: "var(--font-display)", letterSpacing: "-.02rem" }}>
+            Genesys HRMS
+          </h1>
+        </div>
+        <div style={{ color: "rgba(255,255,255,.35)", fontSize: 12, margin: "0 0 28px", letterSpacing: ".02em" }}>
+          Genesys International Corporation Ltd · People Operations
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <label style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".08em", color: "rgba(255,255,255,.4)", margin: "0 0 6px" }}>
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@genesys.example"
+            autoComplete="username"
+            required
+            style={{ background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff", borderRadius: "var(--r-card)" }}
+          />
+
+          <label style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".08em", color: "rgba(255,255,255,.4)", margin: "16px 0 6px" }}>
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            required
+            style={{ background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff", borderRadius: "var(--r-card)" }}
+          />
+
+          {error && (
+            <div style={{
+              color: "var(--danger)", fontSize: 12.5, marginTop: 12,
+              background: "rgba(255,53,53,.1)", border: "1px solid rgba(255,53,53,.25)",
+              borderRadius: "var(--r-card)", padding: "8px 12px",
+            }}>{error}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary"
+            style={{
+              width: "100%", marginTop: 22,
+              padding: "12px", fontSize: 13.5,
+              opacity: loading ? 0.65 : 1,
+            }}
+          >
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        <div style={{ marginTop: 24, fontSize: 11, color: "rgba(255,255,255,.2)", textAlign: "center", letterSpacing: ".03em" }}>
+          Internal tool · Data stays on company systems
+        </div>
+      </div>
+    </div>
+  );
+}

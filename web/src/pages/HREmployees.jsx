@@ -1,0 +1,180 @@
+import { useState, useEffect, useCallback } from "react";
+import { api } from "../lib/api.js";
+import EmployeeDrawer from "../components/EmployeeDrawer.jsx";
+import ImportWizard from "../components/ImportWizard.jsx";
+
+const STATUS_STYLE = {
+  ACTIVE:     { bg: "var(--lime-pale)",  fg: "var(--charcoal)" },
+  ONBOARDING: { bg: "rgba(223,241,64,.2)", fg: "var(--charcoal)" },
+  NOTICE:     { bg: "#ede8df",           fg: "#7a6a55" },
+  EXITED:     { bg: "#ffe5e5",           fg: "var(--danger)" },
+};
+
+export default function HREmployees() {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ q: "", dept: "", status: "", location: "" });
+  const [departments, setDepartments] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [drawerEmpId, setDrawerEmpId] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+
+  const fetchEmployees = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (filters.q)        params.set("q", filters.q);
+      if (filters.dept)     params.set("dept", filters.dept);
+      if (filters.status)   params.set("status", filters.status);
+      if (filters.location) params.set("location", filters.location);
+      const qs = params.toString();
+      const data = await api.get(`/employees${qs ? "?" + qs : ""}`);
+      setEmployees(data);
+    } catch (e) {
+      console.error("fetch employees:", e);
+    }
+    setLoading(false);
+  }, [filters]);
+
+  useEffect(() => { fetchEmployees(); }, [fetchEmployees]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [d, l] = await Promise.all([api.get("/departments"), api.get("/locations")]);
+        setDepartments(d);
+        setLocations(l);
+      } catch {}
+    })();
+  }, []);
+
+  useEffect(() => {
+    let es;
+    try {
+      es = new EventSource("/api/events", { withCredentials: true });
+      es.onmessage = (e) => {
+        try {
+          const d = JSON.parse(e.data);
+          if (d.type === "mutation" && d.entity === "employees") fetchEmployees();
+        } catch {}
+      };
+    } catch {}
+    const poll = setInterval(fetchEmployees, 30000);
+    return () => { es?.close(); clearInterval(poll); };
+  }, [fetchEmployees]);
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+        <h2 style={{ fontSize: 20, margin: 0 }}>Employees</h2>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => { window.location.href = "/api/employees/export"; }} className="btn-sm">
+            Export CSV
+          </button>
+          <button onClick={() => setShowImport(true)} className="btn-sm">
+            Import CSV
+          </button>
+          <button
+            onClick={() => { setDrawerEmpId("new"); setShowAdd(true); }}
+            className="btn-primary"
+            style={{ padding: "7px 18px" }}
+          >
+            + Add Employee
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+        <input
+          placeholder="Search name, code, email…"
+          value={filters.q}
+          onChange={e => setFilters(f => ({ ...f, q: e.target.value }))}
+          style={{ flex: "1 1 200px" }}
+        />
+        <select value={filters.dept}     onChange={e => setFilters(f => ({ ...f, dept: e.target.value }))}     style={{ minWidth: 140 }}>
+          <option value="">All Departments</option>
+          {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+        </select>
+        <select value={filters.status}   onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}   style={{ minWidth: 120 }}>
+          <option value="">All Status</option>
+          {["ACTIVE", "ONBOARDING", "NOTICE", "EXITED"].map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={filters.location} onChange={e => setFilters(f => ({ ...f, location: e.target.value }))} style={{ minWidth: 140 }}>
+          <option value="">All Locations</option>
+          {locations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+        </select>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: "var(--bg)" }}>
+              {["Code", "Name", "Department", "Designation", "Location", "Status", "Joined"].map(h => (
+                <th key={h} className="table-th">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={7} style={{ padding: 32, textAlign: "center", color: "var(--text-faint)" }}>Loading…</td></tr>
+            ) : employees.length === 0 ? (
+              <tr><td colSpan={7} style={{ padding: 32, textAlign: "center", color: "var(--text-faint)" }}>No employees found</td></tr>
+            ) : employees.map(emp => {
+              const sc = STATUS_STYLE[emp.status] || { bg: "var(--line)", fg: "var(--text-muted)" };
+              return (
+                <tr
+                  key={emp.id}
+                  onClick={() => { setDrawerEmpId(emp.id); setShowAdd(false); }}
+                  className="table-row"
+                  style={{ borderBottom: "1px solid var(--line)", cursor: "pointer" }}
+                >
+                  <td className="table-td" style={{ color: "var(--text-muted)", fontSize: 12.5 }}>{emp.code}</td>
+                  <td className="table-td">
+                    <div style={{ fontWeight: 600 }}>{emp.name}</div>
+                    <div style={{ fontSize: 11.5, color: "var(--text-faint)" }}>{emp.email}</div>
+                  </td>
+                  <td className="table-td">{emp.dept || "—"}</td>
+                  <td className="table-td">{emp.desig || "—"}</td>
+                  <td className="table-td">{emp.location || "—"}</td>
+                  <td className="table-td">
+                    <span className="badge" style={{ background: sc.bg, color: sc.fg }}>
+                      {emp.status}
+                    </span>
+                  </td>
+                  <td className="table-td" style={{ color: "var(--text-muted)", fontSize: 12.5 }}>{emp.doj || "—"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Count */}
+      <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 8, textAlign: "right" }}>
+        {employees.length} employee{employees.length !== 1 ? "s" : ""}
+      </div>
+
+      {drawerEmpId != null && (
+        <EmployeeDrawer
+          empId={drawerEmpId}
+          isNew={showAdd}
+          departments={departments}
+          locations={locations}
+          onClose={() => { setDrawerEmpId(null); setShowAdd(false); }}
+          onSaved={() => { fetchEmployees(); }}
+        />
+      )}
+
+      {showImport && (
+        <ImportWizard
+          onClose={() => setShowImport(false)}
+          onDone={() => { setShowImport(false); fetchEmployees(); }}
+        />
+      )}
+    </div>
+  );
+}
