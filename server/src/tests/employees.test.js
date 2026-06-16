@@ -137,7 +137,7 @@ describe("Employees API & RBAC", () => {
       .set("Cookie", hrCookie)
       .send({
         code: "NEW001", name: "New Hire", gender: "Male",
-        email: "newhire@test.com", doj: "2024-06-01",
+        email: "newhire@igenesys.com", doj: "2024-06-01",
         salary: {
           effective_from: "2024-06-01", ctc_annual: 600000,
           basic: 20000, hra: 10000, special: 12000,

@@ -20,7 +20,10 @@ export const EmployeeCreateSchema = z.object({
   gender: z.enum(["Male", "Female", "Other"]),
   dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
-  email: z.string().email(),
+  email: z.string().email().refine(
+    (v) => v.endsWith("@igenesys.com"),
+    { message: "Work email must end with @igenesys.com" },
+  ),
   personal_email: z.string().email().optional().nullable(),
   address: z.string().max(500).optional().nullable(),
   emergency_name: z.string().max(200).optional().nullable(),
@@ -170,4 +173,48 @@ export const AttendanceMarkSchema = z.object({
 export const SettingsPutSchema = z.object({
   key: z.string().min(1),
   value: z.any(),
+});
+
+// ── Expense & Reimbursement ──────────────────────────────────────────────────
+
+export const ExpensePolicyCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  per_diem_limit: z.number().int().positive().optional().nullable(),
+  requires_receipt: z.number().int().min(0).max(1).default(1),
+  active: z.number().int().min(0).max(1).default(1),
+});
+
+export const ExpensePolicyPatchSchema = ExpensePolicyCreateSchema.partial();
+
+export const ExpenseCategoryCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  policy_id: z.number().int().positive().optional().nullable(),
+  active: z.number().int().min(0).max(1).default(1),
+});
+
+export const ExpenseCategoryPatchSchema = ExpenseCategoryCreateSchema.partial();
+
+export const ExpenseCreateSchema = z.object({
+  category_id: z.number().int().positive(),
+  amount: z.number().int().positive(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  description: z.string().max(1000).optional().nullable(),
+  receipt_filename: z.string().max(500).optional().nullable(),
+});
+
+export const ExpenseActSchema = z.object({
+  comment: z.string().max(1000).optional().nullable(),
+});
+
+export const ExpenseSettleSchema = z.object({
+  settled_in_month: z.string().regex(/^\d{4}-\d{2}$/),
+});
+
+export const AdvanceRequestCreateSchema = z.object({
+  amount: z.number().int().positive(),
+  reason: z.string().max(1000).optional().nullable(),
+});
+
+export const AdvanceActSchema = z.object({
+  comment: z.string().max(1000).optional().nullable(),
 });

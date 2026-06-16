@@ -1,0 +1,134 @@
+<h2 class="sr-only">Feature comparison between Genesys HRMS and HROne across 10 functional areas</h2>
+
+<style>
+  .cmp-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 0; font-size: 13px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .cmp-hdr { background: var(--color-background-secondary); font-weight: 500; padding: 10px 12px; font-size: 12px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .cmp-row { display: contents; }
+  .cmp-row > div { padding: 10px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .cmp-row:last-child > div { border-bottom: none; }
+  .cmp-cat { font-weight: 500; color: var(--color-text-primary); }
+  .cmp-detail { font-size: 11.5px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.4; }
+  .tag-full { background: #EAF3DE; color: #3B6D11; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; display: inline-block; }
+  .tag-partial { background: #FAEEDA; color: #854F0B; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; display: inline-block; }
+  .tag-none { background: #FCEBEB; color: #A32D2D; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; display: inline-block; }
+  @media (prefers-color-scheme: dark) {
+    .tag-full { background: #27500A; color: #C0DD97; }
+    .tag-partial { background: #633806; color: #FAC775; }
+    .tag-none { background: #791F1F; color: #F7C1C1; }
+  }
+</style>
+
+<div style="margin-bottom: 16px; display: flex; gap: 12px; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display: flex; align-items: center; gap: 4px;"><span class="tag-full">Full</span> Fully built</span>
+  <span style="display: flex; align-items: center; gap: 4px;"><span class="tag-partial">Partial</span> Partially built</span>
+  <span style="display: flex; align-items: center; gap: 4px;"><span class="tag-none">None</span> Not built</span>
+</div>
+
+<div class="cmp-grid">
+  <div class="cmp-hdr">Functional area</div>
+  <div class="cmp-hdr" style="text-align:center;">Genesys HRMS</div>
+  <div class="cmp-hdr" style="text-align:center;">HROne</div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Core HR / employee master</span><div class="cmp-detail">Employee directory, org structure, departments, designations, locations, document checklist</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Full CRUD, CSV import, v1 migration, RBAC (Employee/HR/Admin), manager hierarchy</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Plus: custom workflows, 3-tier permissions, HR handbook, global search</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Authentication & security</span><div class="cmp-detail">Login, RBAC, session management, audit trail</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">JWT cookies, bcrypt, rate limiting, helmet, forced pw change, full audit log</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Cloud-based auth with SSO options</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Attendance & time tracking</span><div class="cmp-detail">Daily marking, monthly grid, week-off rules, holiday calendar</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Bulk mark, daily/monthly views, WO/sat-off logic, self + HR + team views</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Plus: GPS/geo, selfie punch, biometric, shift rotation, geo-fencing</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Leave management</span><div class="cmp-detail">Apply, approve/reject, balances, types, half-day, carry-forward</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">6 leave types, manager/HR approval, adjustments, overlap detection, cancellation rules</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Plus: comp-off, bulk approval, absence alerts</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Payroll</span><div class="cmp-detail">Salary computation, statutory deductions, payslips, finalize/reopen</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">PF/ESI/PT/TDS (FY26-27), proration, draft/final lifecycle, CSV exports, payslip view</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Plus: auto-scheduler, CTC calculator, govt challan formats, multi-entity payroll</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Dashboards & analytics</span><div class="cmp-detail">KPIs, headcount, attendance %, pending approvals</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">HR dashboard, manager dashboard, employee dashboard, real-time SSE updates</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Plus: deep reporting engine, trend analytics, strategic planning reports</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Recruitment / ATS</span><div class="cmp-detail">Job postings, candidate pipeline, interview scheduling, offer letters</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Explicitly a non-goal in v2.0 spec</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">JD master, sourcing, scheduling, verification, offer letters, Recruiter AI Agent</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Performance management</span><div class="cmp-detail">KRAs, KPIs, OKRs, reviews, 360 feedback</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Explicitly a non-goal in v2.0 spec</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">OKR mapping, 360 feedback, 1-on-1s, increment recommendations</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Expense & reimbursement</span><div class="cmp-detail">Expense claims, policies, advance payouts, fraud detection</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Not in scope</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Multiple policies, advances, fraud management, mobile upload</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Employee engagement</span><div class="cmp-detail">Surveys, recognition, badges, announcements, mood tracking</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Not in scope</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Surveys, badges, reward points, mood bot, announcements</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Asset management</span><div class="cmp-detail">Hardware/asset tracking, allocation, vendor management</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Not in scope</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Asset types, temp/perm assignment, vendor DB, bulk import</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Helpdesk / ticketing</span><div class="cmp-detail">Internal query management, ticket categories, escalation</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Not in scope</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Unlimited categories, auto-assign, escalation matrix, resolver chat</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Mobile app</span><div class="cmp-detail">Native/PWA mobile access for employees</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Web only (responsive not built)</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">iOS/Android app, 110+ actions, selfie attendance, expense upload</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">AI / smart features</span><div class="cmp-detail">AI agents, semantic search, automation</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Not in scope</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">OneAI agent (voice + chat), semantic search, Inbox for HR</div></div>
+  </div>
+
+  <div class="cmp-row">
+    <div><span class="cmp-cat">Self-hosted / on-prem</span><div class="cmp-detail">Run on own infrastructure, no SaaS dependency</div></div>
+    <div style="text-align:center;"><span class="tag-full">Full</span><div class="cmp-detail">Docker + bare VM, SQLite, zero runtime SaaS deps, nightly backup script</div></div>
+    <div style="text-align:center;"><span class="tag-none">None</span><div class="cmp-detail">Cloud SaaS only — no self-hosted option</div></div>
+  </div>
+</div>
+
+<div style="margin-top: 20px; padding: 12px 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md);">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px;">
+    <div>
+      <div style="font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px;">Genesys HRMS strengths</div>
+      <div style="color: var(--color-text-secondary); line-height: 1.5;">Self-hosted with zero SaaS dependency, India-specific statutory payroll (verified FY26-27 rates), 346 passing tests, Docker deployment, full audit trail, lightweight SQLite stack</div>
+    </div>
+    <div>
+      <div style="font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px;">HROne advantages</div>
+      <div style="color: var(--color-text-secondary); line-height: 1.5;">6 additional modules (recruitment, performance, expense, engagement, asset, helpdesk), mobile app, AI agent, GPS/biometric attendance, multi-entity support</div>
+    </div>
+  </div>
+</div>

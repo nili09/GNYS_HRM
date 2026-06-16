@@ -39,7 +39,7 @@ describe("SSE Event Emission", () => {
       .set("Cookie", hrCookie)
       .send({
         code: "SSENEW01", name: "New SSE", gender: "Male",
-        email: "ssenew@test.com", doj: "2024-01-01", status: "ACTIVE",
+        email: "ssenew@igenesys.com", doj: "2024-01-01", status: "ACTIVE",
         role: "EMPLOYEE", password: "TestPass@123",
       });
     expect(res.status).toBe(201);

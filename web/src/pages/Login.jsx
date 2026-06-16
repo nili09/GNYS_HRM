@@ -70,17 +70,29 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <label style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".08em", color: "rgba(255,255,255,.4)", margin: "0 0 6px" }}>
-            Email
+            Username
           </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@genesys.example"
-            autoComplete="username"
-            required
-            style={{ background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff", borderRadius: "var(--r-card)" }}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="yourname"
+              autoComplete="username"
+              required
+              style={{
+                background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff",
+                borderRadius: "var(--r-card) 0 0 var(--r-card)", borderRight: "none", flex: 1,
+              }}
+            />
+            <span style={{
+              padding: "7px 12px", background: "rgba(255,255,255,.03)",
+              border: "1px solid rgba(255,255,255,.15)", borderLeft: "none",
+              borderRadius: "0 var(--r-card) var(--r-card) 0",
+              color: "rgba(255,255,255,.35)", fontSize: 13, whiteSpace: "nowrap",
+              userSelect: "none",
+            }}>@igenesys.com</span>
+          </div>
 
           <label style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".08em", color: "rgba(255,255,255,.4)", margin: "16px 0 6px" }}>
             Password

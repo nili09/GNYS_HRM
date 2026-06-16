@@ -14,6 +14,7 @@ import auditRouter from "../routes/audit.js";
 import payrollRouter from "../routes/payroll.js";
 import dashboardRouter from "../routes/dashboard.js";
 import settingsRouter from "../routes/settings.js";
+import expensesRouter from "../routes/expenses.js";
 
 /**
  * Build a fresh Express app backed by an in-memory SQLite DB.
@@ -44,6 +45,7 @@ export function buildApp(opts = {}) {
   app.use("/api/payroll", payrollRouter);
   app.use("/api/dashboard", dashboardRouter);
   app.use("/api/settings", settingsRouter);
+  app.use("/api/expenses", expensesRouter);
   app.get("/api/health", (req, res) => res.json({ ok: true }));
 
   return { app, db };

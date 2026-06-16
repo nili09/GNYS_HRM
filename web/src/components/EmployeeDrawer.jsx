@@ -262,7 +262,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
               <Field label="Blood Group"        value={form.blood_group}       onChange={v => setField("blood_group", v)}       disabled={!isHR} />
               <Field label="Nationality"        value={form.nationality}       onChange={v => setField("nationality", v)}       disabled={!isHR} />
               <Field label="Wedding Anniversary" value={form.wedding_anniversary} onChange={v => setField("wedding_anniversary", v)} type="date" disabled={!isHR} />
-              <Field label="Work Email"         value={form.email}             onChange={v => setField("email", v)}             type="email" required disabled={!isNew} />
+              <Field label="Work Email (@igenesys.com)" value={form.email}  onChange={v => setField("email", v)}             type="email" required disabled={!isNew} />
               <Field label="Personal Email"     value={form.personal_email}    onChange={v => setField("personal_email", v)}    type="email" />
               <Field label="Phone"              value={form.phone}             onChange={v => setField("phone", v)} />
               <Field label="Address"            value={form.address}           onChange={v => setField("address", v)}           full />

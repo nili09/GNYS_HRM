@@ -86,7 +86,42 @@ for (const d of designations) upsertDesig.run(d);
 for (const l of locations)    upsertLoc.run(l);
 console.log(`✓ Departments / designations / locations seeded`);
 
-// ── 4. Admin user ─────────────────────────────────────────────────────────────
+// ── 4. Expense policies & categories ──────────────────────────────────────
+const expensePolicies = [
+  { name: "Standard Travel Policy", per_diem_limit: 5000, requires_receipt: 1 },
+  { name: "Office Supplies Policy", per_diem_limit: null, requires_receipt: 0 },
+];
+
+const upsertPolicy = db.prepare(
+  `INSERT INTO expense_policies(name, per_diem_limit, requires_receipt)
+   VALUES(@name, @per_diem_limit, @requires_receipt)
+   ON CONFLICT(name) DO NOTHING`
+);
+
+for (const p of expensePolicies) upsertPolicy.run(p);
+console.log(`✓ ${expensePolicies.length} expense policies seeded`);
+
+const travelPolicyId = db.prepare("SELECT id FROM expense_policies WHERE name = 'Standard Travel Policy'").get()?.id;
+const officePolicyId = db.prepare("SELECT id FROM expense_policies WHERE name = 'Office Supplies Policy'").get()?.id;
+
+const expenseCategories = [
+  { name: "Travel — Local Conveyance", policy_id: travelPolicyId },
+  { name: "Travel — Hotel / Lodging", policy_id: travelPolicyId },
+  { name: "Travel — Meals & Food", policy_id: travelPolicyId },
+  { name: "Office Supplies", policy_id: officePolicyId },
+  { name: "Client Entertainment", policy_id: null },
+];
+
+const upsertCategory = db.prepare(
+  `INSERT INTO expense_categories(name, policy_id)
+   VALUES(@name, @policy_id)
+   ON CONFLICT(name) DO NOTHING`
+);
+
+for (const c of expenseCategories) upsertCategory.run(c);
+console.log(`✓ ${expenseCategories.length} expense categories seeded`);
+
+// ── 5. Admin user ─────────────────────────────────────────────────────────────
 const ADMIN_EMAIL    = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ADMIN_NAME     = process.env.ADMIN_NAME || "HR Admin";
@@ -110,7 +145,7 @@ if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   }
 }
 
-// ── 5. Sample data (--sample flag) ────────────────────────────────────────────
+// ── 6. Sample data (--sample flag) ────────────────────────────────────────────
 if (SAMPLE) {
   console.log("ℹ  --sample flag noted — sample employee generation stubbed for Stage 2");
 }

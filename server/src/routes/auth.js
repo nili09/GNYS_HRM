@@ -26,7 +26,11 @@ export function createAuthRouter(opts = {}) {
 
   /* POST /auth/login */
   router.post("/login", loginLimiter, async (req, res) => {
-    const parse = LoginSchema.safeParse(req.body);
+    let loginBody = req.body;
+    if (loginBody?.email && !loginBody.email.includes("@")) {
+      loginBody = { ...loginBody, email: loginBody.email + "@igenesys.com" };
+    }
+    const parse = LoginSchema.safeParse(loginBody);
     if (!parse.success) return res.status(400).json({ error: "Invalid input" });
 
     const { email, password } = parse.data;

@@ -213,7 +213,7 @@ router.post("/", requireHR, async (req, res) => {
 
         const r = insertEmp.run(
           e.code, e.name, e.gender, e.dob || null, e.phone || null,
-          e.email || `${e.code.toLowerCase()}@placeholder.local`,
+          e.email || `${e.code.toLowerCase()}@igenesys.com`,
           null, null, null, null,
           deptId, desigId, locId, managerId,
           e.doj, e.status,

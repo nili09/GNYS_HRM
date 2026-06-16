@@ -219,6 +219,52 @@ CREATE TABLE IF NOT EXISTS docs_checklist (
   PRIMARY KEY(employee_id, key)
 );
 
+-- ── Expense & Reimbursement ─────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS expense_policies (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  name    TEXT    NOT NULL UNIQUE,
+  per_diem_limit  INTEGER,
+  requires_receipt INTEGER NOT NULL DEFAULT 1,
+  active  INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS expense_categories (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  name       TEXT    NOT NULL UNIQUE,
+  policy_id  INTEGER REFERENCES expense_policies(id),
+  active     INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id      INTEGER NOT NULL REFERENCES employees(id),
+  category_id      INTEGER NOT NULL REFERENCES expense_categories(id),
+  amount           INTEGER NOT NULL,
+  date             TEXT    NOT NULL,
+  description      TEXT,
+  receipt_filename TEXT,
+  status           TEXT    NOT NULL DEFAULT 'PENDING'
+                   CHECK(status IN ('PENDING','APPROVED','REJECTED','SETTLED')),
+  applied_at       TEXT    NOT NULL DEFAULT (datetime('now')),
+  acted_by         INTEGER REFERENCES employees(id),
+  acted_at         TEXT,
+  act_comment      TEXT,
+  settled_in_month TEXT
+);
+
+CREATE TABLE IF NOT EXISTS advance_requests (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  amount       INTEGER NOT NULL,
+  reason       TEXT,
+  status       TEXT    NOT NULL DEFAULT 'PENDING'
+               CHECK(status IN ('PENDING','APPROVED','REJECTED','SETTLED')),
+  applied_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  acted_by     INTEGER REFERENCES employees(id),
+  acted_at     TEXT
+);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_employees_email      ON employees(email);
 CREATE INDEX IF NOT EXISTS idx_employees_manager    ON employees(manager_id);
@@ -230,3 +276,7 @@ CREATE INDEX IF NOT EXISTS idx_attendance_date      ON attendance(date);
 CREATE INDEX IF NOT EXISTS idx_payroll_lines_run    ON payroll_lines(run_id);
 CREATE INDEX IF NOT EXISTS idx_salary_employee      ON salary_structures(employee_id);
 CREATE INDEX IF NOT EXISTS idx_audit_entity         ON audit_log(entity, entity_id);
+CREATE INDEX IF NOT EXISTS idx_expenses_employee    ON expenses(employee_id);
+CREATE INDEX IF NOT EXISTS idx_expenses_status      ON expenses(status);
+CREATE INDEX IF NOT EXISTS idx_advance_employee     ON advance_requests(employee_id);
+CREATE INDEX IF NOT EXISTS idx_advance_status       ON advance_requests(status);

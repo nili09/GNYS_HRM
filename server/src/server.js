@@ -16,6 +16,7 @@ import auditRouter from "./routes/audit.js";
 import payrollRouter from "./routes/payroll.js";
 import dashboardRouter from "./routes/dashboard.js";
 import settingsRouter from "./routes/settings.js";
+import expensesRouter from "./routes/expenses.js";
 
 // ── Guard: refuse to boot with default/missing JWT_SECRET ────────────────────
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET === "changeme") {
@@ -76,6 +77,7 @@ app.use("/api/audit", auditRouter);
 app.use("/api/payroll", payrollRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/expenses", expensesRouter);
 
 // Health check
 app.get("/api/health", (req, res) => res.json({ ok: true }));

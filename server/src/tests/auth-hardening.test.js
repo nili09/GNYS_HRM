@@ -56,7 +56,7 @@ describe("Auth hardening — initial password is random, not the code", () => {
 
   test("create returns a temp password that is NOT the employee code", async () => {
     const res = await supertest(app).post("/api/employees").set("Cookie", hrCookie)
-      .send({ code: "GIL9001", name: "Fresh Hire", gender: "Male", email: "fresh@hard.com", doj: "2025-01-01" });
+      .send({ code: "GIL9001", name: "Fresh Hire", gender: "Male", email: "fresh@igenesys.com", doj: "2025-01-01" });
     expect(res.status).toBe(201);
     expect(res.body.tempPassword).toBeTruthy();
     expect(res.body.tempPassword).not.toBe("GIL9001");

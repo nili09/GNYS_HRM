@@ -17,6 +17,9 @@ import HRDashboard from "./pages/HRDashboard.jsx";
 import MyPayslips from "./pages/MyPayslips.jsx";
 import AdminSettings from "./pages/AdminSettings.jsx";
 import AuditLog from "./pages/AuditLog.jsx";
+import MyExpenses from "./pages/MyExpenses.jsx";
+import TeamExpenses from "./pages/TeamExpenses.jsx";
+import HRExpenses from "./pages/HRExpenses.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -87,17 +90,20 @@ function AppRoutes() {
         <Route path="my/leave"       element={<MyLeave />} />
         <Route path="my/payslips"    element={<MyPayslips />} />
         <Route path="my/profile"     element={<MyProfile />} />
+        <Route path="my/expenses"   element={<MyExpenses />} />
 
         {/* Team */}
         <Route path="team/approvals"  element={<TeamApprovals />} />
         <Route path="team/calendar"   element={<TeamApprovals />} />
         <Route path="team/attendance" element={<TeamAttendance />} />
+        <Route path="team/expenses"  element={<TeamExpenses />} />
 
         {/* HR */}
         <Route path="hr/employees"  element={<HROnly><HREmployees /></HROnly>} />
         <Route path="hr/attendance" element={<HROnly><HRAttendance /></HROnly>} />
         <Route path="hr/leave"      element={<HROnly><HRLeave /></HROnly>} />
         <Route path="hr/payroll"    element={<HROnly><HRPayroll /></HROnly>} />
+        <Route path="hr/expenses"  element={<HROnly><HRExpenses /></HROnly>} />
         <Route path="hr/dashboard"  element={<HROnly><HRDashboard /></HROnly>} />
 
         {/* Admin */}

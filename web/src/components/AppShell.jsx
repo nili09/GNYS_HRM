@@ -141,12 +141,14 @@ export default function AppShell() {
           <NavItem to="/my/attendance"  icon="🕘" label="Attendance" />
           <NavItem to="/my/leave"       icon="🌴" label="Apply Leave" />
           <NavItem to="/my/payslips"    icon="₹"  label="Payslips" />
+          <NavItem to="/my/expenses"   icon="💰" label="Expenses" />
           <NavItem to="/my/profile"     icon="👤" label="Profile" />
 
           <SectionLabel>Team</SectionLabel>
           <NavItem to="/team/approvals"  icon="✅" label="Approvals" badge={pendingCount} />
           <NavItem to="/team/calendar"   icon="📅" label="Calendar" />
           <NavItem to="/team/attendance" icon="🕘" label="Team Attendance" />
+          <NavItem to="/team/expenses"  icon="💰" label="Team Expenses" />
 
           {isHR && (
             <>
@@ -156,6 +158,7 @@ export default function AppShell() {
               <NavItem to="/hr/attendance" icon="🕘" label="Attendance" />
               <NavItem to="/hr/leave"      icon="🌴" label="Leave" badge={pendingCount} />
               <NavItem to="/hr/payroll"    icon="₹"  label="Payroll" />
+              <NavItem to="/hr/expenses"  icon="💰" label="Expenses" />
             </>
           )}
 
