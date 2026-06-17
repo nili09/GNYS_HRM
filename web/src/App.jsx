@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./hooks/useTheme.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
 import Login from "./pages/Login.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
@@ -20,6 +21,19 @@ import AuditLog from "./pages/AuditLog.jsx";
 import MyExpenses from "./pages/MyExpenses.jsx";
 import TeamExpenses from "./pages/TeamExpenses.jsx";
 import HRExpenses from "./pages/HRExpenses.jsx";
+import MyInterviews from "./pages/MyInterviews.jsx";
+import HRRecruitment from "./pages/HRRecruitment.jsx";
+import MyPerformance from "./pages/MyPerformance.jsx";
+import TeamPerformance from "./pages/TeamPerformance.jsx";
+import HRPerformance from "./pages/HRPerformance.jsx";
+import Announcements from "./pages/Announcements.jsx";
+import MySurveys from "./pages/MySurveys.jsx";
+import RecognitionWall from "./pages/RecognitionWall.jsx";
+import HREngagement from "./pages/HREngagement.jsx";
+import MyAssets from "./pages/MyAssets.jsx";
+import MyTickets from "./pages/MyTickets.jsx";
+import HRAssets from "./pages/HRAssets.jsx";
+import HRHelpdesk from "./pages/HRHelpdesk.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -90,20 +104,35 @@ function AppRoutes() {
         <Route path="my/leave"       element={<MyLeave />} />
         <Route path="my/payslips"    element={<MyPayslips />} />
         <Route path="my/profile"     element={<MyProfile />} />
-        <Route path="my/expenses"   element={<MyExpenses />} />
+        <Route path="my/expenses"    element={<MyExpenses />} />
+        <Route path="my/interviews"  element={<MyInterviews />} />
+        <Route path="my/performance" element={<MyPerformance />} />
+        <Route path="my/surveys"     element={<MySurveys />} />
+        <Route path="my/assets"      element={<MyAssets />} />
+        <Route path="my/tickets"     element={<MyTickets />} />
+
+        {/* Engagement (all users) */}
+        <Route path="announcements"  element={<Announcements />} />
+        <Route path="recognition"    element={<RecognitionWall />} />
 
         {/* Team */}
         <Route path="team/approvals"  element={<TeamApprovals />} />
         <Route path="team/calendar"   element={<TeamApprovals />} />
         <Route path="team/attendance" element={<TeamAttendance />} />
         <Route path="team/expenses"  element={<TeamExpenses />} />
+        <Route path="team/performance" element={<TeamPerformance />} />
 
         {/* HR */}
         <Route path="hr/employees"  element={<HROnly><HREmployees /></HROnly>} />
         <Route path="hr/attendance" element={<HROnly><HRAttendance /></HROnly>} />
         <Route path="hr/leave"      element={<HROnly><HRLeave /></HROnly>} />
         <Route path="hr/payroll"    element={<HROnly><HRPayroll /></HROnly>} />
-        <Route path="hr/expenses"  element={<HROnly><HRExpenses /></HROnly>} />
+        <Route path="hr/expenses"     element={<HROnly><HRExpenses /></HROnly>} />
+        <Route path="hr/recruitment"  element={<HROnly><HRRecruitment /></HROnly>} />
+        <Route path="hr/performance"  element={<HROnly><HRPerformance /></HROnly>} />
+        <Route path="hr/engagement"  element={<HROnly><HREngagement /></HROnly>} />
+        <Route path="hr/assets"      element={<HROnly><HRAssets /></HROnly>} />
+        <Route path="hr/helpdesk"    element={<HROnly><HRHelpdesk /></HROnly>} />
         <Route path="hr/dashboard"  element={<HROnly><HRDashboard /></HROnly>} />
 
         {/* Admin */}
@@ -127,8 +156,10 @@ function ProtectedRouteForPwChange() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

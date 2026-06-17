@@ -58,7 +58,7 @@ export default function ImportWizard({ onClose, onDone }) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(1,1,1,.45)", zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "var(--overlay)", zIndex: 200 }} />
       <div style={{
         position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
         width: 720, maxWidth: "95vw", maxHeight: "90vh",
@@ -75,7 +75,7 @@ export default function ImportWizard({ onClose, onDone }) {
         {/* Content */}
         <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
           {error && (
-            <div style={{ padding: "8px 12px", background: "#ffe5e5", color: "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13, border: "1px solid rgba(255,53,53,.2)" }}>
+            <div style={{ padding: "8px 12px", background: "var(--badge-danger-bg)", color: "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13, border: "1px solid rgba(255,53,53,.2)" }}>
               {error}
             </div>
           )}
@@ -158,14 +158,14 @@ export default function ImportWizard({ onClose, onDone }) {
             <div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 18 }}>
                 <Stat label="Added"   value={result.added}   bg="var(--lime-pale)"  color="var(--charcoal)" />
-                <Stat label="Updated" value={result.updated} bg="#e8f4ff"           color="#0055a4" />
-                <Stat label="Skipped" value={result.skipped} bg="#ede8df"           color="#7a6a55" />
+                <Stat label="Updated" value={result.updated} bg="var(--badge-cl-bg)"  color="var(--badge-cl-text)" />
+                <Stat label="Skipped" value={result.skipped} bg="var(--badge-tan-bg)" color="var(--badge-tan-text)" />
               </div>
               {result.problems?.length > 0 && (
                 <div>
                   <h4 style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>Issues</h4>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 12, maxHeight: 150, overflowY: "auto" }}>
-                    {result.problems.map((p, i) => <div key={i} style={{ fontSize: 12, color: "#7a6a55", marginBottom: 3 }}>{p}</div>)}
+                    {result.problems.map((p, i) => <div key={i} style={{ fontSize: 12, color: "var(--badge-tan-text)", marginBottom: 3 }}>{p}</div>)}
                   </div>
                 </div>
               )}

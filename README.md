@@ -18,7 +18,19 @@ Monorepo with three workspaces:
 
 ## Modules
 
-Core HR (employees, departments, designations, locations, CSV import), Attendance (daily/monthly, bulk mark), Leave (apply/approve/reject, balances, types, adjustments), Payroll (India/Maharashtra: PF, ESI, PT, TDS new regime), Dashboards (HR head, manager, employee), Settings, Audit log.
+- **Core HR** — Employees, departments, designations, locations, CSV import/export, HROne field parity (32 columns).
+- **Attendance** — Daily/monthly views, bulk mark, multi-code (P, HD, WFH, OD, L, A), weekoff/holiday engine.
+- **Leave** — Apply/approve/reject, balances, 6 leave types, carry-forward, adjustments.
+- **Payroll** — India/Maharashtra: PF, ESI, PT, TDS new regime. Draft/finalize/payslip.
+- **Expense Management** — Submit/approve/settle, policies, categories, manager + HR workflows.
+- **Recruitment** — Job openings, candidates, applications pipeline, interviews, offer letters.
+- **Performance** — Review cycles, goals (self/manager rating), 360 reviews, 1-on-1s.
+- **Engagement** — Announcements, surveys (with questions + responses), badges, recognition wall.
+- **Asset Management** — Asset types, vendors, inventory, assign/return, employee asset view.
+- **Helpdesk** — Ticket categories, ticket lifecycle (open → in_progress → resolved → closed), comments, auto-assignment.
+- **Smart Search** — FTS5 full-text search across all modules, RBAC-filtered, Ctrl+K search bar.
+- **Dashboards** — HR (headcount, attendance, payroll, recruitment, expenses, performance, engagement, assets, helpdesk KPIs), Manager (team overview, pending approvals, expense claims, team goals), Employee (leave, attendance, pay, expenses, tickets, assets, interviews, surveys, recognitions).
+- **Admin** — Settings (weekoffs, Saturday policy, statutory), audit log, search reindex.
 
 ## Quick Start (Development)
 

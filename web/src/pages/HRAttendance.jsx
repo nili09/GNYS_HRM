@@ -12,11 +12,11 @@ const ATT_LABEL = {
 
 const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  A:   { bg: "#ffe5e5", color: "var(--danger)" },
-  HD:  { bg: "#ede8df", color: "#7a6a55" },
+  A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
   OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
-  L:   { bg: "#ede8df", color: "var(--text-muted)" },
+  L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
   "":  { bg: "transparent", color: "var(--text-faint)" },
@@ -170,7 +170,7 @@ function DailyRegister({ onSseEvent }) {
         <button className="btn-sm" onClick={() => setDate(addDays(date, 1))}>›</button>
         <button className="btn-sm" onClick={() => setDate(todayStr())}>Today</button>
         {data?.holiday && (
-          <span style={{ background: "#ede8df", color: "#92400e", borderRadius: "var(--r-card)", padding: "2px 10px", fontSize: 12, fontWeight: 600 }}>
+          <span style={{ background: "var(--badge-amber-bg)", color: "var(--badge-amber-text)", borderRadius: "var(--r-card)", padding: "2px 10px", fontSize: 12, fontWeight: 600 }}>
             🎉 Holiday: {data.holiday.name}
           </span>
         )}
@@ -237,7 +237,7 @@ function DailyRegister({ onSseEvent }) {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{
                           width: 30, height: 30, borderRadius: "50%",
-                          background: "var(--ink)", color: "#dff140",
+                          background: "var(--ink)", color: "var(--lime)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontWeight: 700, fontSize: 11, flexShrink: 0,
                         }}>
@@ -381,7 +381,7 @@ function MonthlyGrid() {
                 {data.employees.map((emp) => (
                   <tr key={emp.id} style={{ borderBottom: "1px solid var(--line)" }}>
                     <td style={{
-                      ...tdStyle, position: "sticky", left: 0, background: "#fff",
+                      ...tdStyle, position: "sticky", left: 0, background: "var(--card)",
                       fontWeight: 600, borderRight: "1px solid var(--line)", zIndex: 1,
                     }}>
                       <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -465,7 +465,7 @@ export default function HRAttendance() {
 
   const tabStyle = (t) => ({
     padding: "8px 18px", borderRadius: "8px 8px 0 0",
-    border: "none", background: tab === t ? "#fff" : "transparent",
+    border: "none", background: tab === t ? "var(--card)" : "transparent",
     color: tab === t ? "var(--ink)" : "var(--text-muted)",
     fontWeight: tab === t ? 700 : 400, fontSize: 13.5,
     cursor: "pointer", borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
@@ -485,7 +485,7 @@ export default function HRAttendance() {
       </div>
 
       <div style={{
-        background: "#fff", border: "1px solid var(--line)", borderTop: "none",
+        background: "var(--card)", border: "1px solid var(--line)", borderTop: "none",
         borderRadius: "0 0 10px 10px", padding: 20,
       }}>
         {tab === "daily"   && <DailyRegister onSseEvent={sseEvent} />}

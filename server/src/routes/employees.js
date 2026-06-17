@@ -6,6 +6,7 @@ import {
 } from "../middleware/auth.js";
 import { audit } from "../utils/audit.js";
 import { broadcast } from "../utils/sse.js";
+import { indexEntity } from "../utils/search.js";
 import {
   EmployeeCreateSchema, EmployeePatchSchema, EmployeeSelfPatchSchema,
   SalaryStructureSchema, ResetPasswordSchema,
@@ -401,6 +402,12 @@ router.post("/", requireHR, async (req, res) => {
   });
   broadcast({ type: "mutation", entity: "employees", id: empId });
 
+  const dept = d.dept_id ? db.prepare("SELECT name FROM departments WHERE id=?").get(d.dept_id)?.name : null;
+  const desig = d.desig_id ? db.prepare("SELECT name FROM designations WHERE id=?").get(d.desig_id)?.name : null;
+  indexEntity(db, "employee", empId, d.name,
+    [d.code, d.email, dept, desig].filter(Boolean).join(" "),
+    { dept, status: d.status || "ACTIVE", role: d.role || "EMPLOYEE" });
+
   // tempPassword is returned exactly once, here, so HR can hand it over.
   res.status(201).json({ id: empId, code: d.code, tempPassword });
 });
@@ -525,6 +532,17 @@ router.patch("/:id", requireAuth, (req, res) => {
     detail: { fields: Object.keys(d) },
   });
   broadcast({ type: "mutation", entity: "employees", id: targetId });
+
+  const updated = db.prepare(
+    `SELECT e.name, e.code, e.email, e.status, e.role, d.name as dept_name, des.name as desig_name
+     FROM employees e LEFT JOIN departments d ON e.dept_id=d.id LEFT JOIN designations des ON e.desig_id=des.id
+     WHERE e.id=?`
+  ).get(targetId);
+  if (updated) {
+    indexEntity(db, "employee", targetId, updated.name,
+      [updated.code, updated.email, updated.dept_name, updated.desig_name].filter(Boolean).join(" "),
+      { dept: updated.dept_name, status: updated.status, role: updated.role });
+  }
 
   res.json({ ok: true });
 });

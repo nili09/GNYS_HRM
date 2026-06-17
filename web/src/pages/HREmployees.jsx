@@ -4,10 +4,10 @@ import EmployeeDrawer from "../components/EmployeeDrawer.jsx";
 import ImportWizard from "../components/ImportWizard.jsx";
 
 const STATUS_STYLE = {
-  ACTIVE:     { bg: "var(--lime-pale)",  fg: "var(--charcoal)" },
-  ONBOARDING: { bg: "rgba(223,241,64,.2)", fg: "var(--charcoal)" },
-  NOTICE:     { bg: "#ede8df",           fg: "#7a6a55" },
-  EXITED:     { bg: "#ffe5e5",           fg: "var(--danger)" },
+  ACTIVE:     { bg: "var(--badge-lime-bg)",   fg: "var(--badge-lime-text)" },
+  ONBOARDING: { bg: "var(--badge-lime-bg)",   fg: "var(--badge-lime-text)" },
+  NOTICE:     { bg: "var(--badge-tan-bg)",    fg: "var(--badge-tan-text)" },
+  EXITED:     { bg: "var(--badge-danger-bg)", fg: "var(--badge-danger-text)" },
 };
 
 export default function HREmployees() {

@@ -18,12 +18,12 @@ function daysAgo(dt) {
 
 // Leave-type badge on new palette
 const LEAVE_BADGE = {
-  EL: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  CL: { bg: "#e8f4ff",          color: "#0055a4" },
-  SL: { bg: "#ede8df",          color: "#7a6a55" },
-  LWP:{ bg: "#ffe5e5",          color: "var(--danger)" },
-  ML: { bg: "#f0eaff",          color: "#5b21b6" },
-  PL: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
+  EL: { bg: "var(--badge-lime-bg)",   color: "var(--badge-lime-text)" },
+  CL: { bg: "var(--badge-cl-bg)",     color: "var(--badge-cl-text)" },
+  SL: { bg: "var(--badge-tan-bg)",    color: "var(--badge-tan-text)" },
+  LWP:{ bg: "var(--badge-danger-bg)", color: "var(--badge-danger-text)" },
+  ML: { bg: "var(--badge-purple-bg)", color: "var(--badge-purple-text)" },
+  PL: { bg: "var(--badge-lime-bg)",   color: "var(--badge-lime-text)" },
 };
 
 export default function HRDashboard() {
@@ -50,7 +50,8 @@ export default function HRDashboard() {
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>Loading…</div>;
   if (!data) return <div style={{ padding: 40, textAlign: "center", color: "var(--danger)" }}>Failed to load dashboard</div>;
 
-  const { headcount, today, pendingLeaves, deptDistribution, payroll, joiners, exits, upcomingHolidays, birthdays } = data;
+  const { headcount, today, pendingLeaves, deptDistribution, payroll, joiners, exits, upcomingHolidays, birthdays,
+    recruitment, expenses, performance, engagement, assets, helpdesk } = data;
   const attPct = today.total > 0 ? Math.round((today.present / today.total) * 100) : 0;
   const maxDept = Math.max(1, ...deptDistribution.map((d) => d.count));
 
@@ -65,6 +66,22 @@ export default function HRDashboard() {
         <KPI label="On Leave Today"   value={today.onLeave}   sub="approved leaves" />
         <KPI label="Pending Approvals" value={pendingLeaves.total} sub="leave requests" onClick={() => navigate("/hr/leave")} />
         <KPI label="Payroll Runs"     value={payroll.finalizedRuns} sub={payroll.latestRun ? `Latest: ${payroll.latestRun.month}` : "none yet"} onClick={() => navigate("/hr/payroll")} />
+      </div>
+
+      {/* Modules Overview */}
+      <h3 style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem", marginBottom: 10 }}>Modules Overview</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))", gap: 10, marginBottom: 22 }}>
+        {recruitment && <KPI label="Open Positions" value={recruitment.openPositions} sub={`${recruitment.candidatesInPipeline} in pipeline`} onClick={() => navigate("/hr/recruitment")} />}
+        {recruitment && <KPI label="Hired This Month" value={recruitment.hiredThisMonth} sub={recruitment.avgDaysToHire ? `avg ${recruitment.avgDaysToHire}d to hire` : "no hires yet"} />}
+        {expenses && <KPI label="Pending Expenses" value={expenses.pendingCount} sub={`₹${fmt(expenses.pendingAmount)}`} onClick={() => navigate("/hr/expenses")} />}
+        {expenses && <KPI label="Settled This Month" value={expenses.settledThisMonth} sub="expense claims" />}
+        {performance && <KPI label="Review Cycle" value={performance.activeCycle || "None"} sub={performance.activeCycle ? `${performance.completionRate}% done` : "no active cycle"} onClick={() => navigate("/hr/performance")} />}
+        {performance && <KPI label="Pending Reviews" value={performance.pendingReviews} sub="awaiting submission" />}
+        {engagement && <KPI label="Active Surveys" value={engagement.activeSurveys} sub={`${engagement.participationRate}% participation`} onClick={() => navigate("/hr/engagement")} />}
+        {engagement && <KPI label="Recognitions" value={engagement.recognitionsThisWeek} sub="this week" onClick={() => navigate("/recognition")} />}
+        {assets && <KPI label="Total Assets" value={assets.total} sub={`${assets.assigned} assigned · ${assets.inRepair} repair`} onClick={() => navigate("/hr/assets")} />}
+        {helpdesk && <KPI label="Open Tickets" value={helpdesk.openTickets} sub={helpdesk.urgentCount ? `${helpdesk.urgentCount} urgent` : "none urgent"} onClick={() => navigate("/hr/helpdesk")} />}
+        {helpdesk && <KPI label="Avg Resolution" value={helpdesk.avgResolutionHours ? `${helpdesk.avgResolutionHours}h` : "—"} sub="hours to resolve" />}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 16 }}>
@@ -203,7 +220,7 @@ function KPI({ label, value, sub, accent, onClick }) {
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px" }}>
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px", boxShadow: "var(--shadow-card)" }}>
       <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>{title}</h4>
       {children}
     </div>

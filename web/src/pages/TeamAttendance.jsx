@@ -9,11 +9,11 @@ const ATT_LABEL = {
 
 const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  A:   { bg: "#ffe5e5", color: "var(--danger)" },
-  HD:  { bg: "#ede8df", color: "#7a6a55" },
+  A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
   OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
-  L:   { bg: "#ede8df", color: "var(--text-muted)" },
+  L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
   "":  { bg: "transparent", color: "var(--neutral)" },
@@ -118,7 +118,7 @@ export default function TeamAttendance() {
       )}
 
       {!loading && data && data.employees.length > 0 && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20 }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
           <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "65vh" }}>
             <table style={{ borderCollapse: "collapse", fontSize: 12, tableLayout: "fixed" }}>
               <colgroup>
@@ -153,7 +153,7 @@ export default function TeamAttendance() {
                   <tr key={emp.id} style={{ borderBottom: "1px solid var(--line)" }}>
                     <td style={{
                       padding: "8px 10px", position: "sticky", left: 0,
-                      background: "#fff", zIndex: 1,
+                      background: "var(--card)", zIndex: 1,
                       borderRight: "1px solid var(--line)", fontWeight: 600,
                     }}>
                       <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

@@ -184,7 +184,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(1,1,1,.4)", zIndex: 100 }} />
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "var(--overlay)", zIndex: 100 }} />
       {/* Drawer */}
       <div style={{
         position: "fixed", top: 0, right: 0, bottom: 0, width: 580, maxWidth: "95vw",
@@ -208,7 +208,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
                 <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem" }}>Profile Completeness</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: completeness.pct === 100 ? "var(--charcoal)" : "#7a6a55" }}>{completeness.pct}%</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: completeness.pct === 100 ? "var(--charcoal)" : "var(--badge-tan-text)" }}>{completeness.pct}%</span>
               </div>
               <div style={{ height: 4, background: "var(--line)", borderRadius: 2, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: `${completeness.pct}%`, background: "var(--lime)", borderRadius: 2, transition: "width .3s" }} />
@@ -219,7 +219,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
                   const done = v === "completed" || v === "complete";
                   return (
                     <span key={k} className="badge" style={{
-                      background: done ? "var(--lime-pale)" : "#ffe5e5",
+                      background: done ? "var(--lime-pale)" : "var(--badge-danger-bg)",
                       color: done ? "var(--charcoal)" : "var(--danger)",
                       fontSize: 10,
                     }}>{label}</span>
@@ -248,7 +248,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
         {/* Content */}
         <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
           {error && (
-            <div style={{ padding: "8px 12px", background: "#ffe5e5", color: "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13, border: "1px solid rgba(255,53,53,.2)" }}>{error}</div>
+            <div style={{ padding: "8px 12px", background: "var(--badge-danger-bg)", color: "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13, border: "1px solid rgba(255,53,53,.2)" }}>{error}</div>
           )}
 
           {tab === 0 && (

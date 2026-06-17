@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 
 const STATUS_BADGE = {
-  PENDING:   { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:   { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED:  { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED:  { bg: "#ffe5e5", color: "var(--danger)" },
+  REJECTED:  { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   CANCELLED: { bg: "var(--bg)", color: "var(--text-muted)" },
 };
 
@@ -114,7 +114,7 @@ export default function TeamApprovals() {
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === k ? 700 : 400,
             color: tab === k ? "var(--ink)" : "var(--text-muted)",
-            borderBottom: tab === k ? "2px solid #dff140" : "2px solid transparent",
+            borderBottom: tab === k ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>
             {label}
@@ -123,7 +123,7 @@ export default function TeamApprovals() {
       </div>
 
       {tab === "pending" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -179,7 +179,7 @@ export default function TeamApprovals() {
       )}
 
       {tab === "calendar" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16 }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, boxShadow: "var(--shadow-card)" }}>
           <div style={{ fontWeight: 700, marginBottom: 12, fontSize: 14 }}>{fmtMonthLabel(calMonth)}</div>
           {Object.keys(empLeaves).length === 0 ? (
             <div style={{ color: "var(--text-faint)", padding: 16, textAlign: "center" }}>No one on leave this month</div>
@@ -198,7 +198,7 @@ export default function TeamApprovals() {
                       return (
                         <th key={d} style={{
                           ...thStyle, textAlign: "center", minWidth: 26,
-                          background: isToday ? "#dff140" : "var(--bg)",
+                          background: isToday ? "var(--lime)" : "var(--bg)",
                           color: isToday ? "var(--ink)" : "var(--text-muted)",
                         }}>{d}</th>
                       );
@@ -208,7 +208,7 @@ export default function TeamApprovals() {
                 <tbody>
                   {Object.entries(empLeaves).map(([empId, { name, leaves }]) => (
                     <tr key={empId} style={{ borderTop: "1px solid var(--line)" }}>
-                      <td style={{ ...tdStyle, position: "sticky", left: 0, background: "#fff", fontWeight: 600 }}>
+                      <td style={{ ...tdStyle, position: "sticky", left: 0, background: "var(--card)", fontWeight: 600 }}>
                         {name}
                       </td>
                       {Array.from({ length: numDays }, (_, i) => {
@@ -218,7 +218,7 @@ export default function TeamApprovals() {
                         return (
                           <td key={d} style={{
                             textAlign: "center", padding: "6px 2px",
-                            background: onLeave ? "#ede8df" : "transparent",
+                            background: onLeave ? "var(--badge-tan-bg)" : "transparent",
                           }}>
                             {onLeave && <span style={{ color: "var(--text-muted)", fontWeight: 700, fontSize: 11 }}>L</span>}
                           </td>

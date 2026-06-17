@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 
 const STATUS_BADGE = {
-  PENDING:  { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED: { bg: "#ffe5e5", color: "var(--danger)" },
-  SETTLED:  { bg: "#e0f2fe", color: "#0369a1" },
+  REJECTED: { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  SETTLED:  { bg: "var(--badge-sky-bg)", color: "var(--badge-sky-text)" },
 };
 
 function Badge({ status }) {
@@ -151,7 +151,7 @@ export default function HRExpenses() {
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t.key ? 700 : 400,
             color: tab === t.key ? "var(--ink)" : "var(--text-muted)",
-            borderBottom: tab === t.key ? "2px solid #dff140" : "2px solid transparent",
+            borderBottom: tab === t.key ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>{t.label}</button>
         ))}
@@ -168,7 +168,7 @@ export default function HRExpenses() {
             <input type="month" value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} style={{ ...inputStyle, width: 180 }} placeholder="Filter by month" />
           </div>
 
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -213,7 +213,7 @@ export default function HRExpenses() {
       )}
 
       {tab === "advances" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -254,7 +254,7 @@ export default function HRExpenses() {
           {/* Policies */}
           <div>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>Policies</div>
-            <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
+            <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
               <form onSubmit={handleAddPolicy}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <div>
@@ -274,10 +274,10 @@ export default function HRExpenses() {
               </form>
             </div>
             {policies.map((p) => (
-              <div key={p.id} style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "10px 14px", marginBottom: 6, fontSize: 13 }}>
+              <div key={p.id} style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "10px 14px", marginBottom: 6, fontSize: 13 }}>
                 <span style={{ fontWeight: 600 }}>{p.name}</span>
                 {p.per_diem_limit && <span style={{ marginLeft: 8, color: "var(--text-muted)", fontSize: 12 }}>Limit: {fmtAmount(p.per_diem_limit)}</span>}
-                {p.requires_receipt ? <span style={{ marginLeft: 8, fontSize: 11, color: "#059669" }}>Receipt required</span> : null}
+                {p.requires_receipt ? <span style={{ marginLeft: 8, fontSize: 11, color: "var(--badge-green-text)" }}>Receipt required</span> : null}
               </div>
             ))}
           </div>
@@ -285,7 +285,7 @@ export default function HRExpenses() {
           {/* Categories */}
           <div>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>Categories</div>
-            <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
+            <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
               <form onSubmit={handleAddCategory}>
                 <div>
                   <label style={labelStyle}>Name</label>
@@ -304,7 +304,7 @@ export default function HRExpenses() {
               {formSuccess && <div style={{ marginTop: 8, color: "var(--charcoal)", fontSize: 12 }}>{formSuccess}</div>}
             </div>
             {categories.map((c) => (
-              <div key={c.id} style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "10px 14px", marginBottom: 6, fontSize: 13 }}>
+              <div key={c.id} style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "10px 14px", marginBottom: 6, fontSize: 13 }}>
                 <span style={{ fontWeight: 600 }}>{c.name}</span>
                 {c.policy_name && <span style={{ marginLeft: 8, color: "var(--text-muted)", fontSize: 12 }}>{c.policy_name}</span>}
                 {!c.active && <span style={{ marginLeft: 8, fontSize: 11, color: "var(--danger)" }}>Inactive</span>}
@@ -317,22 +317,22 @@ export default function HRExpenses() {
   );
 }
 
-const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 };
+const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--badge-gray-text)", marginBottom: 4 };
 const inputStyle = {
-  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid #d1d5db",
+  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
 const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };
 const smallBtn = {
   padding: "6px 16px", borderRadius: "var(--r-pill)", border: "none",
-  background: "var(--ink)", color: "#dff140", fontWeight: 700, fontSize: 12,
+  background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 12,
   cursor: "pointer", fontFamily: "inherit",
 };
 function actionBtn(type) {
   return {
     padding: "4px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
-    background: "#fff", cursor: "pointer", fontSize: 11.5, fontFamily: "inherit", fontWeight: 600,
-    color: type === "reject" ? "var(--danger)" : type === "settle" ? "#0369a1" : "var(--charcoal)",
+    background: "var(--card)", cursor: "pointer", fontSize: 11.5, fontFamily: "inherit", fontWeight: 600,
+    color: type === "reject" ? "var(--danger)" : type === "settle" ? "var(--badge-sky-text)" : "var(--charcoal)",
   };
 }

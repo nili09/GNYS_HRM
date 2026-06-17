@@ -26,7 +26,7 @@ function fmt(n) {
 }
 
 const STATUS_BADGE = {
-  DRAFT: { bg: "#ede8df", color: "#7a6a55", label: "DRAFT" },
+  DRAFT: { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)", label: "DRAFT" },
   FINAL: { bg: "var(--lime-pale)", color: "var(--charcoal)", label: "FINALIZED" },
 };
 
@@ -169,7 +169,7 @@ export default function HRPayroll() {
         </div>
       </div>
 
-      {error && <div style={{ background: "#ffe5e5", color: "var(--danger)", padding: "8px 14px", borderRadius: "var(--r-pill)", marginBottom: 12, fontSize: 13 }}>{error}</div>}
+      {error && <div style={{ background: "var(--badge-danger-bg)", color: "var(--danger)", padding: "8px 14px", borderRadius: "var(--r-pill)", marginBottom: 12, fontSize: 13 }}>{error}</div>}
 
       {/* Actions bar */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
@@ -300,11 +300,11 @@ function KPI({ label, value, accent }) {
   return (
     <div style={{
       background: accent ? "var(--ink)" : "var(--bg)",
-      color: accent ? "#dff140" : "var(--text)",
+      color: accent ? "var(--lime)" : "var(--text)",
       borderRadius: "var(--r-card)", padding: "12px 14px",
       border: accent ? "none" : "1px solid var(--line)",
     }}>
-      <div style={{ fontSize: 11, color: accent ? "#8b9ac0" : "var(--text-muted)", marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, color: accent ? "var(--badge-blue-text)" : "var(--text-muted)", marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 18, fontWeight: 700 }}>{value}</div>
     </div>
   );
@@ -315,5 +315,5 @@ function KPI({ label, value, accent }) {
 const thStyle = { padding: "8px 10px", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".04rem", borderBottom: "1px solid var(--line)" };
 const tdStyle = { padding: "8px 10px" };
 const navBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "5px 10px", cursor: "pointer", fontSize: 13 };
-const primaryBtnStyle = { background: "var(--ink)", color: "#dff140", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
+const primaryBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
 const secondaryBtnStyle = { background: "var(--bg)", color: "var(--charcoal)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 500, fontSize: 13 };

@@ -15,6 +15,12 @@ import payrollRouter from "../routes/payroll.js";
 import dashboardRouter from "../routes/dashboard.js";
 import settingsRouter from "../routes/settings.js";
 import expensesRouter from "../routes/expenses.js";
+import recruitmentRouter from "../routes/recruitment.js";
+import performanceRouter from "../routes/performance.js";
+import engagementRouter from "../routes/engagement.js";
+import assetsRouter from "../routes/assets.js";
+import helpdeskRouter from "../routes/helpdesk.js";
+import searchRouter from "../routes/search.js";
 
 /**
  * Build a fresh Express app backed by an in-memory SQLite DB.
@@ -46,6 +52,12 @@ export function buildApp(opts = {}) {
   app.use("/api/dashboard", dashboardRouter);
   app.use("/api/settings", settingsRouter);
   app.use("/api/expenses", expensesRouter);
+  app.use("/api/recruitment", recruitmentRouter);
+  app.use("/api/performance", performanceRouter);
+  app.use("/api/engagement", engagementRouter);
+  app.use("/api/assets", assetsRouter);
+  app.use("/api/helpdesk", helpdeskRouter);
+  app.use("/api/search", searchRouter);
   app.get("/api/health", (req, res) => res.json({ ok: true }));
 
   return { app, db };

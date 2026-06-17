@@ -3,10 +3,10 @@ import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 const STATUS_BADGE = {
-  PENDING:  { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED: { bg: "#ffe5e5", color: "var(--danger)" },
-  SETTLED:  { bg: "#e0f2fe", color: "#0369a1" },
+  REJECTED: { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  SETTLED:  { bg: "var(--badge-sky-bg)", color: "var(--badge-sky-text)" },
 };
 
 function Badge({ status }) {
@@ -121,12 +121,12 @@ export default function MyExpenses() {
       {/* Summary cards */}
       <div style={{ display: "flex", gap: 14, marginBottom: 18 }}>
         {[
-          { label: "Pending", value: fmtAmount(totalPending), color: "#7a6a55" },
+          { label: "Pending", value: fmtAmount(totalPending), color: "var(--badge-tan-text)" },
           { label: "Approved (unsettled)", value: fmtAmount(totalApproved), color: "var(--charcoal)" },
           { label: "Total Submitted", value: expenses.length, color: "var(--ink)" },
         ].map((c) => (
           <div key={c.label} style={{
-            flex: 1, background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "14px 16px",
+            flex: 1, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "14px 16px", boxShadow: "var(--shadow-card)",
           }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".05em" }}>{c.label}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: c.color, marginTop: 4 }}>{c.value}</div>
@@ -145,14 +145,14 @@ export default function MyExpenses() {
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t.key ? 700 : 400,
             color: tab === t.key ? "var(--ink)" : "var(--text-muted)",
-            borderBottom: tab === t.key ? "2px solid #dff140" : "2px solid transparent",
+            borderBottom: tab === t.key ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>{t.label}</button>
         ))}
       </div>
 
       {tab === "submit" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, maxWidth: 520 }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, maxWidth: 520, boxShadow: "var(--shadow-card)" }}>
           <form onSubmit={handleSubmitExpense}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>
@@ -187,7 +187,7 @@ export default function MyExpenses() {
       )}
 
       {tab === "history" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -218,7 +218,7 @@ export default function MyExpenses() {
 
       {tab === "advance" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20 }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14, color: "var(--ink)" }}>Request Advance</div>
             <form onSubmit={handleSubmitAdvance}>
               <div>
@@ -239,7 +239,7 @@ export default function MyExpenses() {
             </form>
           </div>
 
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
             <div style={{ padding: "12px 16px", fontWeight: 700, fontSize: 13.5, borderBottom: "1px solid var(--line)" }}>My Advances</div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
@@ -269,9 +269,9 @@ export default function MyExpenses() {
   );
 }
 
-const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 };
+const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--badge-gray-text)", marginBottom: 4 };
 const inputStyle = {
-  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid #d1d5db",
+  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
 const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
@@ -279,7 +279,7 @@ const tdStyle = { padding: "10px 12px" };
 function btnStyle(disabled) {
   return {
     marginTop: 16, padding: "9px 28px", borderRadius: "var(--r-pill)", border: "none",
-    background: "var(--ink)", color: "#dff140", fontWeight: 700, fontSize: 13.5,
+    background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 13.5,
     cursor: "pointer", opacity: disabled ? 0.6 : 1, fontFamily: "inherit",
   };
 }

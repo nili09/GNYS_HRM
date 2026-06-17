@@ -39,13 +39,15 @@
   font-display: swap;
 }
 
-/* ── Design tokens ─────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   LIGHT THEME (default)
+   ══════════════════════════════════════════════════════════════════════════ */
 :root {
   /* Surfaces */
-  --ink:        #010101;
-  --bg:         #f1f0ea;
+  --ink:        #161617;
+  --bg:         #ffffff;
   --card:       #ffffff;
-  --line:       #d8d8d4;
+  --line:       #e5e5e3;
 
   /* Accent */
   --lime:       #dff140;
@@ -54,9 +56,9 @@
   --lime-glow:  0 0 0 1px var(--lime), 0 0 10px rgba(223, 241, 64, .45);
 
   /* Text */
-  --text:       #010101;
+  --text:       #161617;
   --text-muted: #565654;
-  --text-faint: #6c6e6b;
+  --text-faint: #8c8c8a;
 
   /* Neutrals */
   --neutral:    #b0b0a9;
@@ -66,18 +68,125 @@
   /* Status */
   --danger:     #ff3535;
 
+  /* Badge / status color pairs */
+  --badge-danger-bg:   #ffe5e5;
+  --badge-danger-text: #ff3535;
+  --badge-tan-bg:      #ede8df;
+  --badge-tan-text:    #7a6a55;
+  --badge-blue-bg:     #dbeafe;
+  --badge-blue-text:   #1e40af;
+  --badge-sky-bg:      #e0f2fe;
+  --badge-sky-text:    #0369a1;
+  --badge-purple-bg:   #f0eaff;
+  --badge-purple-text: #5b21b6;
+  --badge-indigo-bg:   #e0e7ff;
+  --badge-indigo-text: #3730a3;
+  --badge-amber-bg:    #fef3c7;
+  --badge-amber-text:  #92400e;
+  --badge-green-bg:    #bbf7d0;
+  --badge-green-text:  #059669;
+  --badge-pink-bg:     #fce7f3;
+  --badge-pink-text:   #be185d;
+  --badge-gray-bg:     #e5e7eb;
+  --badge-gray-text:   #374151;
+  --badge-cl-bg:       #e8f4ff;
+  --badge-cl-text:     #0055a4;
+  --badge-lime-bg:     var(--lime-pale);
+  --badge-lime-text:   var(--charcoal);
+
+  /* Overlay for modal backdrops etc. */
+  --overlay:    rgba(0, 0, 0, .35);
+
   /* Radii */
   --r-pill: 1000px;
-  --r-card: 2px;
+  --r-card: 8px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, .06);
 
   /* Typography */
   --font-display: "Elios", "Helvetica Neue", Arial, sans-serif;
   --font-ui: "HelveticaNowDisplay", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* Motion */
-  --ease: .2s ease-in-out;
+  --ease: .3s cubic-bezier(.58, .3, .005, 1);
   --ease-em: cubic-bezier(.215, .62, .34, 1);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK THEME
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* Surfaces */
+  --ink:        #0e0e0f;
+  --bg:         #161617;
+  --card:       #1e1e20;
+  --line:       #2c2c2f;
+
+  /* Text */
+  --text:       #e8e8e6;
+  --text-muted: #a0a09e;
+  --text-faint: #707070;
+
+  /* Neutrals */
+  --neutral:    #555555;
+  --charcoal:   #d4d4d4;
+  --tan:        #8a7d6c;
+
+  /* Badge / status color pairs — dark variants */
+  --badge-danger-bg:   #3d1515;
+  --badge-danger-text: #ff6b6b;
+  --badge-tan-bg:      #2d2820;
+  --badge-tan-text:    #c4b49e;
+  --badge-blue-bg:     #1a2536;
+  --badge-blue-text:   #93b4ff;
+  --badge-sky-bg:      #102536;
+  --badge-sky-text:    #56c0f5;
+  --badge-purple-bg:   #231a36;
+  --badge-purple-text: #b794f6;
+  --badge-indigo-bg:   #1c2040;
+  --badge-indigo-text: #a5b4fc;
+  --badge-amber-bg:    #2d2510;
+  --badge-amber-text:  #f6c86e;
+  --badge-green-bg:    #102d1a;
+  --badge-green-text:  #6ee7a0;
+  --badge-pink-bg:     #361a28;
+  --badge-pink-text:   #f472b6;
+  --badge-gray-bg:     #2a2c30;
+  --badge-gray-text:   #9ca3af;
+  --badge-cl-bg:       #152030;
+  --badge-cl-text:     #7eb8e8;
+  --badge-lime-bg:     #2a2d10;
+  --badge-lime-text:   #dff140;
+
+  /* Overlay */
+  --overlay:    rgba(0, 0, 0, .55);
+
+  /* Elevation */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, .3);
+}
+
+/* ── Custom scrollbars ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, .25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, .45); }
+
+/* Sidebar-specific: even thinner, only visible on hover */
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .1);
+  border-radius: 2px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .25); }
+
+/* Firefox scrollbar */
+* { scrollbar-width: thin; scrollbar-color: rgba(128,128,128,.25) transparent; }
+.sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent; }
 
 /* ── Reset & base ──────────────────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -90,6 +199,7 @@ body {
   font-size: 14px;
   letter-spacing: -.005rem;
   -webkit-font-smoothing: antialiased;
+  transition: background var(--ease), color var(--ease);
 }
 
 h1, h2, h3, h4 {
@@ -108,7 +218,7 @@ input, select, textarea {
   border-radius: var(--r-card);
   padding: 8px 10px;
   outline: none;
-  transition: border var(--ease), box-shadow var(--ease);
+  transition: border var(--ease), box-shadow var(--ease), background var(--ease);
   width: 100%;
 }
 
@@ -166,10 +276,10 @@ input[type="checkbox"] {
 
 .btn-secondary {
   padding: 8px 20px;
-  border: 1px solid var(--ink);
+  border: 1px solid var(--text);
   border-radius: var(--r-pill);
   background: transparent;
-  color: var(--ink);
+  color: var(--text);
   font-size: 13px;
   font-family: var(--font-ui);
   font-weight: 600;
@@ -178,7 +288,7 @@ input[type="checkbox"] {
   text-transform: uppercase;
   transition: background var(--ease), box-shadow var(--ease);
 }
-.btn-secondary:hover { background: rgba(1,1,1,.05); }
+.btn-secondary:hover { background: rgba(128, 128, 128, .1); }
 .btn-secondary:focus-visible { outline: none; box-shadow: var(--lime-glow); }
 .btn-secondary:disabled { opacity: .45; cursor: not-allowed; }
 
@@ -206,6 +316,8 @@ input[type="checkbox"] {
   border: 1px solid var(--line);
   border-radius: var(--r-card);
   padding: 16px 18px;
+  box-shadow: var(--shadow-card);
+  transition: background var(--ease), border-color var(--ease), box-shadow var(--ease);
 }
 
 /* ── Table helpers ─────────────────────────────────────────────────────── */
@@ -255,10 +367,10 @@ input[type="checkbox"] {
   letter-spacing: .05rem;
   text-transform: uppercase;
 }
-.badge-lime    { background: var(--lime-pale); color: var(--charcoal); }
-.badge-neutral { background: var(--line);      color: var(--text-muted); }
-.badge-tan     { background: #ede8df;           color: #7a6a55; }
-.badge-danger  { background: #ffe5e5;           color: var(--danger); }
+.badge-lime    { background: var(--badge-lime-bg);   color: var(--badge-lime-text); }
+.badge-neutral { background: var(--line);            color: var(--text-muted); }
+.badge-tan     { background: var(--badge-tan-bg);    color: var(--badge-tan-text); }
+.badge-danger  { background: var(--badge-danger-bg); color: var(--badge-danger-text); }
 
 /* ── Payslip print ─────────────────────────────────────────────────────── */
 @media print {

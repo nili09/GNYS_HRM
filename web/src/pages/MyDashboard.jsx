@@ -71,6 +71,14 @@ export default function MyDashboard() {
         )}
       </div>
 
+      {/* Module KPI row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
+        <KPI label="Expenses" value={data?.myExpenses?.count ?? 0} sub={data?.myExpenses?.total ? `₹${fmt(data.myExpenses.total)} pending` : "none pending"} onClick={() => navigate("/my/expenses")} />
+        <KPI label="Tickets" value={data?.myOpenTickets ?? 0} sub="open tickets" onClick={() => navigate("/my/tickets")} />
+        <KPI label="Assets" value={data?.myAssets ?? 0} sub="assigned to me" onClick={() => navigate("/my/assets")} />
+        <KPI label="Surveys" value={data?.activeSurveys?.length ?? 0} sub="awaiting response" onClick={() => navigate("/my/surveys")} />
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         {/* Leave balances */}
         <Card title="Leave Balances">
@@ -104,6 +112,50 @@ export default function MyDashboard() {
         </Card>
       </div>
 
+      {/* Upcoming interviews */}
+      {data?.myInterviews?.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <Card title="Upcoming Interviews">
+            <div style={{ display: "grid", gap: 4 }}>
+              {data.myInterviews.map((iv) => (
+                <div key={iv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: "1px solid var(--line)", fontSize: 13 }}>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>{iv.candidate_name}</span>
+                    <span style={{ color: "var(--text-muted)", marginLeft: 8 }}>{iv.job_title}</span>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 12, fontWeight: 600 }}>{fmtDate(iv.scheduled_at?.slice(0, 10))}</div>
+                    <div style={{ fontSize: 10, color: "var(--text-faint)" }}>{iv.mode} · {iv.duration_mins}min</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Recent recognitions */}
+      {data?.recentRecognitions?.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <Card title="Recent Recognitions">
+            <div style={{ display: "grid", gap: 4 }}>
+              {data.recentRecognitions.map((r) => (
+                <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: 20 }}>{r.badge_icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13 }}>
+                      <span style={{ fontWeight: 600 }}>{r.badge_name}</span>
+                      <span style={{ color: "var(--text-muted)" }}> from {r.from_name}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--text-faint)" }}>{r.message}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Manager section */}
       {mgrData?.isManager && (
         <div style={{ marginTop: 22 }}>
@@ -111,7 +163,9 @@ export default function MyDashboard() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 14 }}>
             <KPI label="Team Size" value={mgrData.teamSize} sub="direct reports" />
             <KPI label="Out Today" value={mgrData.outToday.length} sub="on leave" />
-            <KPI label="Pending"   value={mgrData.pending.length}  sub="approvals" onClick={() => navigate("/team/approvals")} />
+            <KPI label="Pending"   value={mgrData.pending.length}  sub="leave approvals" onClick={() => navigate("/team/approvals")} />
+            {mgrData.pendingExpenses && <KPI label="Expense Claims" value={mgrData.pendingExpenses.length} sub="pending approval" onClick={() => navigate("/team/expenses")} />}
+            {mgrData.teamGoals && <KPI label="Team Goals" value={`${mgrData.teamGoals.completionRate}%`} sub={`${mgrData.teamGoals.completed}/${mgrData.teamGoals.total} completed`} onClick={() => navigate("/team/performance")} />}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -140,6 +194,25 @@ export default function MyDashboard() {
               ) : <Empty text="All caught up" />}
             </Card>
           </div>
+
+          {/* Team pending expenses */}
+          {mgrData.pendingExpenses?.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <Card title="Pending Expense Approvals">
+                <div style={{ display: "grid", gap: 4 }}>
+                  {mgrData.pendingExpenses.slice(0, 5).map((e) => (
+                    <div key={e.id} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--line)", fontSize: 13 }}>
+                      <div>
+                        <span style={{ fontWeight: 500 }}>{e.emp_name}</span>
+                        <span style={{ color: "var(--text-muted)", marginLeft: 6 }}>{e.description || "Expense"}</span>
+                      </div>
+                      <span style={{ fontWeight: 700, fontSize: 13 }}>₹{fmt(e.amount)}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -168,7 +241,7 @@ function KPI({ label, value, sub, onClick }) {
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px" }}>
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px", boxShadow: "var(--shadow-card)" }}>
       <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>{title}</h4>
       {children}
     </div>

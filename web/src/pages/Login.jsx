@@ -51,18 +51,18 @@ export default function Login() {
         }}
       >
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <div
+        <div style={{ marginBottom: 8 }}>
+          <img
+            src="/logo.png"
+            alt="Genesys HRMS"
             style={{
-              width: 40, height: 40, borderRadius: "var(--r-pill)",
-              background: "var(--lime)", color: "var(--ink)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontWeight: 800, fontSize: 18, fontFamily: "var(--font-display)",
+              height: 28,
+              width: "auto",
+              filter: "brightness(0) invert(1)",
+              opacity: 0.9,
+              display: "block",
             }}
-          >G</div>
-          <h1 style={{ fontSize: 20, color: "#fff", fontFamily: "var(--font-display)", letterSpacing: "-.02rem" }}>
-            Genesys HRMS
-          </h1>
+          />
         </div>
         <div style={{ color: "rgba(255,255,255,.35)", fontSize: 12, margin: "0 0 28px", letterSpacing: ".02em" }}>
           Genesys International Corporation Ltd · People Operations

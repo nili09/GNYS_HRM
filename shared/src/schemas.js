@@ -218,3 +218,253 @@ export const AdvanceRequestCreateSchema = z.object({
 export const AdvanceActSchema = z.object({
   comment: z.string().max(1000).optional().nullable(),
 });
+
+// ── Recruitment ──────────────────────────────────────────────────────────────
+
+export const JobOpeningCreateSchema = z.object({
+  title: z.string().min(1).max(300),
+  dept_id: z.number().int().positive().optional().nullable(),
+  location_id: z.number().int().positive().optional().nullable(),
+  description: z.string().max(5000).optional().nullable(),
+  requirements: z.string().max(5000).optional().nullable(),
+  positions: z.number().int().positive().default(1),
+  status: z.enum(["DRAFT", "OPEN", "ON_HOLD", "CLOSED"]).default("DRAFT"),
+});
+
+export const JobOpeningPatchSchema = JobOpeningCreateSchema.partial();
+
+export const CandidateCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  email: z.string().email(),
+  phone: z.string().max(20).optional().nullable(),
+  resume_filename: z.string().max(500).optional().nullable(),
+  source: z.string().max(100).optional().nullable(),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+export const CandidatePatchSchema = CandidateCreateSchema.partial();
+
+export const ApplicationCreateSchema = z.object({
+  job_id: z.number().int().positive(),
+  candidate_id: z.number().int().positive(),
+});
+
+export const ApplicationPatchSchema = z.object({
+  status: z.enum(["APPLIED", "SCREENING", "INTERVIEW", "OFFERED", "HIRED", "REJECTED"]),
+});
+
+export const InterviewCreateSchema = z.object({
+  application_id: z.number().int().positive(),
+  interviewer_id: z.number().int().positive(),
+  scheduled_at: z.string().min(1),
+  duration_mins: z.number().int().positive().default(60),
+  mode: z.enum(["IN_PERSON", "VIDEO", "PHONE"]).default("IN_PERSON"),
+});
+
+export const InterviewPatchSchema = z.object({
+  scheduled_at: z.string().min(1).optional(),
+  duration_mins: z.number().int().positive().optional(),
+  mode: z.enum(["IN_PERSON", "VIDEO", "PHONE"]).optional(),
+  feedback: z.string().max(5000).optional().nullable(),
+  rating: z.number().int().min(1).max(5).optional().nullable(),
+  status: z.enum(["SCHEDULED", "COMPLETED", "CANCELLED"]).optional(),
+});
+
+export const OfferCreateSchema = z.object({
+  ctc_offered: z.number().int().positive(),
+  joining_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  status: z.enum(["DRAFT", "SENT", "ACCEPTED", "DECLINED"]).default("DRAFT"),
+});
+
+export const OfferPatchSchema = z.object({
+  ctc_offered: z.number().int().positive().optional(),
+  joining_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  status: z.enum(["DRAFT", "SENT", "ACCEPTED", "DECLINED"]).optional(),
+});
+
+// ── Performance Management ─────────────────────────────────────────────────
+
+export const ReviewCycleCreateSchema = z.object({
+  name: z.string().min(1).max(300),
+  year: z.number().int().min(2000).max(2100),
+  quarter: z.number().int().min(1).max(4).optional().nullable(),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  status: z.enum(["DRAFT", "ACTIVE", "CLOSED"]).default("DRAFT"),
+});
+
+export const ReviewCyclePatchSchema = z.object({
+  name: z.string().min(1).max(300).optional(),
+  status: z.enum(["DRAFT", "ACTIVE", "CLOSED"]).optional(),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+export const GoalCreateSchema = z.object({
+  employee_id: z.number().int().positive(),
+  cycle_id: z.number().int().positive(),
+  title: z.string().min(1).max(500),
+  description: z.string().max(5000).optional().nullable(),
+  weight: z.number().min(0).max(100).default(1),
+  target_value: z.string().max(500).optional().nullable(),
+});
+
+export const GoalPatchSchema = z.object({
+  title: z.string().min(1).max(500).optional(),
+  description: z.string().max(5000).optional().nullable(),
+  weight: z.number().min(0).max(100).optional(),
+  target_value: z.string().max(500).optional().nullable(),
+  actual_value: z.string().max(500).optional().nullable(),
+  status: z.enum(["PENDING", "IN_PROGRESS", "COMPLETED", "DEFERRED"]).optional(),
+  self_rating: z.number().int().min(1).max(5).optional().nullable(),
+  manager_rating: z.number().int().min(1).max(5).optional().nullable(),
+});
+
+export const ReviewCreateSchema = z.object({
+  employee_id: z.number().int().positive(),
+  cycle_id: z.number().int().positive(),
+  reviewer_id: z.number().int().positive(),
+  relationship: z.enum(["SELF", "MANAGER", "PEER", "SKIP_LEVEL"]).default("MANAGER"),
+});
+
+export const ReviewPatchSchema = z.object({
+  overall_rating: z.number().int().min(1).max(5).optional().nullable(),
+  strengths: z.string().max(5000).optional().nullable(),
+  improvements: z.string().max(5000).optional().nullable(),
+  comments: z.string().max(5000).optional().nullable(),
+  status: z.enum(["PENDING", "SUBMITTED"]).optional(),
+});
+
+export const OneOnOneCreateSchema = z.object({
+  employee_id: z.number().int().positive(),
+  manager_id: z.number().int().positive(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  notes: z.string().max(5000).optional().nullable(),
+  action_items: z.string().max(5000).optional().nullable(),
+});
+
+export const OneOnOnePatchSchema = z.object({
+  notes: z.string().max(5000).optional().nullable(),
+  action_items: z.string().max(5000).optional().nullable(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+// ── Employee Engagement ────────────────────────────────────────────────────
+
+export const AnnouncementCreateSchema = z.object({
+  title: z.string().min(1).max(300),
+  body: z.string().min(1).max(10000),
+  priority: z.enum(["NORMAL", "IMPORTANT", "URGENT"]).default("NORMAL"),
+  expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+});
+
+export const AnnouncementPatchSchema = z.object({
+  title: z.string().min(1).max(300).optional(),
+  body: z.string().min(1).max(10000).optional(),
+  priority: z.enum(["NORMAL", "IMPORTANT", "URGENT"]).optional(),
+  expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  active: z.coerce.number().int().min(0).max(1).optional(),
+});
+
+export const SurveyCreateSchema = z.object({
+  title: z.string().min(1).max(300),
+  description: z.string().max(5000).optional().nullable(),
+  closes_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  anonymous: z.coerce.number().int().min(0).max(1).default(1),
+  questions: z.array(z.object({
+    question: z.string().min(1).max(1000),
+    type: z.enum(["RATING", "TEXT", "CHOICE"]).default("RATING"),
+    options: z.string().max(2000).optional().nullable(),
+    sort_order: z.number().int().min(0).default(0),
+  })).min(1),
+});
+
+export const SurveyPatchSchema = z.object({
+  title: z.string().min(1).max(300).optional(),
+  description: z.string().max(5000).optional().nullable(),
+  status: z.enum(["DRAFT", "ACTIVE", "CLOSED"]).optional(),
+  closes_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+});
+
+export const SurveyRespondSchema = z.object({
+  answers: z.array(z.object({
+    question_id: z.number().int().positive(),
+    answer: z.string().min(1).max(5000),
+  })).min(1),
+});
+
+export const BadgeCreateSchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional().nullable(),
+  icon: z.string().max(50).default("star"),
+});
+
+export const BadgePatchSchema = BadgeCreateSchema.partial();
+
+export const RecognitionCreateSchema = z.object({
+  to_employee: z.number().int().positive(),
+  badge_id: z.number().int().positive(),
+  message: z.string().min(1).max(1000),
+});
+
+// ── Asset Management ──────────────────────────────────────────────────────
+
+export const AssetTypeCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+});
+
+export const VendorCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  contact_email: z.string().email().optional().nullable(),
+  contact_phone: z.string().max(30).optional().nullable(),
+});
+
+export const AssetCreateSchema = z.object({
+  asset_type_id: z.number().int().positive(),
+  name: z.string().min(1).max(300),
+  serial_no: z.string().max(200).optional().nullable(),
+  purchase_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  purchase_cost: z.number().int().min(0).optional().nullable(),
+  vendor_id: z.number().int().positive().optional().nullable(),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+export const AssetPatchSchema = z.object({
+  name: z.string().min(1).max(300).optional(),
+  serial_no: z.string().max(200).optional().nullable(),
+  purchase_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  purchase_cost: z.number().int().min(0).optional().nullable(),
+  vendor_id: z.number().int().positive().optional().nullable(),
+  status: z.enum(["AVAILABLE", "ASSIGNED", "IN_REPAIR", "RETIRED"]).optional(),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+export const AssetAssignSchema = z.object({
+  employee_id: z.number().int().positive(),
+  is_temporary: z.coerce.number().int().min(0).max(1).default(0),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+// ── Helpdesk ──────────────────────────────────────────────────────────────
+
+export const TicketCategoryCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  assigned_to: z.number().int().positive().optional().nullable(),
+});
+
+export const TicketCreateSchema = z.object({
+  category_id: z.number().int().positive(),
+  subject: z.string().min(1).max(500),
+  description: z.string().min(1).max(10000),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
+});
+
+export const TicketPatchSchema = z.object({
+  status: z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
+  assigned_to: z.number().int().positive().optional().nullable(),
+});
+
+export const TicketCommentSchema = z.object({
+  body: z.string().min(1).max(5000),
+});

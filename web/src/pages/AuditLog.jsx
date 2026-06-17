@@ -61,7 +61,7 @@ export default function AuditLog() {
       </div>
 
       {/* Table */}
-      <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+      <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
         {loading ? (
           <div style={{ padding: 30, textAlign: "center", color: "var(--text-faint)" }}>Loading…</div>
         ) : rows.length === 0 ? (
@@ -112,10 +112,10 @@ function ActionBadge({ action }) {
   const colors = {
     create: { bg: "var(--lime-pale)", c: "var(--charcoal)" },
     update: { bg: "rgba(223,241,64,.15)", c: "var(--charcoal)" },
-    delete: { bg: "#fef2f2", c: "var(--danger)" },
-    login: { bg: "#ede8df", c: "#7a6a55" },
-    finalize: { bg: "#e0e7ff", c: "#3730a3" },
-    reopen: { bg: "#fef3c7", c: "#92400e" },
+    delete: { bg: "var(--badge-danger-bg)", c: "var(--danger)" },
+    login: { bg: "var(--badge-tan-bg)", c: "var(--badge-tan-text)" },
+    finalize: { bg: "var(--badge-indigo-bg)", c: "var(--badge-indigo-text)" },
+    reopen: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" },
     generate: { bg: "var(--lime-pale)", c: "var(--charcoal)" },
   };
   const { bg, c } = colors[action] || { bg: "var(--bg)", c: "var(--text-muted)" };
@@ -134,7 +134,7 @@ function PgBtn({ label, disabled, onClick }) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
       padding: "5px 14px", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
-      background: "#fff", cursor: disabled ? "default" : "pointer",
+      background: "var(--card)", cursor: disabled ? "default" : "pointer",
       fontSize: 12, fontWeight: 500, color: disabled ? "var(--neutral)" : "var(--charcoal)",
       opacity: disabled ? 0.6 : 1,
     }}>{label}</button>

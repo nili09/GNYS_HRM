@@ -265,6 +265,261 @@ CREATE TABLE IF NOT EXISTS advance_requests (
   acted_at     TEXT
 );
 
+-- ── Recruitment ─────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS job_openings (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  title        TEXT    NOT NULL,
+  dept_id      INTEGER REFERENCES departments(id),
+  location_id  INTEGER REFERENCES locations(id),
+  description  TEXT,
+  requirements TEXT,
+  positions    INTEGER NOT NULL DEFAULT 1,
+  status       TEXT    NOT NULL DEFAULT 'DRAFT'
+               CHECK(status IN ('DRAFT','OPEN','ON_HOLD','CLOSED')),
+  created_by   INTEGER REFERENCES employees(id),
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  closed_at    TEXT
+);
+
+CREATE TABLE IF NOT EXISTS candidates (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  name             TEXT    NOT NULL,
+  email            TEXT    NOT NULL,
+  phone            TEXT,
+  resume_filename  TEXT,
+  source           TEXT,
+  notes            TEXT,
+  created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  job_id        INTEGER NOT NULL REFERENCES job_openings(id),
+  candidate_id  INTEGER NOT NULL REFERENCES candidates(id),
+  status        TEXT    NOT NULL DEFAULT 'APPLIED'
+                CHECK(status IN ('APPLIED','SCREENING','INTERVIEW','OFFERED','HIRED','REJECTED')),
+  applied_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+  updated_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS interviews (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  application_id  INTEGER NOT NULL REFERENCES applications(id),
+  interviewer_id  INTEGER NOT NULL REFERENCES employees(id),
+  scheduled_at    TEXT    NOT NULL,
+  duration_mins   INTEGER NOT NULL DEFAULT 60,
+  mode            TEXT    NOT NULL DEFAULT 'IN_PERSON'
+                  CHECK(mode IN ('IN_PERSON','VIDEO','PHONE')),
+  feedback        TEXT,
+  rating          INTEGER CHECK(rating IS NULL OR (rating >= 1 AND rating <= 5)),
+  status          TEXT    NOT NULL DEFAULT 'SCHEDULED'
+                  CHECK(status IN ('SCHEDULED','COMPLETED','CANCELLED'))
+);
+
+CREATE TABLE IF NOT EXISTS offer_letters (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  application_id  INTEGER NOT NULL UNIQUE REFERENCES applications(id),
+  ctc_offered     INTEGER NOT NULL,
+  joining_date    TEXT    NOT NULL,
+  status          TEXT    NOT NULL DEFAULT 'DRAFT'
+                  CHECK(status IN ('DRAFT','SENT','ACCEPTED','DECLINED')),
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ── Performance Management ─────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS review_cycles (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT    NOT NULL,
+  year        INTEGER NOT NULL,
+  quarter     INTEGER CHECK(quarter IS NULL OR (quarter >= 1 AND quarter <= 4)),
+  start_date  TEXT    NOT NULL,
+  end_date    TEXT    NOT NULL,
+  status      TEXT    NOT NULL DEFAULT 'DRAFT'
+              CHECK(status IN ('DRAFT','ACTIVE','CLOSED')),
+  created_by  INTEGER REFERENCES employees(id),
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id     INTEGER NOT NULL REFERENCES employees(id),
+  cycle_id        INTEGER NOT NULL REFERENCES review_cycles(id),
+  title           TEXT    NOT NULL,
+  description     TEXT,
+  weight          REAL    NOT NULL DEFAULT 1.0,
+  target_value    TEXT,
+  actual_value    TEXT,
+  status          TEXT    NOT NULL DEFAULT 'PENDING'
+                  CHECK(status IN ('PENDING','IN_PROGRESS','COMPLETED','DEFERRED')),
+  self_rating     INTEGER CHECK(self_rating IS NULL OR (self_rating >= 1 AND self_rating <= 5)),
+  manager_rating  INTEGER CHECK(manager_rating IS NULL OR (manager_rating >= 1 AND manager_rating <= 5)),
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
+  updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id   INTEGER NOT NULL REFERENCES employees(id),
+  cycle_id      INTEGER NOT NULL REFERENCES review_cycles(id),
+  reviewer_id   INTEGER NOT NULL REFERENCES employees(id),
+  relationship  TEXT    NOT NULL DEFAULT 'MANAGER'
+                CHECK(relationship IN ('SELF','MANAGER','PEER','SKIP_LEVEL')),
+  overall_rating INTEGER CHECK(overall_rating IS NULL OR (overall_rating >= 1 AND overall_rating <= 5)),
+  strengths     TEXT,
+  improvements  TEXT,
+  comments      TEXT,
+  status        TEXT    NOT NULL DEFAULT 'PENDING'
+                CHECK(status IN ('PENDING','SUBMITTED')),
+  submitted_at  TEXT
+);
+
+CREATE TABLE IF NOT EXISTS one_on_ones (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id INTEGER NOT NULL REFERENCES employees(id),
+  manager_id  INTEGER NOT NULL REFERENCES employees(id),
+  date        TEXT    NOT NULL,
+  notes       TEXT,
+  action_items TEXT,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ── Employee Engagement ───────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS announcements (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  title         TEXT    NOT NULL,
+  body          TEXT    NOT NULL,
+  priority      TEXT    NOT NULL DEFAULT 'NORMAL'
+                CHECK(priority IN ('NORMAL','IMPORTANT','URGENT')),
+  published_by  INTEGER NOT NULL REFERENCES employees(id),
+  published_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+  expires_at    TEXT,
+  active        INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS surveys (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  title       TEXT    NOT NULL,
+  description TEXT,
+  status      TEXT    NOT NULL DEFAULT 'DRAFT'
+              CHECK(status IN ('DRAFT','ACTIVE','CLOSED')),
+  created_by  INTEGER NOT NULL REFERENCES employees(id),
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+  closes_at   TEXT,
+  anonymous   INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS survey_questions (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  survey_id  INTEGER NOT NULL REFERENCES surveys(id),
+  question   TEXT    NOT NULL,
+  type       TEXT    NOT NULL DEFAULT 'RATING'
+             CHECK(type IN ('RATING','TEXT','CHOICE')),
+  options    TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS survey_responses (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  survey_id    INTEGER NOT NULL REFERENCES surveys(id),
+  employee_id  INTEGER REFERENCES employees(id),
+  question_id  INTEGER NOT NULL REFERENCES survey_questions(id),
+  answer       TEXT    NOT NULL,
+  submitted_at TEXT    NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(survey_id, employee_id, question_id)
+);
+
+CREATE TABLE IF NOT EXISTS badges (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT    NOT NULL UNIQUE,
+  description TEXT,
+  icon        TEXT    NOT NULL DEFAULT 'star'
+);
+
+CREATE TABLE IF NOT EXISTS recognitions (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  from_employee  INTEGER NOT NULL REFERENCES employees(id),
+  to_employee    INTEGER NOT NULL REFERENCES employees(id),
+  badge_id       INTEGER NOT NULL REFERENCES badges(id),
+  message        TEXT    NOT NULL,
+  created_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ── Asset Management ──────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS asset_types (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  name    TEXT    NOT NULL UNIQUE,
+  active  INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS vendors (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  name           TEXT    NOT NULL,
+  contact_email  TEXT,
+  contact_phone  TEXT,
+  active         INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS assets (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  asset_type_id  INTEGER NOT NULL REFERENCES asset_types(id),
+  name           TEXT    NOT NULL,
+  serial_no      TEXT    UNIQUE,
+  purchase_date  TEXT,
+  purchase_cost  INTEGER,
+  vendor_id      INTEGER REFERENCES vendors(id),
+  status         TEXT    NOT NULL DEFAULT 'AVAILABLE'
+                 CHECK(status IN ('AVAILABLE','ASSIGNED','IN_REPAIR','RETIRED')),
+  notes          TEXT,
+  created_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS asset_assignments (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  asset_id      INTEGER NOT NULL REFERENCES assets(id),
+  employee_id   INTEGER NOT NULL REFERENCES employees(id),
+  assigned_by   INTEGER NOT NULL REFERENCES employees(id),
+  assigned_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  returned_at   TEXT,
+  is_temporary  INTEGER NOT NULL DEFAULT 0,
+  notes         TEXT
+);
+
+-- ── Helpdesk ─────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS ticket_categories (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT    NOT NULL UNIQUE,
+  assigned_to INTEGER REFERENCES employees(id),
+  active      INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS tickets (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  category_id  INTEGER NOT NULL REFERENCES ticket_categories(id),
+  subject      TEXT    NOT NULL,
+  description  TEXT    NOT NULL,
+  priority     TEXT    NOT NULL DEFAULT 'MEDIUM'
+               CHECK(priority IN ('LOW','MEDIUM','HIGH','URGENT')),
+  status       TEXT    NOT NULL DEFAULT 'OPEN'
+               CHECK(status IN ('OPEN','IN_PROGRESS','RESOLVED','CLOSED')),
+  assigned_to  INTEGER REFERENCES employees(id),
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  resolved_at  TEXT
+);
+
+CREATE TABLE IF NOT EXISTS ticket_comments (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  ticket_id   INTEGER NOT NULL REFERENCES tickets(id),
+  author_id   INTEGER NOT NULL REFERENCES employees(id),
+  body        TEXT    NOT NULL,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_employees_email      ON employees(email);
 CREATE INDEX IF NOT EXISTS idx_employees_manager    ON employees(manager_id);
@@ -280,3 +535,42 @@ CREATE INDEX IF NOT EXISTS idx_expenses_employee    ON expenses(employee_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_status      ON expenses(status);
 CREATE INDEX IF NOT EXISTS idx_advance_employee     ON advance_requests(employee_id);
 CREATE INDEX IF NOT EXISTS idx_advance_status       ON advance_requests(status);
+CREATE INDEX IF NOT EXISTS idx_job_openings_status  ON job_openings(status);
+CREATE INDEX IF NOT EXISTS idx_applications_job     ON applications(job_id);
+CREATE INDEX IF NOT EXISTS idx_applications_cand    ON applications(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_interviews_app       ON interviews(application_id);
+CREATE INDEX IF NOT EXISTS idx_interviews_viewer    ON interviews(interviewer_id);
+CREATE INDEX IF NOT EXISTS idx_goals_employee       ON goals(employee_id);
+CREATE INDEX IF NOT EXISTS idx_goals_cycle          ON goals(cycle_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_employee     ON reviews(employee_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_cycle        ON reviews(cycle_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_reviewer     ON reviews(reviewer_id);
+CREATE INDEX IF NOT EXISTS idx_one_on_ones_emp      ON one_on_ones(employee_id);
+CREATE INDEX IF NOT EXISTS idx_one_on_ones_mgr      ON one_on_ones(manager_id);
+CREATE INDEX IF NOT EXISTS idx_announcements_active  ON announcements(active);
+CREATE INDEX IF NOT EXISTS idx_surveys_status        ON surveys(status);
+CREATE INDEX IF NOT EXISTS idx_survey_responses_survey ON survey_responses(survey_id);
+CREATE INDEX IF NOT EXISTS idx_survey_responses_emp  ON survey_responses(employee_id);
+CREATE INDEX IF NOT EXISTS idx_recognitions_to       ON recognitions(to_employee);
+CREATE INDEX IF NOT EXISTS idx_recognitions_from     ON recognitions(from_employee);
+CREATE INDEX IF NOT EXISTS idx_recognitions_created  ON recognitions(created_at);
+CREATE INDEX IF NOT EXISTS idx_assets_type           ON assets(asset_type_id);
+CREATE INDEX IF NOT EXISTS idx_assets_status         ON assets(status);
+CREATE INDEX IF NOT EXISTS idx_assets_vendor         ON assets(vendor_id);
+CREATE INDEX IF NOT EXISTS idx_asset_assign_asset    ON asset_assignments(asset_id);
+CREATE INDEX IF NOT EXISTS idx_asset_assign_emp      ON asset_assignments(employee_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_employee      ON tickets(employee_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_category      ON tickets(category_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_status        ON tickets(status);
+CREATE INDEX IF NOT EXISTS idx_tickets_assigned      ON tickets(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_ticket_comments_ticket ON ticket_comments(ticket_id);
+
+-- ── Full-Text Search ──────────────────────────────────────────────────────
+CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
+  entity,
+  entity_id,
+  title,
+  body,
+  meta,
+  tokenize='porter unicode61'
+);

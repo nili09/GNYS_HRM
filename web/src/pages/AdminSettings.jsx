@@ -124,9 +124,9 @@ export default function AdminSettings() {
         <div style={{
           position: "fixed", top: 16, right: 16, zIndex: 999,
           padding: "10px 20px", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600,
-          background: toast.err ? "#fef2f2" : "var(--lime-pale)",
+          background: toast.err ? "var(--badge-danger-bg)" : "var(--lime-pale)",
           color: toast.err ? "var(--danger)" : "var(--charcoal)",
-          border: `1px solid ${toast.err ? "#fecaca" : "#bbf7d0"}`,
+          border: `1px solid ${toast.err ? "var(--badge-danger-bg)" : "var(--badge-green-bg)"}`,
           
         }}>{toast.msg}</div>
       )}
@@ -257,7 +257,7 @@ export default function AdminSettings() {
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px" }}>
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px", boxShadow: "var(--shadow-card)" }}>
       <h4 style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 10, color: "var(--charcoal)" }}>{title}</h4>
       {children}
     </div>
@@ -268,7 +268,7 @@ function Field({ label, value, onChange, disabled, type }) {
   return (
     <div>
       <label style={lS}>{label}</label>
-      <input type={type || "text"} value={value} onChange={(e) => onChange?.(e.target.value)} disabled={disabled} style={{ ...inputS, background: disabled ? "var(--bg)" : "#fff" }} />
+      <input type={type || "text"} value={value} onChange={(e) => onChange?.(e.target.value)} disabled={disabled} style={{ ...inputS, background: disabled ? "var(--bg)" : "var(--card)" }} />
     </div>
   );
 }
@@ -287,14 +287,14 @@ function Btn({ label, onClick, disabled, secondary }) {
     <button onClick={onClick} disabled={disabled} style={{
       marginTop: 12, padding: "7px 18px", border: secondary ? "1px solid var(--line)" : "none",
       borderRadius: "var(--r-card)", cursor: "pointer", fontSize: 12.5, fontWeight: 600,
-      background: secondary ? "#fff" : "var(--ink)", color: secondary ? "var(--charcoal)" : "#dff140",
+      background: secondary ? "var(--card)" : "var(--ink)", color: secondary ? "var(--charcoal)" : "var(--lime)",
       opacity: disabled ? 0.5 : 1,
     }}>{label}</button>
   );
 }
 
 function RoleBadge({ role }) {
-  const colors = { ADMIN: { bg: "#fef3c7", c: "#92400e" }, HR: { bg: "rgba(223,241,64,.15)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
+  const colors = { ADMIN: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" }, HR: { bg: "rgba(223,241,64,.15)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
   const { bg, c } = colors[role] || colors.EMPLOYEE;
   return <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: "var(--r-pill)", background: bg, color: c }}>{role}</span>;
 }
@@ -302,8 +302,8 @@ function RoleBadge({ role }) {
 function Modal({ title, children, onClose }) {
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)" }} />
-      <div style={{ position: "relative", background: "#fff", borderRadius: "var(--r-card)", padding: "20px 24px", width: 360,  }}>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "var(--overlay)" }} />
+      <div style={{ position: "relative", background: "var(--card)", borderRadius: "var(--r-card)", padding: "20px 24px", width: 360, boxShadow: "var(--shadow-card)" }}>
         <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>{title}</h3>
         {children}
       </div>

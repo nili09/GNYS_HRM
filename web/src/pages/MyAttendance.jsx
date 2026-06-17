@@ -9,11 +9,11 @@ const ATT_LABEL = {
 
 const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  A:   { bg: "#ffe5e5", color: "var(--danger)" },
-  HD:  { bg: "#ede8df", color: "#7a6a55" },
+  A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
   OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
-  L:   { bg: "#ede8df", color: "var(--text-muted)" },
+  L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
   "":  { bg: "var(--bg)", color: "var(--text-faint)" },
@@ -97,7 +97,7 @@ export default function MyAttendance() {
           }}>
             <div>
               <div style={{ fontSize: 12, color: "#8b9ac0", marginBottom: 2 }}>Payable days</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#dff140" }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: "var(--lime)" }}>
                 {data.payable}<span style={{ fontSize: 14, color: "#8b9ac0" }}>/{data.days}</span>
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function MyAttendance() {
           </div>
 
           {/* Calendar grid */}
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20 }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
             {/* Day-of-week header */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 8 }}>
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (

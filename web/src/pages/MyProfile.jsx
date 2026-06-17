@@ -76,11 +76,11 @@ export default function MyProfile() {
     <div>
       <h2 style={{ fontSize: 17, fontWeight: 650, marginBottom: 16 }}>My Profile</h2>
 
-      {msg && <div style={{ padding: "8px 12px", background: msg.includes("success") ? "var(--lime-pale)" : "#ffe5e5", color: msg.includes("success") ? "var(--charcoal)" : "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13 }}>{msg}</div>}
+      {msg && <div style={{ padding: "8px 12px", background: msg.includes("success") ? "var(--lime-pale)" : "var(--badge-danger-bg)", color: msg.includes("success") ? "var(--charcoal)" : "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13 }}>{msg}</div>}
 
       {/* Header card */}
       <div style={{ ...card, display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
-        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--ink)", color: "#dff140", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, flexShrink: 0 }}>
+        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--ink)", color: "var(--lime)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, flexShrink: 0 }}>
           {emp.name?.charAt(0)}
         </div>
         <div style={{ flex: 1 }}>
@@ -88,7 +88,7 @@ export default function MyProfile() {
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{emp.code} · {emp.desig_name || "—"} · {emp.dept_name || "—"}</div>
           <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 2 }}>Joined {emp.doj || "—"} · {emp.location_name || "—"}</div>
         </div>
-        <span style={{ padding: "4px 12px", borderRadius: "var(--r-pill)", fontSize: 12, fontWeight: 600, background: emp.status === "ACTIVE" ? "var(--lime-pale)" : "#ede8df", color: emp.status === "ACTIVE" ? "var(--charcoal)" : "#7a6a55" }}>
+        <span style={{ padding: "4px 12px", borderRadius: "var(--r-pill)", fontSize: 12, fontWeight: 600, background: emp.status === "ACTIVE" ? "var(--lime-pale)" : "var(--badge-tan-bg)", color: emp.status === "ACTIVE" ? "var(--charcoal)" : "var(--badge-tan-text)" }}>
           {emp.status}
         </span>
       </div>
@@ -176,15 +176,15 @@ function Row({ label, value }) {
 }
 
 const card = {
-  background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
-  padding: "16px 20px", 
+  background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
+  padding: "16px 20px", boxShadow: "var(--shadow-card)",
 };
 const sectionTitle = { margin: 0, fontSize: 14, fontWeight: 650 };
 const labelStyle = { display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3 };
 const fldStyle = { width: "100%", padding: "7px 10px", border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 13, outline: "none", boxSizing: "border-box" };
 
 const btnPrimary = {
-  padding: "7px 16px", background: "var(--ink)", color: "#dff140",
+  padding: "7px 16px", background: "var(--ink)", color: "var(--lime)",
   border: "none", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer",
 };
 const btnCancel = {

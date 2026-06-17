@@ -49,7 +49,7 @@ export default function PayslipView({ lineId, onBack }) {
       </div>
 
       {/* Payslip container */}
-      <div id="payslip-print" style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 32, maxWidth: 800, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+      <div id="payslip-print" style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 32, maxWidth: 800, margin: "0 auto", position: "relative", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
 
         {/* DRAFT watermark */}
         {isDraft && (
@@ -166,4 +166,4 @@ function SlipRow({ label, value, bold }) {
 }
 
 const backBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "6px 14px", cursor: "pointer", fontSize: 13 };
-const printBtnStyle = { background: "var(--ink)", color: "#dff140", border: "none", borderRadius: "var(--r-pill)", padding: "6px 14px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
+const printBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "6px 14px", cursor: "pointer", fontWeight: 600, fontSize: 13 };

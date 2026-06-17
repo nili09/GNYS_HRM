@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 
 const STATUS_BADGE = {
-  PENDING:  { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED: { bg: "#ffe5e5", color: "var(--danger)" },
-  SETTLED:  { bg: "#e0f2fe", color: "#0369a1" },
+  REJECTED: { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
+  SETTLED:  { bg: "var(--badge-sky-bg)", color: "var(--badge-sky-text)" },
 };
 
 function Badge({ status }) {
@@ -89,7 +89,7 @@ export default function TeamExpenses() {
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>
         Pending Expenses ({expenses.length})
       </div>
-      <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", marginBottom: 24 }}>
+      <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", marginBottom: 24, boxShadow: "var(--shadow-card)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -127,7 +127,7 @@ export default function TeamExpenses() {
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>
         Pending Advance Requests ({advances.length})
       </div>
-      <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+      <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -166,7 +166,7 @@ const tdStyle = { padding: "10px 12px" };
 function actionBtn(type) {
   return {
     padding: "4px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
-    background: "#fff", cursor: "pointer", fontSize: 11.5, fontFamily: "inherit", fontWeight: 600,
+    background: "var(--card)", cursor: "pointer", fontSize: 11.5, fontFamily: "inherit", fontWeight: 600,
     color: type === "approve" ? "var(--charcoal)" : "var(--danger)",
   };
 }

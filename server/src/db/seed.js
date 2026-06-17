@@ -121,7 +121,28 @@ const upsertCategory = db.prepare(
 for (const c of expenseCategories) upsertCategory.run(c);
 console.log(`✓ ${expenseCategories.length} expense categories seeded`);
 
-// ── 5. Admin user ─────────────────────────────────────────────────────────────
+// ── 5. Engagement badges ─────────────────────────────────────────────────────
+const badges = [
+  { name: "Star Performer",   description: "Consistently exceeds expectations",    icon: "⭐" },
+  { name: "Team Player",      description: "Great collaborator and team spirit",   icon: "🤝" },
+  { name: "Innovator",        description: "Brings creative solutions to problems", icon: "💡" },
+  { name: "Helping Hand",     description: "Always ready to help colleagues",       icon: "🙌" },
+  { name: "Quick Learner",    description: "Rapidly picks up new skills",           icon: "🚀" },
+  { name: "Customer Champion", description: "Goes above and beyond for clients",    icon: "🏅" },
+  { name: "Mentor",           description: "Guides and develops teammates",         icon: "🎓" },
+  { name: "Problem Solver",   description: "Tackles tough challenges head-on",      icon: "🔧" },
+];
+
+const upsertBadge = db.prepare(
+  `INSERT INTO badges(name, description, icon)
+   VALUES(@name, @description, @icon)
+   ON CONFLICT(name) DO NOTHING`
+);
+
+for (const b of badges) upsertBadge.run(b);
+console.log(`✓ ${badges.length} engagement badges seeded`);
+
+// ── 6. Admin user ─────────────────────────────────────────────────────────────
 const ADMIN_EMAIL    = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ADMIN_NAME     = process.env.ADMIN_NAME || "HR Admin";
@@ -145,7 +166,12 @@ if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   }
 }
 
-// ── 6. Sample data (--sample flag) ────────────────────────────────────────────
+// ── 7. Rebuild search index ──────────────────────────────────────────────────
+import { reindexAll } from "../utils/search.js";
+reindexAll(db);
+console.log("✓ Search index rebuilt");
+
+// ── 8. Sample data (--sample flag) ────────────────────────────────────────────
 if (SAMPLE) {
   console.log("ℹ  --sample flag noted — sample employee generation stubbed for Stage 2");
 }

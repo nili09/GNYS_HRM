@@ -13,6 +13,7 @@ import {
 } from "@hrms/shared/schemas";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { indexEntity } from "../utils/search.js";
 
 const router = Router();
 
@@ -141,6 +142,8 @@ router.post("/", requireAuth, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "expense", entityId: id, detail: d });
   broadcast({ type: "expense", entity: "expenses", id });
+  indexEntity(db, "expense", id, `${cat.name} — ${d.amount}`, d.description || "",
+    { status: "PENDING", employee_id: req.user.id });
   res.status(201).json({ id, employee_id: req.user.id, status: "PENDING", ...d });
 });
 

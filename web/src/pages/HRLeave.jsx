@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 
 const STATUS_BADGE = {
-  PENDING:   { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:   { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED:  { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED:  { bg: "#ffe5e5", color: "var(--danger)" },
+  REJECTED:  { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   CANCELLED: { bg: "var(--bg)", color: "var(--text-muted)" },
 };
 
@@ -143,7 +143,7 @@ export default function HRLeave() {
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === k ? 700 : 400,
             color: tab === k ? "var(--ink)" : "var(--text-muted)",
-            borderBottom: tab === k ? "2px solid #dff140" : "2px solid transparent",
+            borderBottom: tab === k ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>
             {label}
@@ -153,7 +153,7 @@ export default function HRLeave() {
 
       {/* ── All Requests ───────────────────────────────────────── */}
       {tab === "requests" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -192,7 +192,7 @@ export default function HRLeave() {
                     )}
                     {(l.status === "PENDING" || l.status === "APPROVED") && (
                       <button onClick={() => act(l.id, "cancel")} disabled={acting === l.id}
-                        style={{ ...btnStyle, border: "1px solid var(--line)", background: "#fff", color: "var(--danger)", marginTop: l.status === "PENDING" ? 4 : 0 }}>
+                        style={{ ...btnStyle, border: "1px solid var(--line)", background: "var(--card)", color: "var(--danger)", marginTop: l.status === "PENDING" ? 4 : 0 }}>
                         Cancel
                       </button>
                     )}
@@ -206,7 +206,7 @@ export default function HRLeave() {
 
       {/* ── Balances ───────────────────────────────────────────── */}
       {tab === "balances" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <div style={{ padding: "12px 16px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid var(--line)" }}>
             Leave Balances — {year}
           </div>
@@ -249,7 +249,7 @@ export default function HRLeave() {
                       <td style={{ ...tdStyle, textAlign: "center" }}>{lwp || "—"}</td>
                       <td style={tdStyle}>
                         <button onClick={() => openAdjust(row.employeeId)}
-                          style={{ ...btnStyle, border: "1px solid var(--line)", background: "#fff" }}>
+                          style={{ ...btnStyle, border: "1px solid var(--line)", background: "var(--card)" }}>
                           Adjust
                         </button>
                       </td>
@@ -267,13 +267,13 @@ export default function HRLeave() {
 
       {/* ── Leave Types ────────────────────────────────────────── */}
       {tab === "types" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--line)" }}>
             <span style={{ fontWeight: 700, fontSize: 14 }}>Leave Types</span>
             <button onClick={() => {
               setEditType("__new__");
               setTypeForm({ code: "", name: "", annual: 0, paid: 1, carry_fwd: 0, max_carry: 0 });
-            }} style={{ ...btnStyle, background: "var(--ink)", color: "#dff140" }}>
+            }} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>
               + Add Type
             </button>
           </div>
@@ -302,7 +302,7 @@ export default function HRLeave() {
                     <button onClick={() => {
                       setEditType(t.code);
                       setTypeForm({ name: t.name, annual: t.annual, paid: t.paid, carry_fwd: t.carry_fwd, max_carry: t.max_carry });
-                    }} style={{ ...btnStyle, border: "1px solid var(--line)", background: "#fff" }}>
+                    }} style={{ ...btnStyle, border: "1px solid var(--line)", background: "var(--card)" }}>
                       Edit
                     </button>
                   </td>
@@ -339,8 +339,8 @@ export default function HRLeave() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
-              <button onClick={() => setAdjustModal(null)} style={{ ...btnStyle, border: "1px solid #d1d5db" }}>Cancel</button>
-              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--ink)", color: "#dff140" }}>Apply</button>
+              <button onClick={() => setAdjustModal(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
+              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>Apply</button>
             </div>
           </div>
         </div>
@@ -396,8 +396,8 @@ export default function HRLeave() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
-              <button onClick={() => setEditType(null)} style={{ ...btnStyle, border: "1px solid #d1d5db" }}>Cancel</button>
-              <button onClick={saveType} style={{ ...btnStyle, background: "var(--ink)", color: "#dff140" }}>Save</button>
+              <button onClick={() => setEditType(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
+              <button onClick={saveType} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>Save</button>
             </div>
           </div>
         </div>
@@ -412,9 +412,9 @@ const btnStyle = {
   padding: "5px 14px", borderRadius: "var(--r-card)", border: "none", cursor: "pointer",
   fontSize: 12, fontWeight: 600, fontFamily: "inherit",
 };
-const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 };
+const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--badge-gray-text)", marginBottom: 4 };
 const inputStyle = {
-  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid #d1d5db",
+  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
 const overlayStyle = {
@@ -422,6 +422,6 @@ const overlayStyle = {
   alignItems: "center", justifyContent: "center", zIndex: 1000,
 };
 const modalStyle = {
-  background: "#fff", borderRadius: "var(--r-card)", padding: 24, minWidth: 440, maxWidth: 560,
+  background: "var(--card)", borderRadius: "var(--r-card)", padding: 24, minWidth: 440, maxWidth: 560, boxShadow: "var(--shadow-card)",
   
 };

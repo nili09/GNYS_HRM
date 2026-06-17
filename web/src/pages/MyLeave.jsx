@@ -3,9 +3,9 @@ import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 const STATUS_BADGE = {
-  PENDING:   { bg: "#ede8df", color: "#7a6a55" },
+  PENDING:   { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
   APPROVED:  { bg: "var(--lime-pale)", color: "var(--charcoal)" },
-  REJECTED:  { bg: "#ffe5e5", color: "var(--danger)" },
+  REJECTED:  { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   CANCELLED: { bg: "var(--bg)", color: "var(--text-muted)" },
 };
 
@@ -144,7 +144,7 @@ export default function MyLeave() {
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t ? 700 : 400,
             color: tab === t ? "var(--ink)" : "var(--text-muted)",
-            borderBottom: tab === t ? "2px solid #dff140" : "2px solid transparent",
+            borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>
             {t === "apply" ? "Apply Leave" : "My Requests"}
@@ -155,7 +155,7 @@ export default function MyLeave() {
       {tab === "apply" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24, alignItems: "start" }}>
           {/* Form */}
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20 }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
             <form onSubmit={handleApply}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                 <div>
@@ -207,7 +207,7 @@ export default function MyLeave() {
               <button type="submit" disabled={submitting || !form.date_from || !form.date_to}
                 style={{
                   marginTop: 16, padding: "9px 28px", borderRadius: "var(--r-pill)", border: "none",
-                  background: "var(--ink)", color: "#dff140", fontWeight: 700, fontSize: 13.5,
+                  background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 13.5,
                   cursor: "pointer", opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
                 }}>
                 {submitting ? "Applying…" : "Apply Leave"}
@@ -216,7 +216,7 @@ export default function MyLeave() {
           </div>
 
           {/* Balance panel */}
-          <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16 }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, boxShadow: "var(--shadow-card)" }}>
             <div style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 10, color: "var(--ink)" }}>
               Balances — {year}
             </div>
@@ -228,7 +228,7 @@ export default function MyLeave() {
                 <div key={t.code} style={{
                   padding: "8px 10px", borderRadius: "var(--r-pill)", marginBottom: 6,
                   background: isActive ? "var(--lime-pale)" : "var(--bg)",
-                  border: isActive ? "1px solid #86efac" : "1px solid transparent",
+                  border: isActive ? "1px solid var(--badge-green-bg)" : "1px solid transparent",
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                     <span style={{ fontWeight: 600 }}>{t.code}</span>
@@ -247,7 +247,7 @@ export default function MyLeave() {
       )}
 
       {tab === "requests" && (
-        <div style={{ background: "#fff", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden" }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "var(--bg)", textAlign: "left" }}>
@@ -279,7 +279,7 @@ export default function MyLeave() {
                       <button onClick={() => handleCancel(l.id)}
                         style={{
                           padding: "3px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
-                          background: "#fff", color: "var(--danger)", cursor: "pointer", fontSize: 11.5,
+                          background: "var(--card)", color: "var(--danger)", cursor: "pointer", fontSize: 11.5,
                           fontFamily: "inherit",
                         }}>Cancel</button>
                     )}
@@ -294,9 +294,9 @@ export default function MyLeave() {
   );
 }
 
-const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 };
+const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--badge-gray-text)", marginBottom: 4 };
 const inputStyle = {
-  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid #d1d5db",
+  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
 const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
