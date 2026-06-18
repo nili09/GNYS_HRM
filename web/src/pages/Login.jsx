@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -129,7 +130,49 @@ export default function Login() {
           </button>
         </form>
 
-        <div style={{ marginTop: 24, fontSize: 11, color: "rgba(255,255,255,.2)", textAlign: "center", letterSpacing: ".03em" }}>
+        {showForgot ? (
+          <div style={{
+            marginTop: 18,
+            padding: "14px 16px",
+            background: "rgba(223,241,64,.06)",
+            border: "1px solid rgba(223,241,64,.15)",
+            borderRadius: "var(--r-card)",
+            fontSize: 12.5,
+            color: "rgba(255,255,255,.65)",
+            lineHeight: 1.55,
+          }}>
+            <div style={{ fontWeight: 700, color: "var(--lime)", marginBottom: 6, fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".06em" }}>
+              Password reset
+            </div>
+            Contact your <strong style={{ color: "#fff" }}>HR or IT helpdesk</strong> to
+            reset your password. They will set a temporary password and you'll be
+            prompted to change it on your next login.
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowForgot(true)}
+            style={{
+              display: "block",
+              width: "100%",
+              marginTop: 16,
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,.35)",
+              fontSize: 12,
+              cursor: "pointer",
+              textAlign: "center",
+              padding: "4px 0",
+              transition: "color .2s",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255,255,255,.35)"}
+          >
+            Forgot password?
+          </button>
+        )}
+
+        <div style={{ marginTop: 16, fontSize: 11, color: "rgba(255,255,255,.2)", textAlign: "center", letterSpacing: ".03em" }}>
           Internal tool · Data stays on company systems
         </div>
       </div>

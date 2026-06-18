@@ -7,6 +7,7 @@ import {
 import { audit } from "../utils/audit.js";
 import { broadcast } from "../utils/sse.js";
 import { indexEntity } from "../utils/search.js";
+import { sendWelcomeEmail } from "../utils/mailer.js";
 import {
   EmployeeCreateSchema, EmployeePatchSchema, EmployeeSelfPatchSchema,
   SalaryStructureSchema, ResetPasswordSchema,
@@ -408,8 +409,15 @@ router.post("/", requireHR, async (req, res) => {
     [d.code, d.email, dept, desig].filter(Boolean).join(" "),
     { dept, status: d.status || "ACTIVE", role: d.role || "EMPLOYEE" });
 
-  // tempPassword is returned exactly once, here, so HR can hand it over.
-  res.status(201).json({ id: empId, code: d.code, tempPassword });
+  let emailStatus = "skipped";
+  if (d.email) {
+    try {
+      const r = await sendWelcomeEmail({ to: d.email, name: d.name, loginEmail: d.email, tempPassword });
+      emailStatus = r.status;
+    } catch { emailStatus = "failed"; }
+  }
+
+  res.status(201).json({ id: empId, code: d.code, tempPassword, emailStatus });
 });
 
 /* ──────────────────────────────────────────────────────────────────────────────

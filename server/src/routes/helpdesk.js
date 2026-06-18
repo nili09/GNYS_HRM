@@ -7,6 +7,7 @@ import {
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
 import { indexEntity } from "../utils/search.js";
+import { notify } from "../utils/notify.js";
 
 const router = Router();
 
@@ -171,6 +172,19 @@ router.post("/tickets/:id/comments", requireAuth, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "ticket_comment", entityId: id, detail: { ticket_id: ticketId } });
   broadcast({ type: "mutation", entity: "tickets" });
+
+  const commentAuthor = db.prepare("SELECT name FROM employees WHERE id = ?").get(req.user.id);
+  const targets = new Set([ticket.employee_id]);
+  if (ticket.assigned_to) targets.add(ticket.assigned_to);
+  targets.delete(req.user.id);
+  for (const uid of targets) {
+    notify(db, {
+      userId: uid, type: "helpdesk_reply", title: "New reply on ticket",
+      body: `${commentAuthor?.name || "Someone"} replied on "${ticket.subject}"`,
+      link: `/helpdesk/${ticketId}`, entity: "ticket", entityId: ticketId,
+    });
+  }
+
   res.status(201).json({ id, ticket_id: ticketId, author_id: req.user.id, body: parsed.data.body });
 });
 

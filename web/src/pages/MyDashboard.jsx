@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useIsMobile } from "../hooks/useIsMobile.jsx";
 import { api } from "../lib/api.js";
 
 function fmt(n) { return Number(n || 0).toLocaleString("en-IN"); }
@@ -27,6 +28,7 @@ function daysAgo(dt) {
 export default function MyDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [data, setData] = useState(null);
   const [mgrData, setMgrData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +63,7 @@ export default function MyDashboard() {
       <h2 style={{ fontSize: 20, marginBottom: 20 }}>Welcome, {user?.name}</h2>
 
       {/* KPI cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
         <KPI label="Leave Balance" value={totalBal} sub="days available" onClick={() => navigate("/my/leave")} />
         <KPI label="Present"       value={att.present ?? 0} sub={fmtMonth(att.month || new Date().toISOString().slice(0, 7))} onClick={() => navigate("/my/attendance")} />
         <KPI label="On Leave"      value={att.leaves ?? 0}  sub="this month" />
@@ -72,14 +74,14 @@ export default function MyDashboard() {
       </div>
 
       {/* Module KPI row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
         <KPI label="Expenses" value={data?.myExpenses?.count ?? 0} sub={data?.myExpenses?.total ? `₹${fmt(data.myExpenses.total)} pending` : "none pending"} onClick={() => navigate("/my/expenses")} />
         <KPI label="Tickets" value={data?.myOpenTickets ?? 0} sub="open tickets" onClick={() => navigate("/my/tickets")} />
         <KPI label="Assets" value={data?.myAssets ?? 0} sub="assigned to me" onClick={() => navigate("/my/assets")} />
         <KPI label="Surveys" value={data?.activeSurveys?.length ?? 0} sub="awaiting response" onClick={() => navigate("/my/surveys")} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         {/* Leave balances */}
         <Card title="Leave Balances">
           {data?.balances?.length ? (
@@ -160,7 +162,7 @@ export default function MyDashboard() {
       {mgrData?.isManager && (
         <div style={{ marginTop: 22 }}>
           <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>Team Overview</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 14 }}>
             <KPI label="Team Size" value={mgrData.teamSize} sub="direct reports" />
             <KPI label="Out Today" value={mgrData.outToday.length} sub="on leave" />
             <KPI label="Pending"   value={mgrData.pending.length}  sub="leave approvals" onClick={() => navigate("/team/approvals")} />
@@ -168,7 +170,7 @@ export default function MyDashboard() {
             {mgrData.teamGoals && <KPI label="Team Goals" value={`${mgrData.teamGoals.completionRate}%`} sub={`${mgrData.teamGoals.completed}/${mgrData.teamGoals.total} completed`} onClick={() => navigate("/team/performance")} />}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
             <Card title="Who's Out Today">
               {mgrData.outToday.length ? (
                 mgrData.outToday.map((e) => (

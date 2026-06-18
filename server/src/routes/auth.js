@@ -67,12 +67,17 @@ export function createAuthRouter(opts = {}) {
       entityId: employee.id,
     });
 
+    const reportCount = db
+      .prepare("SELECT COUNT(*) as c FROM employees WHERE manager_id = ? AND status IN ('ACTIVE','ONBOARDING','NOTICE')")
+      .get(employee.id).c;
+
     res.json({
       id: employee.id,
       name: employee.name,
       email: employee.email,
       role: employee.role,
       must_change_pw: !!employee.must_change_pw,
+      is_manager: reportCount > 0,
     });
   });
 
@@ -90,12 +95,18 @@ export function createAuthRouter(opts = {}) {
 
   /* GET /auth/me */
   router.get("/me", requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const reportCount = db
+      .prepare("SELECT COUNT(*) as c FROM employees WHERE manager_id = ? AND status IN ('ACTIVE','ONBOARDING','NOTICE')")
+      .get(req.user.id).c;
+
     res.json({
       id: req.user.id,
       name: req.user.name,
       email: req.user.email,
       role: req.user.role,
       must_change_pw: !!req.user.must_change_pw,
+      is_manager: reportCount > 0,
     });
   });
 

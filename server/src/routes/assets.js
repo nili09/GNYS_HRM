@@ -7,6 +7,7 @@ import {
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
 import { indexEntity } from "../utils/search.js";
+import { notify } from "../utils/notify.js";
 
 const router = Router();
 
@@ -161,6 +162,13 @@ router.post("/:id/assign", ...requireHR, (req, res) => {
 
   audit(db, { actorId: req.user.id, action: "ASSIGN", entity: "asset", entityId: assetId, detail: { ...parsed.data, assignment_id: assignId } });
   broadcast({ type: "mutation", entity: "assets" });
+
+  notify(db, {
+    userId: parsed.data.employee_id, type: "asset_assigned", title: "Asset assigned to you",
+    body: `${asset.name}${asset.serial_no ? ` (${asset.serial_no})` : ""} has been assigned to you`,
+    link: "/assets/my", entity: "asset", entityId: assetId,
+  });
+
   res.status(201).json({ id: assignId, asset_id: assetId, ...parsed.data, assigned_by: req.user.id });
 });
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api.js";
+import { useIsMobile } from "../hooks/useIsMobile.jsx";
 
 function fmt(n) {
   return Number(n || 0).toLocaleString("en-IN");
@@ -13,6 +14,7 @@ function fmtMonth(ym) {
 export default function PayslipView({ lineId, onBack }) {
   const [slip, setSlip] = useState(null);
   const [error, setError] = useState("");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     (async () => {
@@ -40,6 +42,7 @@ export default function PayslipView({ lineId, onBack }) {
 
   const isDraft = slip.run_status === "DRAFT";
   const totalDeductions = (slip.ded_pf || 0) + (slip.ded_esi || 0) + (slip.ded_pt || 0) + (slip.ded_tds || 0);
+  const pad = isMobile ? 16 : 32;
 
   return (
     <div>
@@ -49,27 +52,32 @@ export default function PayslipView({ lineId, onBack }) {
       </div>
 
       {/* Payslip container */}
-      <div id="payslip-print" style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 32, maxWidth: 800, margin: "0 auto", position: "relative", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
+      <div id="payslip-print" style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: pad, maxWidth: 800, margin: "0 auto", position: "relative", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
 
         {/* DRAFT watermark */}
         {isDraft && (
           <div style={{
             position: "absolute", top: "50%", left: "50%",
             transform: "translate(-50%, -50%) rotate(-30deg)",
-            fontSize: 80, fontWeight: 900, color: "rgba(223,241,64,.08)",
+            fontSize: isMobile ? 50 : 80, fontWeight: 900, color: "rgba(223,241,64,.08)",
             letterSpacing: 20, pointerEvents: "none", whiteSpace: "nowrap",
             zIndex: 1,
           }}>DRAFT</div>
         )}
 
         {/* Company header */}
-        <div style={{ textAlign: "center", marginBottom: 20, position: "relative", zIndex: 2 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Genesys International Corporation Ltd</h2>
+        <div style={{ textAlign: "center", marginBottom: 16, position: "relative", zIndex: 2 }}>
+          <h2 style={{ margin: 0, fontSize: isMobile ? 15 : 18, fontWeight: 700 }}>Genesys International Corporation Ltd</h2>
           <p style={{ margin: "4px 0 0", color: "var(--text-muted)", fontSize: 12 }}>Payslip for {fmtMonth(slip.month)}</p>
         </div>
 
         {/* Employee info */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px", fontSize: 13, marginBottom: 20, position: "relative", zIndex: 2 }}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: "4px 24px", fontSize: 13, marginBottom: 16,
+          position: "relative", zIndex: 2,
+        }}>
           <InfoRow label="Employee Code" value={slip.emp_code} />
           <InfoRow label="Employee Name" value={slip.emp_name} />
           <InfoRow label="Department" value={slip.dept_name || "—"} />
@@ -81,10 +89,15 @@ export default function PayslipView({ lineId, onBack }) {
           <InfoRow label="Working Days" value={`${slip.payable} / ${slip.month_days}`} />
         </div>
 
-        <hr style={{ border: "none", borderTop: "1px solid var(--line)", margin: "16px 0" }} />
+        <hr style={{ border: "none", borderTop: "1px solid var(--line)", margin: "12px 0" }} />
 
-        {/* Earnings + Deductions side by side */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, fontSize: 13, position: "relative", zIndex: 2 }}>
+        {/* Earnings + Deductions */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 16 : 24, fontSize: 13,
+          position: "relative", zIndex: 2,
+        }}>
           {/* Earnings */}
           <div>
             <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--charcoal)", marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em" }}>Earnings</h3>
@@ -116,14 +129,19 @@ export default function PayslipView({ lineId, onBack }) {
         <hr style={{ border: "none", borderTop: "2px solid var(--ink)", margin: "20px 0 12px" }} />
 
         {/* Net pay */}
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, fontWeight: 800, position: "relative", zIndex: 2 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: isMobile ? 16 : 18, fontWeight: 800, position: "relative", zIndex: 2 }}>
           <span>Net Pay</span>
           <span style={{ color: "var(--charcoal)" }}>₹{fmt(slip.net)}</span>
         </div>
 
-        {/* Employer contributions (small footer) */}
-        <div style={{ marginTop: 20, padding: "10px 14px", background: "var(--bg)", borderRadius: "var(--r-pill)", fontSize: 11, color: "var(--text-muted)", position: "relative", zIndex: 2 }}>
-          <strong>Employer Contributions:</strong>{" "}
+        {/* Employer contributions */}
+        <div style={{
+          marginTop: 16, padding: "10px 14px", background: "var(--bg)",
+          borderRadius: "var(--r-pill)", fontSize: 11, color: "var(--text-muted)",
+          position: "relative", zIndex: 2,
+          lineHeight: 1.6,
+        }}>
+          <strong>Employer Contributions:</strong>{isMobile ? <br/> : " "}
           EPF ₹{fmt(slip.er_epf)} | EPS ₹{fmt(slip.er_eps)} | ESI ₹{fmt(slip.er_esi)}
           {slip.esi_covered ? " (ESI covered)" : ""}
         </div>
@@ -150,8 +168,8 @@ export default function PayslipView({ lineId, onBack }) {
 function InfoRow({ label, value }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", padding: "3px 0" }}>
-      <span style={{ color: "var(--text-muted)" }}>{label}</span>
-      <span style={{ fontWeight: 500 }}>{value}</span>
+      <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{label}</span>
+      <span style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
     </div>
   );
 }
@@ -165,5 +183,5 @@ function SlipRow({ label, value, bold }) {
   );
 }
 
-const backBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "6px 14px", cursor: "pointer", fontSize: 13 };
-const printBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "6px 14px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
+const backBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "8px 16px", cursor: "pointer", fontSize: 13, minHeight: 36 };
+const printBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 16px", cursor: "pointer", fontWeight: 600, fontSize: 13, minHeight: 36 };

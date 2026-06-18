@@ -62,6 +62,7 @@ function migrateHROneFields(db) {
     ["notice_period_confirm", "INTEGER"],
     ["notice_period_probation", "INTEGER"],
     ["wedding_anniversary", "TEXT"],
+    ["profile_photo_id", "INTEGER"],
   ];
 
   for (const [col, type] of newCols) {

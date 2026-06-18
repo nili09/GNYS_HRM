@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { api } from "../lib/api.js";
+import { useIsMobile } from "../hooks/useIsMobile.jsx";
+import ProfilePhoto from "../components/ProfilePhoto.jsx";
+import FileUpload from "../components/FileUpload.jsx";
 
 const CONTACT_FIELDS = [
   { key: "phone", label: "Phone" },
@@ -12,6 +15,7 @@ const CONTACT_FIELDS = [
 
 export default function MyProfile() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [emp, setEmp] = useState(null);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({});
@@ -79,13 +83,11 @@ export default function MyProfile() {
       {msg && <div style={{ padding: "8px 12px", background: msg.includes("success") ? "var(--lime-pale)" : "var(--badge-danger-bg)", color: msg.includes("success") ? "var(--charcoal)" : "var(--danger)", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 13 }}>{msg}</div>}
 
       {/* Header card */}
-      <div style={{ ...card, display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
-        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--ink)", color: "var(--lime)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, flexShrink: 0 }}>
-          {emp.name?.charAt(0)}
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>{emp.name}</div>
-          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{emp.code} · {emp.desig_name || "—"} · {emp.dept_name || "—"}</div>
+      <div style={{ ...card, display: "flex", alignItems: "center", gap: isMobile ? 12 : 18, marginBottom: 16, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+        <ProfilePhoto employee={emp} size={isMobile ? 44 : 56} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700 }}>{emp.name}</div>
+          <div style={{ fontSize: 13, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: isMobile ? "normal" : "nowrap" }}>{emp.code} · {emp.desig_name || "—"} · {emp.dept_name || "—"}</div>
           <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 2 }}>Joined {emp.doj || "—"} · {emp.location_name || "—"}</div>
         </div>
         <span style={{ padding: "4px 12px", borderRadius: "var(--r-pill)", fontSize: 12, fontWeight: 600, background: emp.status === "ACTIVE" ? "var(--lime-pale)" : "var(--badge-tan-bg)", color: emp.status === "ACTIVE" ? "var(--charcoal)" : "var(--badge-tan-text)" }}>
@@ -94,7 +96,7 @@ export default function MyProfile() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         {/* Personal info */}
         <div style={card}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -161,15 +163,52 @@ export default function MyProfile() {
             <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 8 }}>Effective from {latestSal.effective_from}</div>
           </div>
         )}
+
+        {/* Profile photo upload */}
+        <div style={{ ...card, gridColumn: "1 / -1" }}>
+          <h3 style={sectionTitle}>Profile Photo</h3>
+          <FileUpload
+            ownerType="profile_photo"
+            ownerId={String(emp.id)}
+            accept="image/jpeg,image/png,image/webp"
+            label="Upload a profile photo (JPEG, PNG, or WebP)"
+          />
+        </div>
+
+        {/* Document vault */}
+        <div style={{ ...card, gridColumn: "1 / -1" }}>
+          <h3 style={sectionTitle}>Documents</h3>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginTop: 8 }}>
+            {DOC_KEYS.map(dk => (
+              <div key={dk.key} style={{ padding: "10px 14px", background: "var(--bg)", borderRadius: "var(--r-card)" }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 4 }}>{dk.label}</div>
+                <FileUpload
+                  ownerType="doc_checklist"
+                  ownerId={`${emp.id}:${dk.key}`}
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
+const DOC_KEYS = [
+  { key: "pan_card", label: "PAN Card" },
+  { key: "aadhaar", label: "Aadhaar Card" },
+  { key: "passport", label: "Passport" },
+  { key: "degree_certificate", label: "Degree Certificate" },
+  { key: "offer_letter", label: "Offer Letter" },
+  { key: "relieving_letter", label: "Relieving Letter" },
+];
+
 function Row({ label, value }) {
   return (
-    <div style={{ display: "flex", fontSize: 13 }}>
-      <span style={{ width: 140, color: "var(--text-muted)", fontWeight: 500, flexShrink: 0 }}>{label}</span>
+    <div style={{ display: "flex", flexDirection: "column", fontSize: 13, gap: 1 }}>
+      <span style={{ color: "var(--text-muted)", fontWeight: 500, fontSize: 12 }}>{label}</span>
       <span style={{ fontWeight: 500 }}>{value || "—"}</span>
     </div>
   );
@@ -181,17 +220,17 @@ const card = {
 };
 const sectionTitle = { margin: 0, fontSize: 14, fontWeight: 650 };
 const labelStyle = { display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3 };
-const fldStyle = { width: "100%", padding: "7px 10px", border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 13, outline: "none", boxSizing: "border-box" };
+const fldStyle = { width: "100%", padding: "10px 12px", border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 14, outline: "none", boxSizing: "border-box" };
 
 const btnPrimary = {
-  padding: "7px 16px", background: "var(--ink)", color: "var(--lime)",
-  border: "none", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer",
+  padding: "10px 20px", background: "var(--ink)", color: "var(--lime)",
+  border: "none", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer", minHeight: 40,
 };
 const btnCancel = {
-  padding: "7px 16px", background: "var(--bg)", color: "var(--text-muted)",
-  border: "1px solid var(--line)", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer",
+  padding: "10px 20px", background: "var(--bg)", color: "var(--text-muted)",
+  border: "1px solid var(--line)", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer", minHeight: 40,
 };
 const btnEdit = {
-  padding: "5px 12px", background: "var(--bg)", color: "var(--charcoal)",
-  border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 12, fontWeight: 600, cursor: "pointer",
+  padding: "8px 14px", background: "var(--bg)", color: "var(--charcoal)",
+  border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 12, fontWeight: 600, cursor: "pointer", minHeight: 36,
 };

@@ -8,6 +8,7 @@ import {
 } from "@hrms/shared/schemas";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { notify } from "../utils/notify.js";
 
 const router = Router();
 
@@ -207,6 +208,14 @@ router.post("/reviews", ...requireHR, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "review", entityId: id, detail: d });
   broadcast({ type: "review", entity: "reviews" });
+
+  const empName = db.prepare("SELECT name FROM employees WHERE id = ?").get(d.employee_id)?.name;
+  notify(db, {
+    userId: d.reviewer_id, type: "review_assigned", title: "Review assigned",
+    body: `You've been assigned to review ${empName || "an employee"} for ${cycle.name}`,
+    link: "/performance/reviews", entity: "review", entityId: id,
+  });
+
   res.status(201).json({ id, ...d, status: "PENDING" });
 });
 

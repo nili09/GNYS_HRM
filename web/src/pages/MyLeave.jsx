@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useIsMobile } from "../hooks/useIsMobile.jsx";
 
 const STATUS_BADGE = {
   PENDING:   { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -25,21 +26,27 @@ function fmtDate(d) {
   return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+function fmtDateShort(d) {
+  if (!d) return "";
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+}
+
 function today() { return new Date().toISOString().slice(0, 10); }
 
 export default function MyLeave() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState("apply");
   const [types, setTypes] = useState([]);
   const [balances, setBalances] = useState(null);
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Form state
   const [form, setForm] = useState({
     type: "", date_from: "", date_to: "", half_from: 0, half_to: 0, reason: "",
   });
-  const [preview, setPreview] = useState(null); // { days, balAvail }
+  const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -63,7 +70,6 @@ export default function MyLeave() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // SSE + 30s polling fallback
   useEffect(() => {
     const es = new EventSource("/api/events", { withCredentials: true });
     es.onmessage = (e) => {
@@ -76,26 +82,13 @@ export default function MyLeave() {
     return () => { es.close(); clearInterval(poll); };
   }, [fetchData]);
 
-  // Live preview — compute working days
   useEffect(() => {
     if (!form.date_from || !form.date_to || form.date_to < form.date_from || !form.type) {
       setPreview(null);
       return;
     }
-    (async () => {
-      try {
-        // Simulate via a dry-run: we can compute client-side but it's simpler
-        // to just show the server's computed days when we submit. For now use
-        // a lightweight approach: count days locally (approximate — doesn't
-        // account for holidays/week-offs perfectly, so we note that).
-        // Actually the best UX is to try applying and catch the days from response.
-        // For the preview, we'll just compute from the balance.
-        const bal = balances?.[form.type];
-        setPreview({
-          balAvail: bal?.available ?? null,
-        });
-      } catch { setPreview(null); }
-    })();
+    const bal = balances?.[form.type];
+    setPreview({ balAvail: bal?.available ?? null });
   }, [form.date_from, form.date_to, form.type, form.half_from, form.half_to, balances]);
 
   async function handleApply(e) {
@@ -131,6 +124,36 @@ export default function MyLeave() {
 
   if (loading) return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading…</div>;
 
+  const balancePanel = (
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, boxShadow: "var(--shadow-card)" }}>
+      <div style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 10, color: "var(--ink)" }}>
+        Balances — {year}
+      </div>
+      {balances && types.filter((t) => t.annual > 0).map((t) => {
+        const b = balances[t.code];
+        if (!b) return null;
+        const isActive = form.type === t.code;
+        return (
+          <div key={t.code} style={{
+            padding: "8px 10px", borderRadius: "var(--r-pill)", marginBottom: 6,
+            background: isActive ? "var(--lime-pale)" : "var(--bg)",
+            border: isActive ? "1px solid var(--badge-green-bg)" : "1px solid transparent",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+              <span style={{ fontWeight: 600 }}>{t.code}</span>
+              <span style={{ fontWeight: 700, color: b.available < 0 ? "var(--danger)" : "var(--charcoal)" }}>
+                {b.available}
+              </span>
+            </div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+              Entitled {b.entitled}{b.adj ? ` + ${b.adj} adj` : ""} — Used {b.used}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div>
       <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
@@ -146,6 +169,7 @@ export default function MyLeave() {
             color: tab === t ? "var(--ink)" : "var(--text-muted)",
             borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
+            minHeight: 40,
           }}>
             {t === "apply" ? "Apply Leave" : "My Requests"}
           </button>
@@ -153,11 +177,17 @@ export default function MyLeave() {
       </div>
 
       {tab === "apply" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24, alignItems: "start" }}>
+        <div style={isMobile
+          ? { display: "flex", flexDirection: "column", gap: 16 }
+          : { display: "grid", gridTemplateColumns: "1fr 300px", gap: 24, alignItems: "start" }
+        }>
+          {/* Balance panel first on mobile */}
+          {isMobile && balancePanel}
+
           {/* Form */}
-          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: isMobile ? 16 : 20, boxShadow: "var(--shadow-card)" }}>
             <form onSubmit={handleApply}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
                 <div>
                   <label style={labelStyle}>Leave Type</label>
                   <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
@@ -165,7 +195,7 @@ export default function MyLeave() {
                     {types.map((t) => <option key={t.code} value={t.code}>{t.code} — {t.name}</option>)}
                   </select>
                 </div>
-                <div />
+                {!isMobile && <div />}
 
                 <div>
                   <label style={labelStyle}>From</label>
@@ -175,9 +205,10 @@ export default function MyLeave() {
                       setForm((f) => ({ ...f, date_from: v, date_to: f.date_to < v ? v : f.date_to }));
                     }}
                     style={inputStyle} />
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, color: "var(--text-muted)" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, color: "var(--text-muted)", minHeight: 32 }}>
                     <input type="checkbox" checked={!!form.half_from}
-                      onChange={(e) => setForm({ ...form, half_from: e.target.checked ? 1 : 0 })} />
+                      onChange={(e) => setForm({ ...form, half_from: e.target.checked ? 1 : 0 })}
+                      style={{ width: 18, height: 18 }} />
                     Half day
                   </label>
                 </div>
@@ -187,9 +218,10 @@ export default function MyLeave() {
                     min={form.date_from}
                     onChange={(e) => setForm({ ...form, date_to: e.target.value })}
                     style={inputStyle} />
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, color: "var(--text-muted)" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, color: "var(--text-muted)", minHeight: 32 }}>
                     <input type="checkbox" checked={!!form.half_to}
-                      onChange={(e) => setForm({ ...form, half_to: e.target.checked ? 1 : 0 })} />
+                      onChange={(e) => setForm({ ...form, half_to: e.target.checked ? 1 : 0 })}
+                      style={{ width: 18, height: 18 }} />
                     Half day
                   </label>
                 </div>
@@ -206,89 +238,103 @@ export default function MyLeave() {
 
               <button type="submit" disabled={submitting || !form.date_from || !form.date_to}
                 style={{
-                  marginTop: 16, padding: "9px 28px", borderRadius: "var(--r-pill)", border: "none",
+                  marginTop: 16, padding: "12px 28px", borderRadius: "var(--r-pill)", border: "none",
                   background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 13.5,
                   cursor: "pointer", opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
+                  width: isMobile ? "100%" : "auto",
                 }}>
                 {submitting ? "Applying…" : "Apply Leave"}
               </button>
             </form>
           </div>
 
-          {/* Balance panel */}
-          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-            <div style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 10, color: "var(--ink)" }}>
-              Balances — {year}
-            </div>
-            {balances && types.filter((t) => t.annual > 0).map((t) => {
-              const b = balances[t.code];
-              if (!b) return null;
-              const isActive = form.type === t.code;
-              return (
-                <div key={t.code} style={{
-                  padding: "8px 10px", borderRadius: "var(--r-pill)", marginBottom: 6,
-                  background: isActive ? "var(--lime-pale)" : "var(--bg)",
-                  border: isActive ? "1px solid var(--badge-green-bg)" : "1px solid transparent",
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                    <span style={{ fontWeight: 600 }}>{t.code}</span>
-                    <span style={{ fontWeight: 700, color: b.available < 0 ? "var(--danger)" : "var(--charcoal)" }}>
-                      {b.available}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-                    Entitled {b.entitled}{b.adj ? ` + ${b.adj} adj` : ""} — Used {b.used}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {/* Balance panel — desktop side */}
+          {!isMobile && balancePanel}
         </div>
       )}
 
       {tab === "requests" && (
-        <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: "var(--bg)", textAlign: "left" }}>
-                <th style={thStyle}>Type</th>
-                <th style={thStyle}>From</th>
-                <th style={thStyle}>To</th>
-                <th style={thStyle}>Days</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>Reason</th>
-                <th style={thStyle}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaves.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No leave requests</td></tr>
-              )}
-              {leaves.map((l) => (
-                <tr key={l.id} style={{ borderTop: "1px solid var(--line)" }}>
-                  <td style={tdStyle}><span style={{ fontWeight: 600 }}>{l.type}</span></td>
-                  <td style={tdStyle}>{fmtDate(l.date_from)}{l.half_from ? " (½)" : ""}</td>
-                  <td style={tdStyle}>{fmtDate(l.date_to)}{l.half_to ? " (½)" : ""}</td>
-                  <td style={tdStyle}>{l.days}</td>
-                  <td style={tdStyle}><Badge status={l.status} /></td>
-                  <td style={{ ...tdStyle, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {l.reason || "—"}
-                  </td>
-                  <td style={tdStyle}>
-                    {(l.status === "PENDING" || (l.status === "APPROVED" && l.date_from > today())) && (
-                      <button onClick={() => handleCancel(l.id)}
-                        style={{
-                          padding: "3px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
-                          background: "var(--card)", color: "var(--danger)", cursor: "pointer", fontSize: 11.5,
-                          fontFamily: "inherit",
-                        }}>Cancel</button>
-                    )}
-                  </td>
+        isMobile ? (
+          /* Card layout for mobile */
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {leaves.length === 0 && (
+              <div style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No leave requests</div>
+            )}
+            {leaves.map((l) => (
+              <div key={l.id} style={{
+                background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
+                padding: 14, boxShadow: "var(--shadow-card)",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontWeight: 700, fontSize: 14 }}>{l.type}</span>
+                  <Badge status={l.status} />
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>
+                  {fmtDateShort(l.date_from)}{l.half_from ? " (½)" : ""}
+                  {l.date_from !== l.date_to && ` → ${fmtDateShort(l.date_to)}`}{l.half_to && l.date_from !== l.date_to ? " (½)" : ""}
+                  <span style={{ marginLeft: 8, fontWeight: 600, color: "var(--text)" }}>{l.days}d</span>
+                </div>
+                {l.reason && (
+                  <div style={{ fontSize: 12, color: "var(--text-faint)", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {l.reason}
+                  </div>
+                )}
+                {(l.status === "PENDING" || (l.status === "APPROVED" && l.date_from > today())) && (
+                  <button onClick={() => handleCancel(l.id)}
+                    style={{
+                      padding: "6px 14px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
+                      background: "var(--card)", color: "var(--danger)", cursor: "pointer", fontSize: 12,
+                      fontFamily: "inherit", minHeight: 36,
+                    }}>Cancel</button>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Table layout for desktop */
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "var(--bg)", textAlign: "left" }}>
+                  <th style={thStyle}>Type</th>
+                  <th style={thStyle}>From</th>
+                  <th style={thStyle}>To</th>
+                  <th style={thStyle}>Days</th>
+                  <th style={thStyle}>Status</th>
+                  <th style={thStyle}>Reason</th>
+                  <th style={thStyle}></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {leaves.length === 0 && (
+                  <tr><td colSpan={7} style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No leave requests</td></tr>
+                )}
+                {leaves.map((l) => (
+                  <tr key={l.id} style={{ borderTop: "1px solid var(--line)" }}>
+                    <td style={tdStyle}><span style={{ fontWeight: 600 }}>{l.type}</span></td>
+                    <td style={tdStyle}>{fmtDate(l.date_from)}{l.half_from ? " (½)" : ""}</td>
+                    <td style={tdStyle}>{fmtDate(l.date_to)}{l.half_to ? " (½)" : ""}</td>
+                    <td style={tdStyle}>{l.days}</td>
+                    <td style={tdStyle}><Badge status={l.status} /></td>
+                    <td style={{ ...tdStyle, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {l.reason || "—"}
+                    </td>
+                    <td style={tdStyle}>
+                      {(l.status === "PENDING" || (l.status === "APPROVED" && l.date_from > today())) && (
+                        <button onClick={() => handleCancel(l.id)}
+                          style={{
+                            padding: "3px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
+                            background: "var(--card)", color: "var(--danger)", cursor: "pointer", fontSize: 11.5,
+                            fontFamily: "inherit",
+                          }}>Cancel</button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
       )}
     </div>
   );
@@ -296,8 +342,8 @@ export default function MyLeave() {
 
 const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--badge-gray-text)", marginBottom: 4 };
 const inputStyle = {
-  width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
-  fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
+  width: "100%", padding: "10px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
+  fontSize: 14, fontFamily: "inherit", boxSizing: "border-box",
 };
 const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };

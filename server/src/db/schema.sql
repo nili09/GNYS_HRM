@@ -520,6 +520,20 @@ CREATE TABLE IF NOT EXISTS ticket_comments (
   created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
+-- ── Attachments ──────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS attachments (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  owner_type  TEXT    NOT NULL,   -- 'expense', 'ticket', 'doc_checklist', 'profile_photo'
+  owner_id    TEXT    NOT NULL,   -- expense.id, ticket.id, "empId:key", employee.id
+  filename    TEXT    NOT NULL,
+  mime        TEXT    NOT NULL,
+  size        INTEGER NOT NULL,
+  path        TEXT    NOT NULL,
+  uploaded_by INTEGER NOT NULL REFERENCES employees(id),
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_attachments_owner ON attachments(owner_type, owner_id);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_employees_email      ON employees(email);
 CREATE INDEX IF NOT EXISTS idx_employees_manager    ON employees(manager_id);
@@ -564,6 +578,25 @@ CREATE INDEX IF NOT EXISTS idx_tickets_category      ON tickets(category_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_status        ON tickets(status);
 CREATE INDEX IF NOT EXISTS idx_tickets_assigned      ON tickets(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_ticket_comments_ticket ON ticket_comments(ticket_id);
+
+-- ── Notifications ────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL REFERENCES employees(id),
+  type        TEXT    NOT NULL,
+  title       TEXT    NOT NULL,
+  body        TEXT,
+  link        TEXT,
+  entity      TEXT,
+  entity_id   INTEGER,
+  read        INTEGER NOT NULL DEFAULT 0,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user     ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_read     ON notifications(user_id, read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created  ON notifications(created_at);
 
 -- ── Full-Text Search ──────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(

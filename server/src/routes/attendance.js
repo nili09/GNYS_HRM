@@ -237,6 +237,59 @@ router.get("/team", requireAuth, (req, res) => {
   res.json({ month: ym, days: dates.length, holidays: monthHols, employees });
 });
 
+// ── GET /attendance/team-calendar?month=YYYY-MM  (who's out view) ─────────────
+
+router.get("/team-calendar", requireAuth, (req, res) => {
+  const db = req.app.locals.db;
+  const ym = req.query.month;
+  if (!ym || !/^\d{4}-\d{2}$/.test(ym))
+    return res.status(400).json({ error: "Provide ?month=YYYY-MM" });
+
+  let emps;
+  if (["HR", "ADMIN"].includes(req.user.role)) {
+    emps = activeEmps(db);
+  } else {
+    emps = activeEmps(db, "AND e.manager_id = ?", [req.user.id]);
+    if (!emps.length)
+      return res.json({ month: ym, days: daysInMonth(ym), holidays: [], entries: [] });
+  }
+
+  const dates    = makeDates(ym);
+  const settings = getSettings(db);
+  const holidays = getHolidays(db);
+  const empIds   = emps.map((e) => e.id);
+  const leaves   = getApprovedLeaves(db, { employeeIds: empIds, dateFrom: dates[0], dateTo: dates[dates.length - 1] });
+  const attRows  = getAttRows(db, { dates, employeeIds: empIds });
+  const attMap   = buildAttMap(attRows);
+  const monthHols = holidays.filter((h) => h.date.startsWith(ym));
+
+  const empMap = Object.fromEntries(emps.map((e) => [e.id, e]));
+  const entries = [];
+
+  for (const d of dates) {
+    const dayEntries = [];
+    for (const emp of emps) {
+      const attCode = (attMap[d] || {})[emp.id] || null;
+      const status  = attStatus(emp, d, { settings, holidays, leaves, attCode });
+      if (status === "L" || status === "WFH" || status === "OD" || status === "H") {
+        const entry = { employee_id: emp.id, name: emp.name, dept: emp.dept || null, status };
+        if (status === "L") {
+          const lv = leaves.find(
+            (l) => l.employee_id === emp.id && l.date_from <= d && l.date_to >= d
+          );
+          if (lv) entry.leave_type = lv.type;
+        }
+        dayEntries.push(entry);
+      }
+    }
+    if (dayEntries.length > 0) {
+      entries.push({ date: d, people: dayEntries });
+    }
+  }
+
+  res.json({ month: ym, days: dates.length, holidays: monthHols, entries });
+});
+
 // ── PUT /attendance/:date  {marks:{empId:code|""}}  (HR only) ─────────────────
 
 const MarksSchema = z.object({

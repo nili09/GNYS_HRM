@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import { useIsMobile } from "../hooks/useIsMobile.jsx";
 
 const ATT_LABEL = {
   P: "Present", A: "Absent", HD: "Half day",
@@ -37,6 +38,7 @@ function shiftMonth(ym, n) {
 function dowChar(idx) { return "SMTWTFS"[idx]; }
 
 export default function MyAttendance() {
+  const isMobile = useIsMobile();
   const [month, setMonth] = useState(thisMonth());
   const [data, setData]   = useState(null);
   const [loading, setLoading] = useState(false);
@@ -74,7 +76,7 @@ export default function MyAttendance() {
   }
 
   return (
-    <div style={{ maxWidth: 860 }}>
+    <div style={{ maxWidth: isMobile ? "100%" : 860 }}>
       <h2 style={{ margin: "0 0 4px", color: "var(--ink)", fontSize: 20, fontWeight: 700 }}>My Attendance</h2>
       <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>Your monthly attendance summary</p>
 
@@ -93,7 +95,7 @@ export default function MyAttendance() {
           <div style={{
             background: "linear-gradient(135deg, var(--ink) 0%, #1e2d5c 100%)",
             color: "#fff", borderRadius: "var(--r-card)", padding: "18px 24px",
-            marginBottom: 20, display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap",
+            marginBottom: 20, display: "flex", alignItems: "center", gap: isMobile ? 12 : 24, flexWrap: "wrap",
           }}>
             <div>
               <div style={{ fontSize: 12, color: "#8b9ac0", marginBottom: 2 }}>Payable days</div>
@@ -116,7 +118,7 @@ export default function MyAttendance() {
           </div>
 
           {/* Calendar grid */}
-          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: isMobile ? 8 : 20, boxShadow: "var(--shadow-card)" }}>
             {/* Day-of-week header */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 8 }}>
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (

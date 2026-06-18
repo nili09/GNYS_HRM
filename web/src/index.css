@@ -372,6 +372,14 @@ input[type="checkbox"] {
 .badge-tan     { background: var(--badge-tan-bg);    color: var(--badge-tan-text); }
 .badge-danger  { background: var(--badge-danger-bg); color: var(--badge-danger-text); }
 
+/* ── Mobile responsive ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar-scroll::-webkit-scrollbar { width: 0; }
+  input, select, textarea {
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+}
+
 /* ── Payslip print ─────────────────────────────────────────────────────── */
 @media print {
   body > *:not(#root) { display: none !important; }

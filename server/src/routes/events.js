@@ -15,7 +15,7 @@ router.get("/", requireAuth, (req, res) => {
     Connection: "keep-alive",
   });
   res.write("data: {\"type\":\"connected\"}\n\n");
-  addClient(res);
+  addClient(res, req.user?.id);
 
   // Keep-alive every 25s
   const keepAlive = setInterval(() => {

@@ -513,6 +513,130 @@ describe("Engagement: Dashboard", () => {
   });
 });
 
+// ── Employee Directory ────────────────────────────────────────────────────
+
+describe("Engagement: Employee Directory", () => {
+  let app, db, empCookie, empId;
+
+  beforeAll(async () => {
+    ({ app, db } = buildApp());
+    const emp = await insertEmployee(db, { email: "emp@dir.com", code: "DIR1", role: "EMPLOYEE", name: "Diana Ross" });
+    empId = emp.id;
+    await insertEmployee(db, { email: "bob@dir.com", code: "DIR2", role: "EMPLOYEE", name: "Bob Marley" });
+    await insertEmployee(db, { email: "sal@dir.com", code: "SAL1", role: "HR", name: "Salary Admin" });
+    empCookie = await loginAs(app, "emp@dir.com");
+  });
+
+  test("employee can search by name (case-insensitive)", async () => {
+    const res = await supertest(app).get("/api/engagement/employee-search?q=bob").set("Cookie", empCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(1);
+    expect(res.body[0].name).toMatch(/bob/i);
+  });
+
+  test("employee can search by code (case-insensitive)", async () => {
+    const res = await supertest(app).get("/api/engagement/employee-search?q=dir2").set("Cookie", empCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(1);
+    expect(res.body[0].code).toBe("DIR2");
+  });
+
+  test("directory returns only safe fields — no salary, bank, email, PII", async () => {
+    const res = await supertest(app).get("/api/engagement/employee-search?q=sal").set("Cookie", empCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(1);
+    const row = res.body[0];
+    expect(row).toHaveProperty("id");
+    expect(row).toHaveProperty("code");
+    expect(row).toHaveProperty("name");
+    // Must NOT leak sensitive fields
+    expect(row).not.toHaveProperty("email");
+    expect(row).not.toHaveProperty("personal_email");
+    expect(row).not.toHaveProperty("phone");
+    expect(row).not.toHaveProperty("password_hash");
+    expect(row).not.toHaveProperty("pan");
+    expect(row).not.toHaveProperty("uan");
+    expect(row).not.toHaveProperty("bank_name");
+    expect(row).not.toHaveProperty("bank_acc");
+    expect(row).not.toHaveProperty("address");
+    expect(row).not.toHaveProperty("dob");
+  });
+
+  test("empty query returns empty array", async () => {
+    const res = await supertest(app).get("/api/engagement/employee-search?q=").set("Cookie", empCookie);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  test("unauthenticated directory request is rejected", async () => {
+    const res = await supertest(app).get("/api/engagement/employee-search?q=bob");
+    expect(res.status).toBe(401);
+  });
+});
+
+// ── Recognition by Code ──────────────────────────────────────────────────
+
+describe("Engagement: Recognition by employee code", () => {
+  let app, db, empCookie, emp2Code, empId, emp2Id, badgeId;
+
+  beforeAll(async () => {
+    ({ app, db } = buildApp());
+    const emp = await insertEmployee(db, { email: "emp@rcode.com", code: "RC1", role: "EMPLOYEE" });
+    empId = emp.id;
+    const emp2 = await insertEmployee(db, { email: "emp2@rcode.com", code: "RC2", role: "EMPLOYEE" });
+    emp2Id = emp2.id;
+    emp2Code = "RC2";
+    empCookie = await loginAs(app, "emp@rcode.com");
+    badgeId = seedBadge(db).id;
+  });
+
+  test("recognition by to_employee_code resolves correctly", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ to_employee_code: "rc2", badge_id: badgeId, message: "Code lookup!" });
+    expect(res.status).toBe(201);
+    expect(res.body.to_employee).toBe(emp2Id);
+  });
+
+  test("case-insensitive code resolution (mixed case)", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ to_employee_code: "Rc2", badge_id: badgeId, message: "Mixed case" });
+    expect(res.status).toBe(201);
+    expect(res.body.to_employee).toBe(emp2Id);
+  });
+
+  test("unknown code returns 400 with clear message", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ to_employee_code: "ZZZZZ", badge_id: badgeId, message: "Ghost" });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/no active employee/i);
+  });
+
+  test("self-recognition by code is still blocked", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ to_employee_code: "RC1", badge_id: badgeId, message: "Self" });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/yourself/i);
+  });
+
+  test("recognition by numeric id still works", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ to_employee: emp2Id, badge_id: badgeId, message: "By id" });
+    expect(res.status).toBe(201);
+  });
+
+  test("must provide either to_employee or to_employee_code", async () => {
+    const res = await supertest(app).post("/api/engagement/recognitions")
+      .set("Cookie", empCookie)
+      .send({ badge_id: badgeId, message: "Nobody" });
+    expect(res.status).toBe(400);
+  });
+});
+
 // ── Auth / unauthenticated ────────────────────────────────────────────────
 
 describe("Engagement: Auth guards", () => {
@@ -531,6 +655,7 @@ describe("Engagement: Auth guards", () => {
       ["POST", "/api/engagement/recognitions"],
       ["GET", "/api/engagement/recognitions/feed"],
       ["GET", "/api/engagement/dashboard"],
+      ["GET", "/api/engagement/employee-search?q=test"],
     ];
     for (const [method, path] of endpoints) {
       const res = await supertest(app)[method.toLowerCase()](path);

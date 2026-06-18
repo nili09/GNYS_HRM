@@ -4,10 +4,12 @@
  * Uses shared rowToEmp for field extraction.
  */
 import { Router } from "express";
+import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { requireHR } from "../middleware/auth.js";
 import { audit } from "../utils/audit.js";
 import { broadcast } from "../utils/sse.js";
+import { sendWelcomeEmail } from "../utils/mailer.js";
 import { CsvImportSchema } from "@hrms/shared/schemas";
 import { rowToEmp } from "@hrms/shared/import";
 
@@ -37,11 +39,10 @@ router.post("/", requireHR, async (req, res) => {
   const findByCode = db.prepare("SELECT id FROM employees WHERE code = ? COLLATE NOCASE");
   const findByEmail = db.prepare("SELECT id FROM employees WHERE email = ? COLLATE NOCASE");
 
-  // Pre-hash a default password (all imported employees get the same, must change on first login)
-  const defaultHash = await bcrypt.hash("Welcome@123", 12);
-
   let added = 0, updated = 0, skipped = 0;
   const problems = [];
+  const emailResults = { sent: 0, failed: 0, skipped: 0 };
+  const welcomeQueue = [];
 
   // Next code sequence
   let nextCode = db.prepare("SELECT MAX(CAST(SUBSTR(code, 4) AS INTEGER)) AS mx FROM employees WHERE code LIKE 'GIL%'").get()?.mx || 0;
@@ -110,6 +111,12 @@ router.post("/", requireHR, async (req, res) => {
        conveyance, medical, lta, other_earn, other_earn_label
      ) VALUES(?,?,?,?,?,?,?,?,?,?,?)`
   );
+
+  const rowPasswords = [];
+  for (let i = 0; i < rows.length; i++) {
+    const tp = randomBytes(9).toString("base64url");
+    rowPasswords.push({ plain: tp, hash: await bcrypt.hash(tp, 12) });
+  }
 
   const doImport = db.transaction(() => {
     for (let ri = 0; ri < rows.length; ri++) {
@@ -211,16 +218,17 @@ router.post("/", requireHR, async (req, res) => {
           continue;
         }
 
+        const finalEmail = e.email || `${e.code.toLowerCase()}@igenesys.com`;
         const r = insertEmp.run(
           e.code, e.name, e.gender, e.dob || null, e.phone || null,
-          e.email || `${e.code.toLowerCase()}@igenesys.com`,
+          finalEmail,
           null, null, null, null,
           deptId, desigId, locId, managerId,
           e.doj, e.status,
           e.pan || null, e.aadhaar || null, e.uan || null,
           e.pfNo || null, e.esiNo || null,
           e.bankName || null, e.bankAcc || null, e.ifsc || null,
-          defaultHash, null,
+          rowPasswords[ri].hash, null,
           e.prefix || null, e.bloodGroup || null, e.nationality || null,
           e.employmentStatus || null, e.otherStatus || null,
           e.company || null, e.businessUnit || null, e.subBranch || null,
@@ -251,6 +259,7 @@ router.post("/", requireHR, async (req, res) => {
             e.conveyance, e.medical, e.lta, e.otherEarn, "Other Allowance",
           );
         }
+        welcomeQueue.push({ name: e.name, email: finalEmail, tempPassword: rowPasswords[ri].plain });
         added++;
       }
     }
@@ -258,15 +267,25 @@ router.post("/", requireHR, async (req, res) => {
 
   doImport();
 
+  for (const w of welcomeQueue) {
+    if (!w.email) { emailResults.skipped++; continue; }
+    try {
+      const r = await sendWelcomeEmail({ to: w.email, name: w.name, loginEmail: w.email, tempPassword: w.tempPassword });
+      if (r.status === "sent") emailResults.sent++;
+      else if (r.status === "skipped") emailResults.skipped++;
+      else emailResults.failed++;
+    } catch { emailResults.failed++; }
+  }
+
   audit(db, {
     actorId: req.user.id,
     action: "EMPLOYEE_IMPORT",
     entity: "employees",
-    detail: { added, updated, skipped, problemCount: problems.length },
+    detail: { added, updated, skipped, problemCount: problems.length, emailResults },
   });
   broadcast({ type: "mutation", entity: "employees" });
 
-  res.json({ added, updated, skipped, problems });
+  res.json({ added, updated, skipped, problems, emailResults });
 });
 
 export default router;

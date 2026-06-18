@@ -13,8 +13,10 @@
 import "dotenv/config";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { getDb } from "./index.js";
+import { sendWelcomeEmail } from "../utils/mailer.js";
 
 const args = process.argv.slice(2);
 const filePath = args[0];
@@ -121,7 +123,7 @@ const locMap   = Object.fromEntries(db.prepare("SELECT name, id FROM locations")
 
 // v1 employees use string IDs; build a v1id→sqlite-id map
 const v1ToSqlite = {};
-const defaultHash = await bcrypt.hash("Welcome@123", 12);
+const welcomeQueue = [];
 
 if (v1.employees?.length) {
   const insEmp = db.prepare(
@@ -136,6 +138,8 @@ if (v1.employees?.length) {
 
   for (const e of v1.employees) {
     const email = e.email || `${e.code.toLowerCase()}@genesys.in`;
+    const tempPassword = randomBytes(9).toString("base64url");
+    const empHash = await bcrypt.hash(tempPassword, 12);
     const result = insEmp.run(
       e.code, e.name, e.gender || "Male", e.dob || null, e.phone || null,
       email, e.personalEmail || null, e.address || null,
@@ -148,8 +152,11 @@ if (v1.employees?.length) {
       e.bankName || null, e.bankAcc || null, (e.ifsc || "").toUpperCase() || null,
       e.pfOpt ? 1 : 0, e.esiOpt ? 1 : 0, e.ptOpt ? 1 : 0,
       e.tdsOverride !== "" && e.tdsOverride != null ? Number(e.tdsOverride) : null,
-      "EMPLOYEE", defaultHash, 1, e.notes || null
+      "EMPLOYEE", empHash, 1, e.notes || null
     );
+    if (result.changes) {
+      welcomeQueue.push({ name: e.name, email, tempPassword });
+    }
 
     // Look up the sqlite id (whether just inserted or already existed)
     const row = db.prepare("SELECT id FROM employees WHERE code = ?").get(e.code);
@@ -262,6 +269,19 @@ if (v1.leaveAdjust?.length) {
     console.log(`✓ Leave adjustments: skipped (${existingAdj} already in DB)`);
   }
 }
+
+// ── Welcome emails ──────────────────────────────────────────────────────────
+const emailCounts = { sent: 0, failed: 0, skipped: 0 };
+for (const w of welcomeQueue) {
+  if (!w.email) { emailCounts.skipped++; continue; }
+  try {
+    const r = await sendWelcomeEmail({ to: w.email, name: w.name, loginEmail: w.email, tempPassword: w.tempPassword });
+    if (r.status === "sent") emailCounts.sent++;
+    else if (r.status === "skipped") emailCounts.skipped++;
+    else emailCounts.failed++;
+  } catch { emailCounts.failed++; }
+}
+console.log(`✓ Welcome emails: ${emailCounts.sent} sent, ${emailCounts.failed} failed, ${emailCounts.skipped} skipped`);
 
 // ── Summary ─────────────────────────────────────────────────────────────────
 console.log("\n═══ Import Summary ═══");

@@ -21,6 +21,8 @@ import engagementRouter from "../routes/engagement.js";
 import assetsRouter from "../routes/assets.js";
 import helpdeskRouter from "../routes/helpdesk.js";
 import searchRouter from "../routes/search.js";
+import notificationsRouter from "../routes/notifications.js";
+import attachmentsRouter from "../routes/attachments.js";
 
 /**
  * Build a fresh Express app backed by an in-memory SQLite DB.
@@ -58,6 +60,8 @@ export function buildApp(opts = {}) {
   app.use("/api/assets", assetsRouter);
   app.use("/api/helpdesk", helpdeskRouter);
   app.use("/api/search", searchRouter);
+  app.use("/api/notifications", notificationsRouter);
+  app.use("/api/attachments", attachmentsRouter);
   app.get("/api/health", (req, res) => res.json({ ok: true }));
 
   return { app, db };

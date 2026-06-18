@@ -23,6 +23,8 @@ import engagementRouter from "./routes/engagement.js";
 import assetsRouter from "./routes/assets.js";
 import helpdeskRouter from "./routes/helpdesk.js";
 import searchRouter from "./routes/search.js";
+import notificationsRouter from "./routes/notifications.js";
+import attachmentsRouter from "./routes/attachments.js";
 
 // ── Guard: refuse to boot with default/missing JWT_SECRET ────────────────────
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET === "changeme") {
@@ -90,6 +92,8 @@ app.use("/api/engagement", engagementRouter);
 app.use("/api/assets", assetsRouter);
 app.use("/api/helpdesk", helpdeskRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/notifications", notificationsRouter);
+app.use("/api/attachments", attachmentsRouter);
 
 // Health check
 app.get("/api/health", (req, res) => res.json({ ok: true }));

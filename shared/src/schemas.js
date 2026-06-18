@@ -402,9 +402,12 @@ export const BadgeCreateSchema = z.object({
 export const BadgePatchSchema = BadgeCreateSchema.partial();
 
 export const RecognitionCreateSchema = z.object({
-  to_employee: z.number().int().positive(),
+  to_employee: z.number().int().positive().optional(),
+  to_employee_code: z.string().min(1).max(20).optional(),
   badge_id: z.number().int().positive(),
   message: z.string().min(1).max(1000),
+}).refine(d => d.to_employee || d.to_employee_code, {
+  message: "Provide to_employee (id) or to_employee_code",
 });
 
 // ── Asset Management ──────────────────────────────────────────────────────

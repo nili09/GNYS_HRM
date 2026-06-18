@@ -26,6 +26,7 @@ import {
 import { countWorkingDays, findOverlap, leaveBalance } from "@hrms/shared/leave";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { notify, notifyMany } from "../utils/notify.js";
 
 const router = Router();
 
@@ -185,6 +186,21 @@ router.post("/", requireAuth, (req, res) => {
   });
   broadcast({ type: "leave", entity: "leaves", id: leaveId });
 
+  // Notify manager + HR about new leave request
+  const applicant = db.prepare("SELECT name, manager_id FROM employees WHERE id = ?").get(employeeId);
+  const targets = new Set();
+  if (applicant?.manager_id) targets.add(applicant.manager_id);
+  const hrIds = db.prepare("SELECT id FROM employees WHERE role IN ('HR','ADMIN') AND status = 'ACTIVE'").all();
+  for (const h of hrIds) targets.add(h.id);
+  targets.delete(req.user.id);
+  if (targets.size > 0) {
+    notifyMany(db, [...targets], {
+      type: "leave_applied", title: "New leave request",
+      body: `${applicant?.name || "Employee"} applied for ${days}d ${data.type} leave (${data.date_from} – ${data.date_to})`,
+      link: "/leaves?tab=pending", entity: "leave", entityId: leaveId,
+    });
+  }
+
   res.status(201).json({
     id: leaveId, employee_id: employeeId, type: data.type,
     date_from: data.date_from, date_to: data.date_to,
@@ -307,6 +323,14 @@ router.post("/:id/approve", requireAuth, (req, res) => {
     detail: { employeeId: leave.employee_id, type: leave.type, days: leave.days },
   });
   broadcast({ type: "leave", entity: "leaves", id: leaveId });
+
+  const approver = db.prepare("SELECT name FROM employees WHERE id = ?").get(req.user.id);
+  notify(db, {
+    userId: leave.employee_id, type: "leave_approved", title: "Leave approved",
+    body: `Your ${leave.days}d ${leave.type} leave (${leave.date_from} – ${leave.date_to}) was approved by ${approver?.name || "Manager"}`,
+    link: "/leaves", entity: "leave", entityId: leaveId,
+  });
+
   res.json({ ok: true, status: "APPROVED" });
 });
 
@@ -336,6 +360,14 @@ router.post("/:id/reject", requireAuth, (req, res) => {
     detail: { employeeId: leave.employee_id, type: leave.type },
   });
   broadcast({ type: "leave", entity: "leaves", id: leaveId });
+
+  const rejector = db.prepare("SELECT name FROM employees WHERE id = ?").get(req.user.id);
+  notify(db, {
+    userId: leave.employee_id, type: "leave_rejected", title: "Leave rejected",
+    body: `Your ${leave.days}d ${leave.type} leave (${leave.date_from} – ${leave.date_to}) was rejected by ${rejector?.name || "Manager"}`,
+    link: "/leaves", entity: "leave", entityId: leaveId,
+  });
+
   res.json({ ok: true, status: "REJECTED" });
 });
 

@@ -41,6 +41,7 @@ import {
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
 import { indexEntity, removeEntity } from "../utils/search.js";
+import { notify, notifyMany } from "../utils/notify.js";
 
 const router = Router();
 
@@ -83,6 +84,16 @@ router.post("/announcements", ...requireHR, (req, res) => {
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "announcement", entityId: id, detail: d });
   broadcast({ type: "mutation", entity: "announcements" });
   indexEntity(db, "announcement", id, d.title, d.body, { priority: d.priority });
+
+  const activeEmps = db.prepare("SELECT id FROM employees WHERE status = 'ACTIVE' AND id != ?").all(req.user.id);
+  if (activeEmps.length > 0) {
+    notifyMany(db, activeEmps.map(e => e.id), {
+      type: "announcement", title: "New announcement",
+      body: d.title,
+      link: "/engagement/announcements", entity: "announcement", entityId: id,
+    });
+  }
+
   res.status(201).json({ id, ...d, published_by: req.user.id });
 });
 
@@ -126,6 +137,18 @@ router.delete("/announcements/:id", ...requireHR, (req, res) => {
 });
 
 // ── Surveys ───────────────────────────────────────────────────────────────
+
+router.get("/surveys/my-count", requireAuth, (req, res) => {
+  const db = req.app.locals.db;
+  const { c } = db
+    .prepare(
+      `SELECT COUNT(*) as c FROM surveys s
+       WHERE s.status = 'ACTIVE'
+       AND s.id NOT IN (SELECT survey_id FROM survey_responses WHERE employee_id = ?)`
+    )
+    .get(req.user.id);
+  res.json({ count: c });
+});
 
 router.get("/surveys", requireAuth, (req, res) => {
   const db = req.app.locals.db;
@@ -371,6 +394,26 @@ router.post("/badges", ...requireHR, (req, res) => {
   res.status(201).json({ id, ...d });
 });
 
+// ── Employee Directory (lightweight, all auth) ───────────────────────────
+
+router.get("/employee-search", requireAuth, (req, res) => {
+  const q = (req.query.q || "").trim();
+  if (!q) return res.json([]);
+  const db = req.app.locals.db;
+  const pattern = `%${q}%`;
+  const rows = db.prepare(
+    `SELECT e.id, e.code, e.name,
+            d.name AS dept_name, ds.name AS desig_name
+       FROM employees e
+       LEFT JOIN departments d  ON d.id = e.dept_id
+       LEFT JOIN designations ds ON ds.id = e.desig_id
+      WHERE e.status = 'ACTIVE'
+        AND (e.name LIKE ? COLLATE NOCASE OR e.code LIKE ? COLLATE NOCASE)
+      LIMIT 20`
+  ).all(pattern, pattern);
+  res.json(rows);
+});
+
 // ── Recognitions ──────────────────────────────────────────────────────────
 
 router.post("/recognitions", requireAuth, (req, res) => {
@@ -378,6 +421,14 @@ router.post("/recognitions", requireAuth, (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   const db = req.app.locals.db;
   const d = parsed.data;
+
+  // Resolve to_employee_code → to_employee id
+  if (d.to_employee_code && !d.to_employee) {
+    const code = d.to_employee_code.trim().toUpperCase();
+    const emp = db.prepare("SELECT id FROM employees WHERE UPPER(code) = ? AND status = 'ACTIVE'").get(code);
+    if (!emp) return res.status(400).json({ error: `No active employee with code ${code}` });
+    d.to_employee = emp.id;
+  }
 
   // No self-recognition
   if (d.to_employee === req.user.id) {
@@ -398,6 +449,15 @@ router.post("/recognitions", requireAuth, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "recognition", entityId: id, detail: { ...d, from_employee: req.user.id } });
   broadcast({ type: "mutation", entity: "recognitions" });
+
+  const giver = db.prepare("SELECT name FROM employees WHERE id = ?").get(req.user.id);
+  const badgeInfo = db.prepare("SELECT name FROM badges WHERE id = ?").get(d.badge_id);
+  notify(db, {
+    userId: d.to_employee, type: "recognition", title: "You received a recognition!",
+    body: `${giver?.name || "Someone"} gave you the "${badgeInfo?.name || "badge"}" badge: ${d.message}`,
+    link: "/engagement/recognitions", entity: "recognition", entityId: id,
+  });
+
   res.status(201).json({ id, from_employee: req.user.id, ...d });
 });
 

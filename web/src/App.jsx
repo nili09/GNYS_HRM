@@ -12,6 +12,7 @@ import HRAttendance from "./pages/HRAttendance.jsx";
 import TeamAttendance from "./pages/TeamAttendance.jsx";
 import MyLeave from "./pages/MyLeave.jsx";
 import TeamApprovals from "./pages/TeamApprovals.jsx";
+import TeamCalendar from "./pages/TeamCalendar.jsx";
 import HRLeave from "./pages/HRLeave.jsx";
 import HRPayroll from "./pages/HRPayroll.jsx";
 import HRDashboard from "./pages/HRDashboard.jsx";
@@ -34,6 +35,7 @@ import MyAssets from "./pages/MyAssets.jsx";
 import MyTickets from "./pages/MyTickets.jsx";
 import HRAssets from "./pages/HRAssets.jsx";
 import HRHelpdesk from "./pages/HRHelpdesk.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -117,7 +119,7 @@ function AppRoutes() {
 
         {/* Team */}
         <Route path="team/approvals"  element={<TeamApprovals />} />
-        <Route path="team/calendar"   element={<TeamApprovals />} />
+        <Route path="team/calendar"   element={<TeamCalendar />} />
         <Route path="team/attendance" element={<TeamAttendance />} />
         <Route path="team/expenses"  element={<TeamExpenses />} />
         <Route path="team/performance" element={<TeamPerformance />} />
@@ -141,7 +143,7 @@ function AppRoutes() {
       </Route>
 
       {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

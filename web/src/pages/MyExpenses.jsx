@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
+import FileUpload from "../components/FileUpload.jsx";
 
 const STATUS_BADGE = {
   PENDING:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -196,11 +197,12 @@ export default function MyExpenses() {
                 <th style={thStyle}>Amount</th>
                 <th style={thStyle}>Description</th>
                 <th style={thStyle}>Status</th>
+                <th style={thStyle}>Receipt</th>
               </tr>
             </thead>
             <tbody>
               {expenses.length === 0 && (
-                <tr><td colSpan={5} style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No expenses</td></tr>
+                <tr><td colSpan={6} style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No expenses</td></tr>
               )}
               {expenses.map((x) => (
                 <tr key={x.id} style={{ borderTop: "1px solid var(--line)" }}>
@@ -209,6 +211,9 @@ export default function MyExpenses() {
                   <td style={{ ...tdStyle, fontWeight: 600 }}>{fmtAmount(x.amount)}</td>
                   <td style={{ ...tdStyle, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{x.description || "--"}</td>
                   <td style={tdStyle}><Badge status={x.status} /></td>
+                  <td style={tdStyle}>
+                    <FileUpload ownerType="expense" ownerId={String(x.id)} accept=".pdf,.jpg,.jpeg,.png" />
+                  </td>
                 </tr>
               ))}
             </tbody>

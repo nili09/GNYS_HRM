@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
+import FileUpload from "../components/FileUpload.jsx";
 
 const STATUS_BADGE = {
   OPEN:        { bg: "var(--badge-sky-bg)", color: "var(--badge-sky-text)" },
@@ -225,6 +226,9 @@ export default function MyTickets() {
               <span>Category: {selected.category_name}</span>
               <span>Created: {fmtDate(selected.created_at)}</span>
               <span>Assigned: {selected.assigned_to_name || "Unassigned"}</span>
+            </div>
+            <div style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+              <FileUpload ownerType="ticket" ownerId={String(selected.id)} label="Attachments" />
             </div>
           </div>
 

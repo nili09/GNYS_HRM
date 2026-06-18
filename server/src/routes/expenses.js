@@ -13,6 +13,7 @@ import {
 } from "@hrms/shared/schemas";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { notify, notifyMany } from "../utils/notify.js";
 import { indexEntity } from "../utils/search.js";
 
 const router = Router();
@@ -144,6 +145,21 @@ router.post("/", requireAuth, (req, res) => {
   broadcast({ type: "expense", entity: "expenses", id });
   indexEntity(db, "expense", id, `${cat.name} — ${d.amount}`, d.description || "",
     { status: "PENDING", employee_id: req.user.id });
+
+  const submitter = db.prepare("SELECT name, manager_id FROM employees WHERE id = ?").get(req.user.id);
+  const targets = new Set();
+  if (submitter?.manager_id) targets.add(submitter.manager_id);
+  const hrIds = db.prepare("SELECT id FROM employees WHERE role IN ('HR','ADMIN') AND status = 'ACTIVE'").all();
+  for (const h of hrIds) targets.add(h.id);
+  targets.delete(req.user.id);
+  if (targets.size > 0) {
+    notifyMany(db, [...targets], {
+      type: "expense_submitted", title: "New expense claim",
+      body: `${submitter?.name || "Employee"} submitted ₹${d.amount} expense (${cat.name})`,
+      link: "/expenses", entity: "expense", entityId: id,
+    });
+  }
+
   res.status(201).json({ id, employee_id: req.user.id, status: "PENDING", ...d });
 });
 
@@ -235,6 +251,11 @@ router.post("/:id/approve", requireAuth, (req, res) => {
   ).run(req.user.id, parsed.data.comment || null, expId);
   audit(db, { actorId: req.user.id, action: "APPROVE", entity: "expense", entityId: expId });
   broadcast({ type: "expense", entity: "expenses", id: expId });
+  notify(db, {
+    userId: exp.employee_id, type: "expense_approved", title: "Expense approved",
+    body: `Your ₹${exp.amount} expense was approved`,
+    link: "/expenses", entity: "expense", entityId: expId,
+  });
   res.json({ ok: true, status: "APPROVED" });
 });
 
@@ -254,6 +275,11 @@ router.post("/:id/reject", requireAuth, (req, res) => {
   ).run(req.user.id, parsed.data.comment || null, expId);
   audit(db, { actorId: req.user.id, action: "REJECT", entity: "expense", entityId: expId });
   broadcast({ type: "expense", entity: "expenses", id: expId });
+  notify(db, {
+    userId: exp.employee_id, type: "expense_rejected", title: "Expense rejected",
+    body: `Your ₹${exp.amount} expense was rejected`,
+    link: "/expenses", entity: "expense", entityId: expId,
+  });
   res.json({ ok: true, status: "REJECTED" });
 });
 
@@ -270,6 +296,11 @@ router.post("/:id/settle", ...requireHR, (req, res) => {
   ).run(parsed.data.settled_in_month, req.user.id, expId);
   audit(db, { actorId: req.user.id, action: "SETTLE", entity: "expense", entityId: expId, detail: parsed.data });
   broadcast({ type: "expense", entity: "expenses", id: expId });
+  notify(db, {
+    userId: exp.employee_id, type: "expense_settled", title: "Expense reimbursed",
+    body: `Your ₹${exp.amount} expense has been settled`,
+    link: "/expenses", entity: "expense", entityId: expId,
+  });
   res.json({ ok: true, status: "SETTLED" });
 });
 

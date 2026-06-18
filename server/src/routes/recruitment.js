@@ -205,6 +205,14 @@ router.patch("/applications/:id", ...requireHR, (req, res) => {
 
 // ── Interviews ─────────────────────────────────────────────────────────────
 
+router.get("/interviews/my-count", requireAuth, (req, res) => {
+  const db = req.app.locals.db;
+  const { c } = db
+    .prepare("SELECT COUNT(*) as c FROM interviews WHERE interviewer_id = ?")
+    .get(req.user.id);
+  res.json({ count: c });
+});
+
 router.get("/interviews", requireAuth, (req, res) => {
   const db = req.app.locals.db;
   const isHR = ["HR", "ADMIN"].includes(req.user.role);
