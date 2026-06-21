@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import EmployeePicker from "../components/EmployeePicker.jsx";
 
 const STATUS_BADGE = {
   AVAILABLE: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
@@ -33,7 +34,6 @@ export default function HRAssets() {
   const [assets, setAssets] = useState([]);
   const [types, setTypes] = useState([]);
   const [vendors, setVendors] = useState([]);
-  const [employees, setEmployees] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -43,25 +43,23 @@ export default function HRAssets() {
   const [typeForm, setTypeForm] = useState({ name: "" });
   const [vendorForm, setVendorForm] = useState({ name: "", contact_email: "", contact_phone: "" });
   const [assetForm, setAssetForm] = useState({ asset_type_id: "", name: "", serial_no: "", purchase_date: "", purchase_cost: "", vendor_id: "", notes: "" });
-  const [assignForm, setAssignForm] = useState({ asset_id: null, employee_id: "", is_temporary: false });
+  const [assignForm, setAssignForm] = useState({ asset_id: null, employee: null, is_temporary: false });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
       const qs = [statusFilter && `status=${statusFilter}`, typeFilter && `type_id=${typeFilter}`].filter(Boolean).join("&");
-      const [assetList, typeList, vendorList, dash, empList] = await Promise.all([
+      const [assetList, typeList, vendorList, dash] = await Promise.all([
         api.get(`/assets${qs ? `?${qs}` : ""}`),
         api.get("/assets/asset-types"),
         api.get("/assets/vendors"),
         api.get("/assets/dashboard"),
-        api.get("/employees"),
       ]);
       setAssets(assetList);
       setTypes(typeList);
       setVendors(vendorList);
       setDashboard(dash);
-      setEmployees(empList.filter(e => e.status === "ACTIVE"));
     } catch { /* ignore */ }
     setLoading(false);
   }, [statusFilter, typeFilter]);
@@ -126,13 +124,14 @@ export default function HRAssets() {
 
   async function handleAssign(e) {
     e.preventDefault();
+    if (!assignForm.employee) { setFormError("Select an employee"); return; }
     setFormError(""); setFormSuccess(""); setActing(`assign-${assignForm.asset_id}`);
     try {
       await api.post(`/assets/${assignForm.asset_id}/assign`, {
-        employee_id: Number(assignForm.employee_id),
+        employee_id: assignForm.employee.id,
         is_temporary: assignForm.is_temporary ? 1 : 0,
       });
-      setAssignForm({ asset_id: null, employee_id: "", is_temporary: false });
+      setAssignForm({ asset_id: null, employee: null, is_temporary: false });
       setFormSuccess("Asset assigned");
       fetchData();
     } catch (err) { setFormError(err.message || "Failed"); }
@@ -219,7 +218,7 @@ export default function HRAssets() {
                     <td style={{ padding: "8px 10px" }}>{fmtAmount(a.purchase_cost)}</td>
                     <td style={{ padding: "8px 10px" }}>
                       {a.status === "AVAILABLE" && (
-                        <button onClick={() => { setAssignForm({ asset_id: a.id, employee_id: "", is_temporary: false }); setTab("assign"); }}
+                        <button onClick={() => { setAssignForm({ asset_id: a.id, employee: null, is_temporary: false }); setTab("assign"); }}
                           style={{ padding: "4px 12px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
                           Assign
                         </button>
@@ -247,21 +246,24 @@ export default function HRAssets() {
           <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Assign Asset #{assignForm.asset_id}</h3>
           <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
             Employee
-            <select value={assignForm.employee_id} onChange={e => setAssignForm(f => ({ ...f, employee_id: e.target.value }))} required style={inputStyle}>
-              <option value="">Select employee</option>
-              {employees.map(e => <option key={e.id} value={e.id}>{e.name} ({e.code})</option>)}
-            </select>
+            <EmployeePicker
+              value={assignForm.employee}
+              onChange={(emp) => setAssignForm(f => ({ ...f, employee: emp }))}
+              status="ACTIVE"
+              placeholder="Type employee name or code…"
+              style={{ marginTop: 4 }}
+            />
           </label>
           <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 8 }}>
             <input type="checkbox" checked={assignForm.is_temporary} onChange={e => setAssignForm(f => ({ ...f, is_temporary: e.target.checked }))} />
             Temporary assignment
           </label>
           <div style={{ display: "flex", gap: 8 }}>
-            <button type="submit" disabled={acting}
+            <button type="submit" disabled={acting || !assignForm.employee}
               style={{ padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
               Assign
             </button>
-            <button type="button" onClick={() => { setAssignForm({ asset_id: null, employee_id: "", is_temporary: false }); setTab("inventory"); }}
+            <button type="button" onClick={() => { setAssignForm({ asset_id: null, employee: null, is_temporary: false }); setTab("inventory"); }}
               style={{ padding: "8px 24px", borderRadius: 4, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
               Cancel
             </button>

@@ -48,8 +48,12 @@ function stripSalary(row) {
   return r;
 }
 
+const LIST_DEFAULT_LIMIT = 50;
+const LIST_MAX_LIMIT = 1200;
+
 /* ──────────────────────────────────────────────────────────────────────────────
-   GET /employees — list with filters (HR/ADMIN, or manager sees direct reports)
+   GET /employees — paginated list with filters (HR/ADMIN, or manager sees
+   direct reports). Returns { data, total, page, pageSize }.
    ────────────────────────────────────────────────────────────────────────────── */
 router.get("/", requireAuth, (req, res) => {
   const db = req.app.locals.db;
@@ -80,8 +84,10 @@ router.get("/", requireAuth, (req, res) => {
     params.push(req.query.dept);
   }
   if (req.query.status) {
-    where.push("e.status = ?");
-    params.push(req.query.status);
+    // Express parses repeated ?status=A&status=B into an array; accept both.
+    const statuses = Array.isArray(req.query.status) ? req.query.status : [req.query.status];
+    where.push(`e.status IN (${statuses.map(() => "?").join(",")})`);
+    params.push(...statuses);
   }
   if (req.query.location) {
     where.push("l.name = ?");
@@ -94,6 +100,21 @@ router.get("/", requireAuth, (req, res) => {
     params.push(req.user.id);
   }
 
+  const whereSql = where.join(" AND ");
+
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(LIST_MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || LIST_DEFAULT_LIMIT));
+  const offset = (page - 1) * limit;
+
+  const total = db.prepare(
+    `SELECT COUNT(*) AS c
+     FROM employees e
+     LEFT JOIN departments d  ON e.dept_id = d.id
+     LEFT JOIN designations ds ON e.desig_id = ds.id
+     LEFT JOIN locations l    ON e.location_id = l.id
+     WHERE ${whereSql}`
+  ).get(...params).c;
+
   const rows = db.prepare(
     `SELECT e.id, e.code, e.name, e.email, e.role, e.status, e.doj, e.gender,
             e.phone, e.dept_id, e.desig_id, e.location_id, e.manager_id,
@@ -104,26 +125,36 @@ router.get("/", requireAuth, (req, res) => {
      LEFT JOIN designations ds ON e.desig_id = ds.id
      LEFT JOIN locations l    ON e.location_id = l.id
      LEFT JOIN employees m    ON e.manager_id = m.id
-     WHERE ${where.join(" AND ")}
-     ORDER BY e.name`
-  ).all(...params);
+     WHERE ${whereSql}
+     ORDER BY e.name
+     LIMIT ? OFFSET ?`
+  ).all(...params, limit, offset);
 
   // Strip salary data for non-HR callers
   if (!isHR) {
-    return res.json(rows.map(stripSalary));
+    return res.json({ data: rows.map(stripSalary), total, page, pageSize: limit });
   }
-  // HR: also attach latest salary structure
-  const stmtSal = db.prepare(
-    `SELECT * FROM salary_structures
-     WHERE employee_id = ?
-     ORDER BY effective_from DESC LIMIT 1`
-  );
-  const result = rows.map(r => {
+
+  // HR: attach latest salary structure per employee via one batched query
+  // (was one SELECT per row — N+1 — for the whole page).
+  const ids = rows.map(r => r.id);
+  const salByEmp = {};
+  if (ids.length) {
+    const placeholders = ids.map(() => "?").join(",");
+    const salRows = db.prepare(
+      `SELECT s.* FROM salary_structures s
+       WHERE s.employee_id IN (${placeholders})
+       AND s.effective_from = (
+         SELECT MAX(s2.effective_from) FROM salary_structures s2 WHERE s2.employee_id = s.employee_id
+       )`
+    ).all(...ids);
+    for (const s of salRows) salByEmp[s.employee_id] = s;
+  }
+  const data = rows.map(r => {
     delete r.password_hash;
-    const sal = stmtSal.get(r.id);
-    return { ...r, salary: sal || null };
+    return { ...r, salary: salByEmp[r.id] || null };
   });
-  res.json(result);
+  res.json({ data, total, page, pageSize: limit });
 });
 
 /* ──────────────────────────────────────────────────────────────────────────────

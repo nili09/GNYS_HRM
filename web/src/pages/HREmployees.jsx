@@ -10,8 +10,12 @@ const STATUS_STYLE = {
   EXITED:     { bg: "var(--badge-danger-bg)", fg: "var(--badge-danger-text)" },
 };
 
+const PAGE_SIZE = 50;
+
 export default function HREmployees() {
   const [employees, setEmployees] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ q: "", dept: "", status: "", location: "" });
   const [departments, setDepartments] = useState([]);
@@ -28,16 +32,23 @@ export default function HREmployees() {
       if (filters.dept)     params.set("dept", filters.dept);
       if (filters.status)   params.set("status", filters.status);
       if (filters.location) params.set("location", filters.location);
-      const qs = params.toString();
-      const data = await api.get(`/employees${qs ? "?" + qs : ""}`);
-      setEmployees(data);
+      params.set("page", String(page));
+      params.set("limit", String(PAGE_SIZE));
+      const res = await api.get(`/employees?${params.toString()}`);
+      setEmployees(res.data || []);
+      setTotal(res.total || 0);
     } catch (e) {
       console.error("fetch employees:", e);
     }
     setLoading(false);
-  }, [filters]);
+  }, [filters, page]);
 
   useEffect(() => { fetchEmployees(); }, [fetchEmployees]);
+
+  function updateFilter(key, value) {
+    setFilters(f => ({ ...f, [key]: value }));
+    setPage(1);
+  }
 
   useEffect(() => {
     (async () => {
@@ -91,18 +102,18 @@ export default function HREmployees() {
         <input
           placeholder="Search name, code, email…"
           value={filters.q}
-          onChange={e => setFilters(f => ({ ...f, q: e.target.value }))}
+          onChange={e => updateFilter("q", e.target.value)}
           style={{ flex: "1 1 200px" }}
         />
-        <select value={filters.dept}     onChange={e => setFilters(f => ({ ...f, dept: e.target.value }))}     style={{ minWidth: 140 }}>
+        <select value={filters.dept}     onChange={e => updateFilter("dept", e.target.value)}     style={{ minWidth: 140 }}>
           <option value="">All Departments</option>
           {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
         </select>
-        <select value={filters.status}   onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}   style={{ minWidth: 120 }}>
+        <select value={filters.status}   onChange={e => updateFilter("status", e.target.value)}   style={{ minWidth: 120 }}>
           <option value="">All Status</option>
           {["ACTIVE", "ONBOARDING", "NOTICE", "EXITED"].map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={filters.location} onChange={e => setFilters(f => ({ ...f, location: e.target.value }))} style={{ minWidth: 140 }}>
+        <select value={filters.location} onChange={e => updateFilter("location", e.target.value)} style={{ minWidth: 140 }}>
           <option value="">All Locations</option>
           {locations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
         </select>
@@ -153,9 +164,29 @@ export default function HREmployees() {
         </table>
       </div>
 
-      {/* Count */}
-      <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 8, textAlign: "right" }}>
-        {employees.length} employee{employees.length !== 1 ? "s" : ""}
+      {/* Pagination */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12, marginTop: 10 }}>
+        <span style={{ fontSize: 12, color: "var(--text-faint)" }}>
+          {total === 0
+            ? "0 employees"
+            : `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, total)} of ${total}`}
+        </span>
+        <button
+          className="btn-sm"
+          disabled={page <= 1}
+          onClick={() => setPage(p => p - 1)}
+          style={{ opacity: page <= 1 ? 0.5 : 1 }}
+        >
+          ‹ Prev
+        </button>
+        <button
+          className="btn-sm"
+          disabled={page * PAGE_SIZE >= total}
+          onClick={() => setPage(p => p + 1)}
+          style={{ opacity: page * PAGE_SIZE >= total ? 0.5 : 1 }}
+        >
+          Next ›
+        </button>
       </div>
 
       {drawerEmpId != null && (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api.js";
+import EmployeePicker from "./EmployeePicker.jsx";
 
 const TABS = ["Personal", "Job", "Statutory & Bank", "Salary", "Documents"];
 
@@ -30,7 +31,6 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
   const [emp, setEmp] = useState(null);
   const [form, setForm] = useState({});
   const [designations, setDesignations] = useState([]);
-  const [employees, setEmployees] = useState([]);
   const [salaryForm, setSalaryForm] = useState(emptySalary());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -55,12 +55,8 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
   useEffect(() => {
     (async () => {
       try {
-        const [desig, emps] = await Promise.all([
-          api.get("/designations"),
-          api.get("/employees").catch(() => []),
-        ]);
+        const desig = await api.get("/designations");
         setDesignations(desig);
-        setEmployees(emps);
       } catch {}
     })();
   }, []);
@@ -279,7 +275,17 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
               <Field label="Designation"     value={form.desig_id}       onChange={v => setField("desig_id", v)}       type="select" options={designations.map(d => ({ value: d.id, label: d.name }))} />
               <Field label="Location"        value={form.location_id}    onChange={v => setField("location_id", v)}    type="select" options={locations.map(l => ({ value: l.id, label: l.name }))} />
               <Field label="Sub Branch"      value={form.sub_branch}     onChange={v => setField("sub_branch", v)}     disabled={!isHR} />
-              <Field label="Manager"         value={form.manager_id}     onChange={v => setField("manager_id", v)}     type="select" options={employees.filter(e => e.id !== empId).map(e => ({ value: e.id, label: `${e.name} (${e.code})` }))} />
+              <div style={{ marginBottom: 2 }}>
+                <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".04rem" }}>
+                  Manager
+                </label>
+                <EmployeePicker
+                  value={form.manager_id ? { id: form.manager_id, name: form.manager_name || `#${form.manager_id}` } : null}
+                  onChange={(mgr) => setForm(f => ({ ...f, manager_id: mgr ? mgr.id : null, manager_name: mgr ? mgr.name : null }))}
+                  excludeId={empId}
+                  placeholder="Search manager by name or code…"
+                />
+              </div>
               <Field label="Functional Mgr Code" value={form.functional_manager_code} onChange={v => setField("functional_manager_code", v)} disabled={!isHR} />
               {!isNew && emp?.functional_manager_name && <Field label="Functional Manager Name" value={emp.functional_manager_name} disabled />}
               <Field label="Date of Joining" value={form.doj}            onChange={v => setField("doj", v)}            type="date" required />

@@ -190,7 +190,7 @@ describe("RBAC role gates", () => {
       .get("/api/employees")
       .set("Cookie", cookieHeader);
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
   });
 
   it("ADMIN can access GET /api/employees", async () => {

@@ -49,12 +49,14 @@ export default function HRLeave() {
         api.get("/leaves"),
         api.get("/leaves/types"),
         api.get(`/leaves/balances?year=${year}`),
-        api.get("/employees"),
+        // /leaves/balances returns one row per active employee with no name —
+        // this needs the whole roster to resolve names, not a search picker.
+        api.get("/employees?limit=5000"),
       ]);
       setLeaves(l);
       setTypes(t);
       setBalanceData(b);
-      setEmployees(e);
+      setEmployees(e.data || []);
     } catch { /* ignore */ }
     setLoading(false);
   }, [year]);

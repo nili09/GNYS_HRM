@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import EmployeePicker from "../components/EmployeePicker.jsx";
 
 const STATUS_BADGE = {
   OPEN:        { bg: "var(--badge-sky-bg)", color: "var(--badge-sky-text)" },
@@ -34,7 +35,6 @@ export default function HRHelpdesk() {
   const [tab, setTab] = useState("tickets");
   const [tickets, setTickets] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [employees, setEmployees] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -44,23 +44,21 @@ export default function HRHelpdesk() {
   const [comments, setComments] = useState([]);
   const [commentBody, setCommentBody] = useState("");
 
-  const [catForm, setCatForm] = useState({ name: "", assigned_to: "" });
+  const [catForm, setCatForm] = useState({ name: "", assignedTo: null });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
       const qs = [statusFilter && `status=${statusFilter}`, categoryFilter && `category_id=${categoryFilter}`].filter(Boolean).join("&");
-      const [tix, cats, dash, empList] = await Promise.all([
+      const [tix, cats, dash] = await Promise.all([
         api.get(`/helpdesk/tickets${qs ? `?${qs}` : ""}`),
         api.get("/helpdesk/ticket-categories"),
         api.get("/helpdesk/dashboard"),
-        api.get("/employees"),
       ]);
       setTickets(tix);
       setCategories(cats);
       setDashboard(dash);
-      setEmployees(empList.filter(e => e.status === "ACTIVE"));
     } catch { /* ignore */ }
     setLoading(false);
   }, [statusFilter, categoryFilter]);
@@ -84,9 +82,9 @@ export default function HRHelpdesk() {
     try {
       await api.post("/helpdesk/ticket-categories", {
         name: catForm.name,
-        assigned_to: catForm.assigned_to ? Number(catForm.assigned_to) : null,
+        assigned_to: catForm.assignedTo ? catForm.assignedTo.id : null,
       });
-      setCatForm({ name: "", assigned_to: "" });
+      setCatForm({ name: "", assignedTo: null });
       setFormSuccess("Category created");
       fetchData();
     } catch (err) { setFormError(err.message || "Failed"); }
@@ -194,12 +192,14 @@ export default function HRHelpdesk() {
                     <td style={{ padding: "8px 10px" }}><Badge map={PRIORITY_BADGE} value={t.priority} /></td>
                     <td style={{ padding: "8px 10px" }}><Badge map={STATUS_BADGE} value={t.status} /></td>
                     <td style={{ padding: "8px 10px" }}>
-                      <select value={t.assigned_to || ""} onChange={e => updateTicket(t.id, { assigned_to: e.target.value ? Number(e.target.value) : null })}
+                      <EmployeePicker
+                        value={t.assigned_to ? { id: t.assigned_to, name: t.assigned_to_name } : null}
+                        onChange={(emp) => updateTicket(t.id, { assigned_to: emp ? emp.id : null })}
+                        status="ACTIVE"
+                        placeholder="Unassigned"
                         disabled={acting === `ticket-${t.id}`}
-                        style={{ ...inputStyle, width: 130, marginTop: 0, padding: "4px 6px", fontSize: 11 }}>
-                        <option value="">Unassigned</option>
-                        {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                      </select>
+                        style={{ width: 150 }}
+                      />
                     </td>
                     <td style={{ padding: "8px 10px" }}>{fmtDate(t.created_at)}</td>
                     <td style={{ padding: "8px 10px" }}>
@@ -296,10 +296,13 @@ export default function HRHelpdesk() {
             </label>
             <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
               Default Resolver
-              <select value={catForm.assigned_to} onChange={e => setCatForm(f => ({ ...f, assigned_to: e.target.value }))} style={inputStyle}>
-                <option value="">None</option>
-                {employees.map(e => <option key={e.id} value={e.id}>{e.name} ({e.code})</option>)}
-              </select>
+              <EmployeePicker
+                value={catForm.assignedTo}
+                onChange={(emp) => setCatForm(f => ({ ...f, assignedTo: emp }))}
+                status="ACTIVE"
+                placeholder="None — type to search…"
+                style={{ marginTop: 4 }}
+              />
             </label>
             <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
               Add Category

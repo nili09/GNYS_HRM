@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../lib/api.js";
+
+const USER_STATUSES = ["ACTIVE", "ONBOARDING", "NOTICE"];
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const SAT_OPTS = [
@@ -12,6 +14,8 @@ const SAT_OPTS = [
 export default function AdminSettings() {
   const [settings, setSettings] = useState(null);
   const [users, setUsers] = useState([]);
+  const [userSearch, setUserSearch] = useState("");
+  const userSearchDebounce = useRef(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
@@ -47,10 +51,7 @@ export default function AdminSettings() {
 
   const load = useCallback(async () => {
     try {
-      const [s, empRes] = await Promise.all([
-        api.get("/settings"),
-        api.get("/employees?status=ACTIVE&status=ONBOARDING&status=NOTICE&limit=500"),
-      ]);
+      const s = await api.get("/settings");
       setSettings(s);
       setCompanyName(s.companyName || "");
       setCin(s.cin || "");
@@ -64,12 +65,28 @@ export default function AdminSettings() {
       setPfCapWages(s.pfCapWages ?? true);
       setEsiEnabled(s.esiEnabled ?? true);
       setPtEnabled(s.ptEnabled ?? true);
-      setUsers(empRes.data || empRes || []);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const loadUsers = useCallback(async (q) => {
+    try {
+      const params = new URLSearchParams();
+      USER_STATUSES.forEach((s) => params.append("status", s));
+      params.set("limit", "50");
+      if (q) params.set("q", q);
+      const res = await api.get(`/employees?${params.toString()}`);
+      setUsers(res.data || []);
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => { load(); loadUsers(""); }, [load, loadUsers]);
+
+  function handleUserSearch(v) {
+    setUserSearch(v);
+    clearTimeout(userSearchDebounce.current);
+    userSearchDebounce.current = setTimeout(() => loadUsers(v), 250);
+  }
 
   async function saveCompany() {
     setSaving(true);
@@ -109,7 +126,7 @@ export default function AdminSettings() {
       await api.patch(`/employees/${roleModal.id}`, { role: newRole });
       showToast(`Role updated to ${newRole} for ${roleModal.name}`);
       setRoleModal(null);
-      load();
+      loadUsers(userSearch);
     } catch (e) { showToast(e.message, true); }
   }
 
@@ -184,6 +201,12 @@ export default function AdminSettings() {
         {/* Right: Users & roles */}
         <div style={{ display: "grid", gap: 16, alignContent: "start" }}>
           <Card title="Users & Roles">
+            <input
+              placeholder="Search by name, code, or email…"
+              value={userSearch}
+              onChange={(e) => handleUserSearch(e.target.value)}
+              style={{ ...inputS, marginBottom: 10 }}
+            />
             <div style={{ maxHeight: 400, overflowY: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
                 <thead>
@@ -195,7 +218,10 @@ export default function AdminSettings() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(Array.isArray(users) ? users : []).map((u) => (
+                  {users.length === 0 && (
+                    <tr><td colSpan={4} style={{ ...tdS, textAlign: "center", color: "var(--text-faint)", padding: 16 }}>No users found</td></tr>
+                  )}
+                  {users.map((u) => (
                     <tr key={u.id} style={{ borderBottom: "1px solid var(--line)" }}>
                       <td style={tdS}>{u.name}</td>
                       <td style={tdS}><span style={{ color: "var(--text-muted)" }}>{u.email}</span></td>
