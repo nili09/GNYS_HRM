@@ -16,12 +16,12 @@ import { computeDerived, HRONE_EXPORT_HEADERS } from "@hrms/shared/import";
 
 const router = Router();
 
-/* ── salary fields to strip for non-HR callers ── */
+/* ── salary/statutory fields to strip for non-HR callers ── */
 const SALARY_FIELDS = [
   "pan", "aadhaar", "uan", "pf_no", "esi_no",
-  "bank_name", "bank_acc", "ifsc",
   "pf_opt", "esi_opt", "pt_opt", "tds_override",
 ];
+const BANK_FIELDS = ["bank_name", "bank_acc", "ifsc"];
 
 /* ── All HROne extended columns on the employees table ── */
 const HRONE_COLS = [
@@ -43,6 +43,7 @@ const HRONE_COLS = [
 function stripSalary(row) {
   const r = { ...row };
   for (const f of SALARY_FIELDS) delete r[f];
+  for (const f of BANK_FIELDS) delete r[f];
   delete r.password_hash;
   return r;
 }
@@ -275,6 +276,10 @@ router.get("/:id", requireAuth, (req, res) => {
   // Strip salary/statutory for non-HR (manager or self-employee)
   if (!isHR) {
     for (const f of SALARY_FIELDS) delete row[f];
+    // Bank fields visible to self but not to managers
+    if (!isSelf) {
+      for (const f of BANK_FIELDS) delete row[f];
+    }
   }
 
   // Attach salary structures for HR, or just current for self
@@ -295,6 +300,25 @@ router.get("/:id", requireAuth, (req, res) => {
   row.docs = db.prepare(
     "SELECT key, done FROM docs_checklist WHERE employee_id = ?"
   ).all(targetId);
+
+  // Attach sub-entity detail records (visible to self and HR)
+  if (isSelf || isHR) {
+    row.emergency_contacts = db.prepare(
+      "SELECT * FROM employee_emergency_contacts WHERE employee_id = ? ORDER BY id"
+    ).all(targetId);
+    row.family = db.prepare(
+      "SELECT * FROM employee_family WHERE employee_id = ? ORDER BY id"
+    ).all(targetId);
+    row.nominees = db.prepare(
+      "SELECT * FROM employee_nominees WHERE employee_id = ? ORDER BY id"
+    ).all(targetId);
+    row.education = db.prepare(
+      "SELECT * FROM employee_education WHERE employee_id = ? ORDER BY id"
+    ).all(targetId);
+    row.prev_employers = db.prepare(
+      "SELECT * FROM employee_prev_employers WHERE employee_id = ? ORDER BY id"
+    ).all(targetId);
+  }
 
   res.json(row);
 });

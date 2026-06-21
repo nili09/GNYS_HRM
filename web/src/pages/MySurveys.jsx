@@ -102,11 +102,11 @@ export default function MySurveys() {
   }
 
   if (loading) {
-    return <div style={{ padding: 20, color: "#64748b" }}>Loading...</div>;
+    return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading...</div>;
   }
 
   if (error) {
-    return <div style={{ padding: 20, color: "#ef4444" }}>{error}</div>;
+    return <div style={{ padding: 20, color: "var(--danger)" }}>{error}</div>;
   }
 
   return (
@@ -118,9 +118,9 @@ export default function MySurveys() {
           background: "#fff",
           borderRadius: 10,
           padding: 32,
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--line)",
           textAlign: "center",
-          color: "#94a3b8",
+          color: "var(--text-faint)",
           fontSize: 14,
         }}>
           No active surveys at this time.
@@ -138,19 +138,19 @@ export default function MySurveys() {
               background: "#fff",
               borderRadius: 10,
               padding: 16,
-              border: isActive ? "2px solid #dff140" : "1px solid #e2e8f0",
+              border: isActive ? "2px solid var(--lime)" : "1px solid var(--line)",
             }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#0d152c", marginBottom: 4 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>
                     {s.title}
                   </div>
                   {s.description && (
-                    <div style={{ fontSize: 13, color: "#64748b", marginBottom: 6 }}>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 6 }}>
                       {s.description}
                     </div>
                   )}
-                  <div style={{ fontSize: 12, color: "#94a3b8" }}>
+                  <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                     {s.closes_at ? `Closes ${fmtDate(s.closes_at)}` : "No closing date"}
                     {s.anonymous === 1 && (
                       <span style={{ marginLeft: 10, fontStyle: "italic" }}>Anonymous</span>
@@ -165,8 +165,8 @@ export default function MySurveys() {
                       borderRadius: 10,
                       fontSize: 11,
                       fontWeight: 600,
-                      background: "#dcfce7",
-                      color: "#22c55e",
+                      background: "var(--badge-green-bg)",
+                      color: "var(--badge-green-text)",
                     }}>
                       Completed
                     </span>
@@ -180,8 +180,8 @@ export default function MySurveys() {
                         cursor: "pointer",
                         fontWeight: 600,
                         fontSize: 13,
-                        background: isActive ? "#e2e8f0" : "#dff140",
-                        color: "#0d152c",
+                        background: isActive ? "var(--line)" : "var(--lime)",
+                        color: isActive ? "var(--text)" : "#ffffff",
                       }}
                     >
                       {isActive ? "Close" : "Take Survey"}
@@ -194,22 +194,22 @@ export default function MySurveys() {
             {/* Inline survey form */}
             {isActive && !isCompleted && (
               <div style={{
-                background: "#f8fafc",
-                borderRadius: "0 0 10px 10px",
+                background: "var(--bg)",
+                borderRadius: "0 0 var(--r-card) var(--r-card)",
                 padding: 20,
-                border: "1px solid #e2e8f0",
+                border: "1px solid var(--line)",
                 borderTop: "none",
                 marginTop: -2,
               }}>
                 {loadingQuestions ? (
-                  <div style={{ color: "#64748b", fontSize: 13 }}>Loading questions...</div>
+                  <div style={{ color: "var(--text-muted)", fontSize: 13 }}>Loading questions...</div>
                 ) : questions.length === 0 ? (
-                  <div style={{ color: "#94a3b8", fontSize: 13 }}>No questions found for this survey.</div>
+                  <div style={{ color: "var(--text-faint)", fontSize: 13 }}>No questions found for this survey.</div>
                 ) : (
                   <div>
                     {questions.map((q, idx) => (
                       <div key={q.id} style={{ marginBottom: 20 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#0d152c", marginBottom: 8 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
                           {idx + 1}. {q.question}
                         </div>
 
@@ -224,9 +224,9 @@ export default function MySurveys() {
                                   width: 40,
                                   height: 40,
                                   borderRadius: 8,
-                                  border: answers[q.id] === n ? "2px solid #dff140" : "1px solid #cbd5e1",
-                                  background: answers[q.id] === n ? "#dff140" : "#fff",
-                                  color: "#0d152c",
+                                  border: answers[q.id] === n ? "2px solid var(--lime)" : "1px solid var(--line)",
+                                  background: answers[q.id] === n ? "var(--lime)" : "var(--card)",
+                                  color: answers[q.id] === n ? "#ffffff" : "var(--text)",
                                   fontSize: 15,
                                   fontWeight: 700,
                                   cursor: "pointer",
@@ -274,8 +274,8 @@ export default function MySurveys() {
                                     gap: 8,
                                     padding: "8px 12px",
                                     borderRadius: 6,
-                                    border: selected ? "2px solid #dff140" : "1px solid #e2e8f0",
-                                    background: selected ? "#fafdf0" : "#fff",
+                                    border: selected ? "2px solid var(--lime)" : "1px solid var(--line)",
+                                    background: selected ? "var(--lime-subtle)" : "var(--card)",
                                     cursor: "pointer",
                                     fontSize: 13,
                                   }}
@@ -285,7 +285,7 @@ export default function MySurveys() {
                                     name={`q_${q.id}`}
                                     checked={selected}
                                     onChange={() => setAnswer(q.id, trimmed)}
-                                    style={{ accentColor: "#dff140" }}
+                                    style={{ accentColor: "#191970" }}
                                   />
                                   {trimmed}
                                 </label>
@@ -297,10 +297,10 @@ export default function MySurveys() {
                     ))}
 
                     {submitError && (
-                      <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 10 }}>{submitError}</div>
+                      <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 10 }}>{submitError}</div>
                     )}
                     {submitSuccess && (
-                      <div style={{ color: "#22c55e", fontSize: 13, marginBottom: 10 }}>{submitSuccess}</div>
+                      <div style={{ color: "var(--badge-green-text)", fontSize: 13, marginBottom: 10 }}>{submitSuccess}</div>
                     )}
 
                     <button
@@ -313,8 +313,8 @@ export default function MySurveys() {
                         cursor: submitting ? "not-allowed" : "pointer",
                         fontWeight: 600,
                         fontSize: 13,
-                        background: "#dff140",
-                        color: "#0d152c",
+                        background: "var(--lime)",
+                        color: "#ffffff",
                         opacity: submitting ? 0.6 : 1,
                       }}
                     >

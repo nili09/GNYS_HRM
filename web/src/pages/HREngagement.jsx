@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
+import Icon from "../components/Icon.jsx";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
 
@@ -10,18 +11,34 @@ function fmtDate(d) {
   return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const PRIORITY_COLORS = { URGENT: "#ef4444", IMPORTANT: "#f59e0b", NORMAL: "#3b82f6" };
-const PRIORITY_BG    = { URGENT: "#fef2f2", IMPORTANT: "#fffbeb", NORMAL: "#eff6ff" };
-const STATUS_COLORS  = { ACTIVE: "#22c55e", DRAFT: "#94a3b8", CLOSED: "#6b7280" };
-const STATUS_BG      = { ACTIVE: "#dcfce7", DRAFT: "#f1f5f9", CLOSED: "#f3f4f6" };
+const PRIORITY_COLORS = {
+  URGENT:    "var(--badge-danger-text)",
+  IMPORTANT: "var(--badge-amber-text)",
+  NORMAL:    "var(--badge-blue-text)",
+};
+const PRIORITY_BG = {
+  URGENT:    "var(--badge-danger-bg)",
+  IMPORTANT: "var(--badge-amber-bg)",
+  NORMAL:    "var(--badge-blue-bg)",
+};
+const STATUS_COLORS = {
+  ACTIVE: "var(--badge-green-text)",
+  DRAFT:  "var(--badge-gray-text)",
+  CLOSED: "var(--text-faint)",
+};
+const STATUS_BG = {
+  ACTIVE: "var(--badge-green-bg)",
+  DRAFT:  "var(--badge-gray-bg)",
+  CLOSED: "var(--line)",
+};
 
 function PriorityBadge({ priority }) {
   return (
     <span style={{
-      padding: "2px 8px", borderRadius: 10, fontSize: 11, fontWeight: 600,
+      padding: "2px 8px", borderRadius: "var(--r-pill)", fontSize: 11, fontWeight: 700,
       background: PRIORITY_BG[priority] || PRIORITY_BG.NORMAL,
       color: PRIORITY_COLORS[priority] || PRIORITY_COLORS.NORMAL,
-      textTransform: "uppercase",
+      textTransform: "uppercase", letterSpacing: ".04rem",
     }}>
       {priority}
     </span>
@@ -31,10 +48,10 @@ function PriorityBadge({ priority }) {
 function StatusBadge({ status }) {
   return (
     <span style={{
-      padding: "2px 8px", borderRadius: 10, fontSize: 11, fontWeight: 600,
+      padding: "2px 8px", borderRadius: "var(--r-pill)", fontSize: 11, fontWeight: 700,
       background: STATUS_BG[status] || STATUS_BG.DRAFT,
       color: STATUS_COLORS[status] || STATUS_COLORS.DRAFT,
-      textTransform: "uppercase",
+      textTransform: "uppercase", letterSpacing: ".04rem",
     }}>
       {status}
     </span>
@@ -43,14 +60,14 @@ function StatusBadge({ status }) {
 
 /* ── Style constants ──────────────────────────────────────────────── */
 
-const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4 };
-const inputStyle = { width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
-const thStyle = { textAlign: "left", padding: "8px 10px", borderBottom: "2px solid #e2e8f0", fontWeight: 600, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.04em" };
-const tdStyle = { padding: "8px 10px", borderBottom: "1px solid #f1f5f9", fontSize: 13 };
-const btnPrimary = { padding: "7px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13, background: "#dff140", color: "#0d152c" };
-const btnDanger = { padding: "7px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13, background: "#ef4444", color: "#fff" };
-const btnSmall = { padding: "4px 10px", borderRadius: 6, border: "1px solid #e2e8f0", cursor: "pointer", fontWeight: 600, fontSize: 12, background: "#fff", color: "#0d152c" };
-const cardStyle = { background: "#fff", borderRadius: 10, padding: 16, border: "1px solid #e2e8f0", marginBottom: 12 };
+const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 4 };
+const inputStyle = { width: "100%", padding: "9px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)", fontSize: 13, boxSizing: "border-box", fontFamily: "inherit", background: "var(--card)", color: "var(--text)" };
+const thStyle = { textAlign: "left", padding: "10px 12px", borderBottom: "1px solid var(--line)", background: "var(--bg)", fontWeight: 700, fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.045em" };
+const tdStyle = { padding: "10px 12px", borderBottom: "1px solid var(--line)", fontSize: 13 };
+const btnPrimary = { padding: "7px 16px", borderRadius: "var(--r-pill)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13, background: "var(--grad-cta)", color: "var(--ink)" };
+const btnDanger = { padding: "7px 16px", borderRadius: "var(--r-pill)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13, background: "var(--danger)", color: "#fff" };
+const btnSmall = { padding: "5px 12px", borderRadius: "var(--r-pill)", border: "1px solid var(--line)", cursor: "pointer", fontWeight: 600, fontSize: 12, background: "var(--card)", color: "var(--text)" };
+const cardStyle = { background: "var(--card)", borderRadius: "var(--r-card)", padding: 16, border: "1px solid var(--line)", marginBottom: 12, boxShadow: "var(--shadow-sm)" };
 
 const TABS = ["Announcements", "Surveys", "Badges", "Dashboard"];
 
@@ -65,22 +82,23 @@ export default function HREngagement() {
       <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Employee Engagement</h1>
 
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #e2e8f0", marginBottom: 18 }}>
+      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--line)", marginBottom: 20 }}>
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             style={{
-              padding: "8px 20px",
+              padding: "9px 22px",
               background: "none",
               border: "none",
               cursor: "pointer",
-              fontWeight: tab === t ? 700 : 400,
-              color: tab === t ? "#0d152c" : "#94a3b8",
-              borderBottom: tab === t ? "2px solid #dff140" : "2px solid transparent",
-              marginBottom: -2,
-              fontSize: 13.5,
+              fontWeight: tab === t ? 700 : 500,
+              color: tab === t ? "var(--text)" : "var(--text-faint)",
+              borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
+              marginBottom: -1,
+              fontSize: 13,
               fontFamily: "inherit",
+              transition: "color .2s",
             }}
           >
             {t}
@@ -198,12 +216,12 @@ function AnnouncementsTab() {
     }
   }
 
-  if (loading) return <div style={{ padding: 20, color: "#64748b" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading...</div>;
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <span style={{ fontSize: 14, color: "#64748b" }}>{announcements.length} announcement(s)</span>
+        <span style={{ fontSize: 14, color: "var(--text-muted)" }}>{announcements.length} announcement(s)</span>
         <button onClick={() => { resetForm(); setShowForm(true); }} style={btnPrimary}>
           + New Announcement
         </button>
@@ -211,8 +229,8 @@ function AnnouncementsTab() {
 
       {/* Create / Edit Form */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "#dff140" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "#0d152c" }}>
+        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "var(--lime)" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--text)" }}>
             {editId ? "Edit Announcement" : "New Announcement"}
           </div>
           <form onSubmit={handleSubmit}>
@@ -259,7 +277,7 @@ function AnnouncementsTab() {
               </div>
             </div>
 
-            {error && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{error}</div>}
+            {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>{error}</div>}
 
             <div style={{ display: "flex", gap: 8 }}>
               <button type="submit" disabled={submitting} style={{ ...btnPrimary, opacity: submitting ? 0.6 : 1 }}>
@@ -272,7 +290,7 @@ function AnnouncementsTab() {
       )}
 
       {/* Announcements table */}
-      <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e2e8f0", overflow: "hidden" }}>
+      <div style={{ background: "var(--card)", borderRadius: "var(--r-card)", border: "1px solid var(--line)", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
@@ -288,7 +306,7 @@ function AnnouncementsTab() {
           <tbody>
             {announcements.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>
+                <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "var(--text-faint)" }}>
                   No announcements yet.
                 </td>
               </tr>
@@ -305,8 +323,8 @@ function AnnouncementsTab() {
                 <td style={tdStyle}>
                   <span style={{
                     padding: "2px 8px", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    background: a.active ? "#dcfce7" : "#f1f5f9",
-                    color: a.active ? "#22c55e" : "#94a3b8",
+                    background: a.active ? "var(--badge-green-bg)" : "var(--line)",
+                    color: a.active ? "var(--badge-green-text)" : "var(--text-faint)",
                     cursor: "pointer",
                   }} onClick={() => handleToggleActive(a)}>
                     {a.active ? "YES" : "NO"}
@@ -315,7 +333,7 @@ function AnnouncementsTab() {
                 <td style={tdStyle}>
                   <div style={{ display: "flex", gap: 6 }}>
                     <button onClick={() => handleEdit(a)} style={btnSmall}>Edit</button>
-                    <button onClick={() => handleDelete(a.id)} style={{ ...btnSmall, color: "#ef4444", borderColor: "#fecaca" }}>Delete</button>
+                    <button onClick={() => handleDelete(a.id)} style={{ ...btnSmall, color: "var(--danger)", borderColor: "var(--badge-danger-bg)" }}>Delete</button>
                   </div>
                 </td>
               </tr>
@@ -447,12 +465,12 @@ function SurveysTab() {
     setResultsLoading(false);
   }
 
-  if (loading) return <div style={{ padding: 20, color: "#64748b" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading...</div>;
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <span style={{ fontSize: 14, color: "#64748b" }}>{surveys.length} survey(s)</span>
+        <span style={{ fontSize: 14, color: "var(--text-muted)" }}>{surveys.length} survey(s)</span>
         <button onClick={() => { resetForm(); setShowForm(true); }} style={btnPrimary}>
           + New Survey
         </button>
@@ -460,8 +478,8 @@ function SurveysTab() {
 
       {/* Create form */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "#dff140" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "#0d152c" }}>
+        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "var(--lime)" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--text)" }}>
             New Survey
           </div>
           <form onSubmit={handleSubmit}>
@@ -504,19 +522,19 @@ function SurveysTab() {
             </label>
 
             {/* Questions builder */}
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: "#0d152c" }}>Questions</div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: "var(--text)" }}>Questions</div>
             {questions.map((q, idx) => (
               <div key={idx} style={{
-                background: "#f8fafc",
+                background: "var(--bg)",
                 borderRadius: 8,
                 padding: 12,
                 border: "1px solid #e2e8f0",
                 marginBottom: 8,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#64748b" }}>Question {idx + 1}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>Question {idx + 1}</span>
                   {questions.length > 1 && (
-                    <button type="button" onClick={() => removeQuestion(idx)} style={{ ...btnSmall, color: "#ef4444", fontSize: 11, padding: "2px 8px" }}>Remove</button>
+                    <button type="button" onClick={() => removeQuestion(idx)} style={{ ...btnSmall, color: "var(--danger)", fontSize: 11, padding: "2px 8px" }}>Remove</button>
                   )}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 140px", gap: 8, marginBottom: 8 }}>
@@ -555,7 +573,7 @@ function SurveysTab() {
               + Add Question
             </button>
 
-            {error && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{error}</div>}
+            {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>{error}</div>}
 
             <div style={{ display: "flex", gap: 8 }}>
               <button type="submit" disabled={submitting} style={{ ...btnPrimary, opacity: submitting ? 0.6 : 1 }}>
@@ -568,7 +586,7 @@ function SurveysTab() {
       )}
 
       {/* Surveys table */}
-      <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e2e8f0", overflow: "hidden" }}>
+      <div style={{ background: "var(--card)", borderRadius: "var(--r-card)", border: "1px solid var(--line)", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
@@ -583,11 +601,11 @@ function SurveysTab() {
           <tbody>
             {surveys.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>No surveys yet.</td>
+                <td colSpan={6} style={{ padding: 24, textAlign: "center", color: "var(--text-faint)" }}>No surveys yet.</td>
               </tr>
             )}
             {surveys.map((s) => (
-              <tr key={s.id} style={{ background: resultsForId === s.id ? "#fafdf0" : "transparent" }}>
+              <tr key={s.id} style={{ background: resultsForId === s.id ? "var(--lime-subtle)" : "transparent" }}>
                 <td style={{ ...tdStyle, fontWeight: 600 }}>{s.title}</td>
                 <td style={tdStyle}><StatusBadge status={s.status} /></td>
                 <td style={tdStyle}>{s.anonymous ? "Yes" : "No"}</td>
@@ -596,12 +614,12 @@ function SurveysTab() {
                 <td style={tdStyle}>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {s.status === "DRAFT" && (
-                      <button onClick={() => handleStatusChange(s.id, "ACTIVE")} style={{ ...btnSmall, color: "#22c55e", borderColor: "#bbf7d0" }}>
+                      <button onClick={() => handleStatusChange(s.id, "ACTIVE")} style={{ ...btnSmall, color: "var(--badge-green-text)", borderColor: "var(--badge-green-bg)" }}>
                         Activate
                       </button>
                     )}
                     {s.status === "ACTIVE" && (
-                      <button onClick={() => handleStatusChange(s.id, "CLOSED")} style={{ ...btnSmall, color: "#6b7280", borderColor: "#d1d5db" }}>
+                      <button onClick={() => handleStatusChange(s.id, "CLOSED")} style={{ ...btnSmall, color: "var(--text-faint)", borderColor: "var(--line)" }}>
                         Close
                       </button>
                     )}
@@ -618,40 +636,40 @@ function SurveysTab() {
 
       {/* Inline Results */}
       {resultsForId && (
-        <div style={{ ...cardStyle, marginTop: 12, borderColor: "#dff140" }}>
+        <div style={{ ...cardStyle, marginTop: 12, borderColor: "var(--lime)" }}>
           {resultsLoading ? (
-            <div style={{ color: "#64748b", fontSize: 13 }}>Loading results...</div>
+            <div style={{ color: "var(--text-muted)", fontSize: 13 }}>Loading results...</div>
           ) : results ? (
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#0d152c" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
                   Results: {results.title}
                 </div>
-                <span style={{ fontSize: 12, color: "#64748b" }}>
+                <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
                   {results.totalRespondents} respondent(s) {results.anonymous ? "(Anonymous)" : ""}
                 </span>
               </div>
 
               {results.questions.map((q) => (
                 <div key={q.question_id} style={{
-                  background: "#f8fafc",
+                  background: "var(--bg)",
                   borderRadius: 8,
                   padding: 12,
                   border: "1px solid #e2e8f0",
                   marginBottom: 10,
                 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#0d152c", marginBottom: 8 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
                     {q.question}
-                    <span style={{ fontWeight: 400, color: "#94a3b8", marginLeft: 8 }}>({q.type})</span>
+                    <span style={{ fontWeight: 400, color: "var(--text-faint)", marginLeft: 8 }}>({q.type})</span>
                   </div>
-                  <div style={{ fontSize: 12, color: "#64748b", marginBottom: 6 }}>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 6 }}>
                     {q.totalResponses} response(s)
                   </div>
 
                   {q.type === "RATING" && (
                     <div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: "#0d152c", marginBottom: 6 }}>
-                        {q.avg} <span style={{ fontSize: 12, fontWeight: 400, color: "#94a3b8" }}>/ 5 average</span>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 6 }}>
+                        {q.avg} <span style={{ fontSize: 12, fontWeight: 400, color: "var(--text-faint)" }}>/ 5 average</span>
                       </div>
                       <div style={{ display: "flex", gap: 8 }}>
                         {[1, 2, 3, 4, 5].map((n) => (
@@ -659,12 +677,12 @@ function SurveysTab() {
                             <div style={{
                               width: 32,
                               height: Math.max(4, ((q.distribution?.[String(n)] || 0) / Math.max(q.totalResponses, 1)) * 60),
-                              background: "#dff140",
+                              background: "var(--lime)",
                               borderRadius: 4,
                               marginBottom: 2,
                             }} />
-                            <div style={{ fontSize: 11, color: "#64748b" }}>{n}</div>
-                            <div style={{ fontSize: 10, color: "#94a3b8" }}>{q.distribution?.[String(n)] || 0}</div>
+                            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{n}</div>
+                            <div style={{ fontSize: 10, color: "var(--text-faint)" }}>{q.distribution?.[String(n)] || 0}</div>
                           </div>
                         ))}
                       </div>
@@ -676,18 +694,18 @@ function SurveysTab() {
                       {Object.entries(q.counts).map(([option, count]) => (
                         <div key={option} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <div style={{
-                            flex: 1, height: 20, background: "#f1f5f9", borderRadius: 4, overflow: "hidden",
+                            flex: 1, height: 20, background: "var(--line)", borderRadius: 4, overflow: "hidden",
                           }}>
                             <div style={{
                               width: `${q.totalResponses > 0 ? (count / q.totalResponses) * 100 : 0}%`,
                               height: "100%",
-                              background: "#dff140",
+                              background: "var(--lime)",
                               borderRadius: 4,
                               transition: "width 0.3s",
                             }} />
                           </div>
-                          <span style={{ fontSize: 12, minWidth: 120, color: "#334155" }}>{option}</span>
-                          <span style={{ fontSize: 12, color: "#94a3b8", minWidth: 30, textAlign: "right" }}>{count}</span>
+                          <span style={{ fontSize: 12, minWidth: 120, color: "var(--text-muted)" }}>{option}</span>
+                          <span style={{ fontSize: 12, color: "var(--text-faint)", minWidth: 30, textAlign: "right" }}>{count}</span>
                         </div>
                       ))}
                     </div>
@@ -696,17 +714,17 @@ function SurveysTab() {
                   {q.type === "TEXT" && q.answers && (
                     <div style={{ maxHeight: 200, overflowY: "auto" }}>
                       {q.answers.length === 0 && (
-                        <div style={{ fontSize: 12, color: "#94a3b8" }}>No text responses.</div>
+                        <div style={{ fontSize: 12, color: "var(--text-faint)" }}>No text responses.</div>
                       )}
                       {q.answers.map((a, i) => (
                         <div key={i} style={{
                           padding: "6px 10px",
-                          background: "#fff",
-                          borderRadius: 6,
-                          border: "1px solid #e2e8f0",
+                          background: "var(--bg)",
+                          borderRadius: "var(--r-card)",
+                          border: "1px solid var(--line)",
                           marginBottom: 4,
                           fontSize: 13,
-                          color: "#334155",
+                          color: "var(--text-muted)",
                         }}>
                           {a.employee_name && (
                             <span style={{ fontWeight: 600, marginRight: 6 }}>{a.employee_name}:</span>
@@ -786,12 +804,12 @@ function BadgesTab() {
     setSubmitting(false);
   }
 
-  if (loading) return <div style={{ padding: 20, color: "#64748b" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading...</div>;
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <span style={{ fontSize: 14, color: "#64748b" }}>{badges.length} badge(s)</span>
+        <span style={{ fontSize: 14, color: "var(--text-muted)" }}>{badges.length} badge(s)</span>
         <button onClick={() => { resetForm(); setShowForm(true); }} style={btnPrimary}>
           + New Badge
         </button>
@@ -799,8 +817,8 @@ function BadgesTab() {
 
       {/* Create form */}
       {showForm && (
-        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "#dff140" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "#0d152c" }}>
+        <div style={{ ...cardStyle, marginBottom: 18, borderColor: "var(--lime)" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--text)" }}>
             New Badge
           </div>
           <form onSubmit={handleSubmit}>
@@ -833,7 +851,7 @@ function BadgesTab() {
               </div>
             </div>
 
-            {error && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{error}</div>}
+            {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>{error}</div>}
 
             <div style={{ display: "flex", gap: 8 }}>
               <button type="submit" disabled={submitting} style={{ ...btnPrimary, opacity: submitting ? 0.6 : 1 }}>
@@ -854,19 +872,19 @@ function BadgesTab() {
                 width: 40,
                 height: 40,
                 borderRadius: 10,
-                background: "#f8fafc",
+                background: "var(--bg)",
                 border: "1px solid #e2e8f0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 20,
               }}>
-                {b.icon || "⭐"}
+                {b.icon || <Icon name="star" filled={true} style={{ fontSize: 20 }} />}
               </span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#0d152c" }}>{b.name}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{b.name}</div>
                 {b.description && (
-                  <div style={{ fontSize: 12, color: "#64748b" }}>{b.description}</div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{b.description}</div>
                 )}
               </div>
             </div>
@@ -875,7 +893,7 @@ function BadgesTab() {
       </div>
 
       {badges.length === 0 && !showForm && (
-        <div style={{ ...cardStyle, textAlign: "center", color: "#94a3b8", padding: 32 }}>
+        <div style={{ ...cardStyle, textAlign: "center", color: "var(--text-faint)", padding: 32 }}>
           No badges created yet.
         </div>
       )}
@@ -904,8 +922,8 @@ function DashboardTab() {
     })();
   }, []);
 
-  if (loading) return <div style={{ padding: 20, color: "#64748b" }}>Loading dashboard...</div>;
-  if (error) return <div style={{ padding: 20, color: "#ef4444" }}>{error}</div>;
+  if (loading) return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading dashboard...</div>;
+  if (error) return <div style={{ padding: 20, color: "var(--danger)" }}>{error}</div>;
   if (!data) return null;
 
   return (
@@ -913,21 +931,21 @@ function DashboardTab() {
       {/* Stat cards row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 24 }}>
         <StatCard label="Active Surveys" value={data.surveys.active} color="#3b82f6" />
-        <StatCard label="Total Surveys" value={data.surveys.total} color="#64748b" />
-        <StatCard label="Avg Participation" value={`${data.surveys.avgParticipation}%`} color="#22c55e" />
+        <StatCard label="Total Surveys" value={data.surveys.total} color="var(--text-muted)" />
+        <StatCard label="Avg Participation" value={`${data.surveys.avgParticipation}%`} color="var(--badge-green-text)" />
         <StatCard label="Active Announcements" value={data.announcements.active} color="#f59e0b" />
-        <StatCard label="Expiring Soon" value={data.announcements.expiringSoon} color="#ef4444" />
+        <StatCard label="Expiring Soon" value={data.announcements.expiringSoon} color="var(--danger)" />
         <StatCard label="Recognitions This Week" value={data.recognitions.thisWeek} color="#8b5cf6" />
         <StatCard label="Recognitions This Month" value={data.recognitions.thisMonth} color="#8b5cf6" />
       </div>
 
       {/* Top receivers */}
       <div style={cardStyle}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: "#0d152c", marginBottom: 12 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 12 }}>
           Top Recognition Receivers
         </div>
         {data.recognitions.topReceivers.length === 0 ? (
-          <div style={{ fontSize: 13, color: "#94a3b8" }}>No recognitions data yet.</div>
+          <div style={{ fontSize: 13, color: "var(--text-faint)" }}>No recognitions data yet.</div>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
@@ -948,10 +966,10 @@ function DashboardTab() {
                       width: 24,
                       height: 24,
                       borderRadius: 12,
-                      background: i === 0 ? "#fef9c3" : i === 1 ? "#f1f5f9" : i === 2 ? "#fef2f2" : "#f8fafc",
+                      background: i === 0 ? "var(--badge-amber-bg)" : i === 1 ? "var(--line)" : i === 2 ? "var(--badge-danger-bg)" : "var(--bg)",
                       fontSize: 12,
                       fontWeight: 700,
-                      color: "#0d152c",
+                      color: "var(--text)",
                     }}>
                       {i + 1}
                     </span>
@@ -971,8 +989,8 @@ function DashboardTab() {
 function StatCard({ label, value, color }) {
   return (
     <div style={cardStyle}>
-      <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600, marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, color: color || "#0d152c" }}>{value}</div>
+      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 600, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: color || "var(--text)" }}>{value}</div>
     </div>
   );
 }

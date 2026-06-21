@@ -213,7 +213,7 @@ router.post("/reviews", ...requireHR, (req, res) => {
   notify(db, {
     userId: d.reviewer_id, type: "review_assigned", title: "Review assigned",
     body: `You've been assigned to review ${empName || "an employee"} for ${cycle.name}`,
-    link: "/performance/reviews", entity: "review", entityId: id,
+    link: "/my/performance", entity: "review", entityId: id,
   });
 
   res.status(201).json({ id, ...d, status: "PENDING" });

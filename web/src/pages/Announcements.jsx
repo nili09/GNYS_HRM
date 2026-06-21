@@ -3,15 +3,15 @@ import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 const PRIORITY_COLORS = {
-  URGENT: "#ef4444",
-  IMPORTANT: "#f59e0b",
-  NORMAL: "#3b82f6",
+  URGENT:    "var(--badge-danger-text)",
+  IMPORTANT: "var(--badge-amber-text)",
+  NORMAL:    "var(--badge-blue-text)",
 };
 
 const PRIORITY_BG = {
-  URGENT: "#fef2f2",
-  IMPORTANT: "#fffbeb",
-  NORMAL: "#eff6ff",
+  URGENT:    "var(--badge-danger-bg)",
+  IMPORTANT: "var(--badge-amber-bg)",
+  NORMAL:    "var(--badge-blue-bg)",
 };
 
 function fmtDate(d) {
@@ -56,11 +56,11 @@ export default function Announcements() {
   }, [fetchAnnouncements]);
 
   if (loading) {
-    return <div style={{ padding: 20, color: "#64748b" }}>Loading...</div>;
+    return <div style={{ padding: 20, color: "var(--text-muted)" }}>Loading...</div>;
   }
 
   if (error) {
-    return <div style={{ padding: 20, color: "#ef4444" }}>{error}</div>;
+    return <div style={{ padding: 20, color: "var(--danger)" }}>{error}</div>;
   }
 
   return (
@@ -74,7 +74,7 @@ export default function Announcements() {
           padding: 32,
           border: "1px solid #e2e8f0",
           textAlign: "center",
-          color: "#94a3b8",
+          color: "var(--text-faint)",
           fontSize: 14,
         }}>
           No announcements at this time.
@@ -115,17 +115,17 @@ export default function Announcements() {
               }}>
                 {a.priority}
               </span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: "#0d152c" }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>
                 {a.title}
               </span>
             </div>
 
-            <div style={{ fontSize: 14, color: "#334155", lineHeight: 1.6, marginBottom: 12 }}>
+            <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 12 }}>
               {a.body}
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 12, color: "#94a3b8" }}>
-              <span>Published by <span style={{ fontWeight: 600, color: "#64748b" }}>{a.published_by_name}</span></span>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 12, color: "var(--text-faint)" }}>
+              <span>Published by <span style={{ fontWeight: 600, color: "var(--text-muted)" }}>{a.published_by_name}</span></span>
               <span>{fmtDate(a.published_at)}</span>
               {a.expires_at && (
                 <span>Expires {fmtDate(a.expires_at)}</span>

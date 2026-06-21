@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
+import Icon from "./Icon.jsx";
 
 const ENTITY_META = {
-  employee:     { icon: "👤", label: "Employee",     path: (id) => `/hr/employees` },
-  job:          { icon: "📋", label: "Job Opening",  path: (id) => `/hr/recruitment` },
-  ticket:       { icon: "🎫", label: "Ticket",       path: (id) => `/my/tickets` },
-  asset:        { icon: "💻", label: "Asset",        path: (id) => `/hr/assets` },
-  announcement: { icon: "📢", label: "Announcement", path: (id) => `/announcements` },
-  expense:      { icon: "💰", label: "Expense",      path: (id) => `/my/expenses` },
+  employee:     { icon: "person",                  label: "Employee",     path: (id) => `/hr/employees` },
+  job:          { icon: "work",                    label: "Job Opening",  path: (id) => `/hr/recruitment` },
+  ticket:       { icon: "confirmation_number",     label: "Ticket",       path: (id) => `/my/tickets` },
+  asset:        { icon: "laptop_mac",              label: "Asset",        path: (id) => `/hr/assets` },
+  announcement: { icon: "campaign",               label: "Announcement", path: (id) => `/announcements` },
+  expense:      { icon: "account_balance_wallet",  label: "Expense",      path: (id) => `/my/expenses` },
 };
 
 export default function SearchBar() {
@@ -92,7 +93,7 @@ export default function SearchBar() {
           minWidth: 180,
         }}
       >
-        <span style={{ fontSize: 13 }}>⌕</span>
+        <Icon name="search" style={{ fontSize: 16 }} />
         <span style={{ flex: 1, textAlign: "left" }}>Search...</span>
         <kbd style={{
           fontSize: 10, padding: "1px 5px", borderRadius: 3,
@@ -120,7 +121,7 @@ export default function SearchBar() {
         overflow: "hidden",
       }}>
         <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-          <span style={{ fontSize: 16, marginRight: 10, color: "var(--text-muted)" }}>⌕</span>
+          <Icon name="search" style={{ fontSize: 18, marginRight: 10, color: "var(--text-muted)" }} />
           <input
             ref={inputRef}
             value={query}
@@ -151,15 +152,16 @@ export default function SearchBar() {
           )}
 
           {Object.entries(grouped).map(([entity, items]) => {
-            const meta = ENTITY_META[entity] || { icon: "📄", label: entity };
+            const meta = ENTITY_META[entity] || { icon: "description", label: entity };
             return (
               <div key={entity}>
                 <div style={{
                   padding: "8px 16px 4px", fontSize: 10, fontWeight: 700,
                   textTransform: "uppercase", letterSpacing: ".08em",
                   color: "var(--text-faint)",
+                  display: "flex", alignItems: "center", gap: 4,
                 }}>
-                  {meta.icon} {meta.label}
+                  <Icon name={meta.icon} style={{ fontSize: 12 }} /> {meta.label}
                 </div>
                 {items.map((r) => {
                   const flatIdx = results.indexOf(r);
@@ -171,7 +173,7 @@ export default function SearchBar() {
                       onMouseEnter={() => setSelectedIdx(flatIdx)}
                       style={{
                         padding: "8px 16px", cursor: "pointer",
-                        background: isSelected ? "rgba(223,241,64,.12)" : "transparent",
+                        background: isSelected ? "rgba(25,25,112,.10)" : "transparent",
                         borderLeft: isSelected ? "2px solid var(--lime)" : "2px solid transparent",
                       }}
                     >

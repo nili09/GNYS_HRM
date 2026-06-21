@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth, requireHR } from "../middleware/auth.js";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { notifyMany } from "../utils/notify.js";
 import { payableDays, daysInMonth, pad2 } from "@hrms/shared/attendance";
 import { computePayLine, monthlyGross } from "@hrms/shared/payroll";
 
@@ -322,6 +323,20 @@ router.post("/runs/:id/finalize", ...requireHR, (req, res) => {
   });
 
   broadcast({ type: "mutation", entity: "payroll", id: run.id });
+
+  // Notify every employee included in the run that their payslip is ready
+  const lines = db.prepare("SELECT employee_id FROM payroll_lines WHERE run_id = ?").all(run.id);
+  if (lines.length > 0) {
+    notifyMany(db, lines.map(l => l.employee_id), {
+      type: "payslip_ready",
+      title: "Your payslip is ready",
+      body: `Payslip for ${run.month} has been finalized`,
+      link: "/my/payslips",
+      entity: "payroll_run",
+      entityId: run.id,
+    });
+  }
+
   res.json({ ...run, status: "FINAL", finalized_at: new Date().toISOString() });
 });
 

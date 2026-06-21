@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 const STATUS_BADGE = {
   DRAFT:       { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -31,7 +32,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "var(--ink)",
+  background: "var(--lime)", color: "#ffffff",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -39,7 +40,7 @@ const tabStyle = (active) => ({
   padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
   background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "var(--ink)" : "var(--text-faint)",
+  color: active ? "#ffffff" : "var(--text-faint)",
   textTransform: "uppercase", letterSpacing: ".06rem",
   transition: "all .15s",
 });
@@ -153,7 +154,7 @@ export default function HRPerformance() {
               border: "1px solid var(--border)", minWidth: 120,
             }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06rem" }}>{d.dept}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginTop: 2 }}>{d.avg_rating} ★ <span style={{ fontSize: 11, fontWeight: 400, color: "var(--text-faint)" }}>({d.count})</span></div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginTop: 2 }}>{d.avg_rating} <Icon name="star" filled={true} style={{ fontSize: 20 }} /> <span style={{ fontSize: 11, fontWeight: 400, color: "var(--text-faint)" }}>({d.count})</span></div>
             </div>
           ))}
         </div>
@@ -249,8 +250,8 @@ export default function HRPerformance() {
                   <td style={{ padding: "8px 10px", fontWeight: 600 }}>{g.employee_name}</td>
                   <td style={{ padding: "8px 10px" }}>{g.title}</td>
                   <td style={{ padding: "8px 10px" }}>{g.weight}%</td>
-                  <td style={{ padding: "8px 10px" }}>{g.self_rating ? "★".repeat(g.self_rating) : "—"}</td>
-                  <td style={{ padding: "8px 10px" }}>{g.manager_rating ? "★".repeat(g.manager_rating) : "—"}</td>
+                  <td style={{ padding: "8px 10px" }}>{g.self_rating ? Array.from({length: g.self_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
+                  <td style={{ padding: "8px 10px" }}>{g.manager_rating ? Array.from({length: g.manager_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
                   <td style={{ padding: "8px 10px" }}><Badge status={g.status} /></td>
                 </tr>
               ))}
@@ -307,7 +308,7 @@ export default function HRPerformance() {
                   <td style={{ padding: "8px 10px", fontWeight: 600 }}>{r.employee_name}</td>
                   <td style={{ padding: "8px 10px" }}>{r.reviewer_name}</td>
                   <td style={{ padding: "8px 10px" }}>{r.relationship}</td>
-                  <td style={{ padding: "8px 10px" }}>{r.overall_rating ? "★".repeat(r.overall_rating) : "—"}</td>
+                  <td style={{ padding: "8px 10px" }}>{r.overall_rating ? Array.from({length: r.overall_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
                   <td style={{ padding: "8px 10px" }}><Badge status={r.status} /></td>
                 </tr>
               ))}

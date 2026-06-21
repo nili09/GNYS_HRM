@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -14,8 +15,8 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
+  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
@@ -171,7 +172,7 @@ function DailyRegister({ onSseEvent }) {
         <button className="btn-sm" onClick={() => setDate(todayStr())}>Today</button>
         {data?.holiday && (
           <span style={{ background: "var(--badge-amber-bg)", color: "var(--badge-amber-text)", borderRadius: "var(--r-card)", padding: "2px 10px", fontSize: 12, fontWeight: 600 }}>
-            🎉 Holiday: {data.holiday.name}
+            <Icon name="celebration" style={{ verticalAlign: "middle", marginRight: 4 }} /> Holiday: {data.holiday.name}
           </span>
         )}
         {data?.isWeekOff && !data?.holiday && (
@@ -184,12 +185,12 @@ function DailyRegister({ onSseEvent }) {
           <button
             onClick={markAllPresent}
             style={{
-              background: "var(--lime)", color: "var(--ink)",
+              background: "var(--lime)", color: "#ffffff",
               border: "none", borderRadius: "var(--r-pill)", padding: "6px 14px",
               fontWeight: 700, fontSize: 13, cursor: "pointer",
             }}
           >
-            ✓ Mark all unmarked Present
+            <Icon name="check" style={{ verticalAlign: "middle", marginRight: 4 }} /> Mark all unmarked Present
           </button>
         )}
       </div>
@@ -237,7 +238,7 @@ function DailyRegister({ onSseEvent }) {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{
                           width: 30, height: 30, borderRadius: "50%",
-                          background: "var(--ink)", color: "var(--lime)",
+                          background: "var(--ink)", color: "var(--lime-light)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontWeight: 700, fontSize: 11, flexShrink: 0,
                         }}>
@@ -466,7 +467,7 @@ export default function HRAttendance() {
   const tabStyle = (t) => ({
     padding: "8px 18px", borderRadius: "8px 8px 0 0",
     border: "none", background: tab === t ? "var(--card)" : "transparent",
-    color: tab === t ? "var(--ink)" : "var(--text-muted)",
+    color: tab === t ? "var(--text)" : "var(--text-muted)",
     fontWeight: tab === t ? 700 : 400, fontSize: 13.5,
     cursor: "pointer", borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
   });
@@ -474,7 +475,7 @@ export default function HRAttendance() {
   return (
     <div style={{ maxWidth: 1400 }}>
       <div style={{ marginBottom: 4 }}>
-        <h2 style={{ margin: "0 0 2px", color: "var(--ink)", fontSize: 20, fontWeight: 700 }}>Attendance</h2>
+        <h2 style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Attendance</h2>
         <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 13 }}>Daily register and monthly view</p>
       </div>
 

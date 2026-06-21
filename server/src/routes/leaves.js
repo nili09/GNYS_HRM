@@ -186,19 +186,24 @@ router.post("/", requireAuth, (req, res) => {
   });
   broadcast({ type: "leave", entity: "leaves", id: leaveId });
 
-  // Notify manager + HR about new leave request
+  // Notify manager + HR about new leave request. Manager and HR get different links
+  // because their respective approval UIs live on different routes.
   const applicant = db.prepare("SELECT name, manager_id FROM employees WHERE id = ?").get(employeeId);
-  const targets = new Set();
-  if (applicant?.manager_id) targets.add(applicant.manager_id);
+  const notifBase = {
+    type: "leave_applied", title: "New leave request",
+    body: `${applicant?.name || "Employee"} applied for ${days}d ${data.type} leave (${data.date_from} – ${data.date_to})`,
+    entity: "leave", entityId: leaveId,
+  };
+  const notifiedIds = new Set();
+  if (applicant?.manager_id && applicant.manager_id !== req.user.id) {
+    notify(db, { ...notifBase, userId: applicant.manager_id, link: "/team/approvals" });
+    notifiedIds.add(applicant.manager_id);
+  }
   const hrIds = db.prepare("SELECT id FROM employees WHERE role IN ('HR','ADMIN') AND status = 'ACTIVE'").all();
-  for (const h of hrIds) targets.add(h.id);
-  targets.delete(req.user.id);
-  if (targets.size > 0) {
-    notifyMany(db, [...targets], {
-      type: "leave_applied", title: "New leave request",
-      body: `${applicant?.name || "Employee"} applied for ${days}d ${data.type} leave (${data.date_from} – ${data.date_to})`,
-      link: "/leaves?tab=pending", entity: "leave", entityId: leaveId,
-    });
+  for (const h of hrIds) {
+    if (h.id !== req.user.id && !notifiedIds.has(h.id)) {
+      notify(db, { ...notifBase, userId: h.id, link: "/hr/leave" });
+    }
   }
 
   res.status(201).json({

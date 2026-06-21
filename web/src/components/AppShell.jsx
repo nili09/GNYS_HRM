@@ -7,6 +7,7 @@ import { api } from "../lib/api.js";
 import SearchBar from "./SearchBar.jsx";
 import NotificationBell from "./NotificationBell.jsx";
 import ProfilePhoto from "./ProfilePhoto.jsx";
+import Icon from "./Icon.jsx";
 
 function NavItem({ to, icon, label, badge, onNav }) {
   const [hovered, setHovered] = useState(false);
@@ -19,21 +20,21 @@ function NavItem({ to, icon, label, badge, onNav }) {
       onMouseLeave={() => setHovered(false)}
       style={({ isActive }) => ({
         display: "flex", alignItems: "center", gap: 11,
-        padding: "10px 12px",
-        borderRadius: 2,
-        color: isActive ? "var(--lime)" : hovered ? "rgba(255,255,255,.8)" : "var(--text-faint)",
+        padding: "9px 12px 9px 10px",
+        borderRadius: 8,
+        color: isActive ? "var(--lime-light)" : hovered ? "rgba(255,255,255,.85)" : "rgba(255,255,255,.55)",
         fontSize: 12, textDecoration: "none",
         cursor: "pointer",
         transition: "background .2s, color .2s",
-        borderLeft: isActive ? "2px solid var(--lime)" : "2px solid transparent",
-        background: isActive ? "rgba(223,241,64,.1)" : hovered ? "rgba(255,255,255,.05)" : "transparent",
+        borderLeft: isActive ? "3px solid var(--lime-light)" : "3px solid transparent",
+        background: isActive ? "var(--grad-active)" : hovered ? "rgba(255,255,255,.06)" : "transparent",
         fontWeight: 600,
         textTransform: "uppercase",
         letterSpacing: ".05rem",
         minHeight: 40,
       })}
     >
-      <span style={{ width: 16, textAlign: "center", fontSize: 14, flexShrink: 0 }}>{icon}</span>
+      <Icon name={icon} style={{ flexShrink: 0 }} />
       <span style={{ flex: 1 }}>{label}</span>
       {badge > 0 && (
         <span style={{
@@ -111,6 +112,13 @@ export default function AppShell() {
       try {
         const d = JSON.parse(e.data);
         if (d.entity === "leaves") fetchPendingCount();
+        if (d.entity === "interviews" || d.entity === "surveys") fetchModuleCounts();
+        // Relay notification events to NotificationBell via a window CustomEvent so
+        // the bell doesn't need to hold its own EventSource reference (avoids the
+        // child-effect-before-parent-effect race that kept the bell silent).
+        if (d.type === "notification" && d.notification) {
+          window.dispatchEvent(new CustomEvent("hrms:notification", { detail: d.notification }));
+        }
       } catch { /* ignore */ }
     };
     return () => { es.close(); window.__sseSource = null; };
@@ -165,9 +173,9 @@ export default function AppShell() {
       {/* Logo */}
       <div
         style={{
-          padding: "20px 4px 18px",
+          padding: "22px 6px 18px",
           borderBottom: "1px solid rgba(255,255,255,.07)",
-          marginBottom: 8,
+          marginBottom: 6,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}
       >
@@ -193,62 +201,66 @@ export default function AppShell() {
               fontSize: 22, cursor: "pointer", padding: "4px 8px", lineHeight: 1,
             }}
             aria-label="Close menu"
-          >×</button>
+          >
+            <Icon name="close" />
+          </button>
         )}
       </div>
 
       {/* Nav */}
       <nav className="sidebar-scroll" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 1, overflowY: "auto" }}>
         <SectionLabel>My Space</SectionLabel>
-        <NavItem to="/my/dashboard"   icon="◫"  label="Dashboard"  onNav={closeDrawer} />
-        <NavItem to="/my/attendance"  icon="🕘" label="Attendance" onNav={closeDrawer} />
-        <NavItem to="/my/leave"       icon="🌴" label="Apply Leave" onNav={closeDrawer} />
-        <NavItem to="/my/payslips"    icon="₹"  label="Payslips"   onNav={closeDrawer} />
-        <NavItem to="/my/expenses"    icon="💰" label="Expenses"   onNav={closeDrawer} />
-        {interviewCount > 0 && <NavItem to="/my/interviews"  icon="🎙" label="My Interviews" onNav={closeDrawer} />}
-        <NavItem to="/my/performance" icon="📊" label="Performance" onNav={closeDrawer} />
-        {surveyCount > 0 && <NavItem to="/my/surveys" icon="📝" label="Surveys" onNav={closeDrawer} />}
-        <NavItem to="/my/assets"      icon="💻" label="My Assets"   onNav={closeDrawer} />
-        <NavItem to="/my/tickets"     icon="🎫" label="My Tickets"  onNav={closeDrawer} />
-        <NavItem to="/my/profile"     icon="👤" label="Profile"     onNav={closeDrawer} />
+        <NavItem to="/my/dashboard"   icon="dashboard"              label="Dashboard"  onNav={closeDrawer} />
+        <NavItem to="/my/attendance"  icon="schedule"               label="Attendance" onNav={closeDrawer} />
+        <NavItem to="/my/leave"       icon="beach_access"           label="Apply Leave" onNav={closeDrawer} />
+        <NavItem to="/my/payslips"    icon="payments"               label="Payslips"   onNav={closeDrawer} />
+        <NavItem to="/my/expenses"    icon="account_balance_wallet" label="Expenses"   onNav={closeDrawer} />
+        {interviewCount > 0 && <NavItem to="/my/interviews"  icon="mic"                label="My Interviews" onNav={closeDrawer} />}
+        <NavItem to="/my/performance" icon="insights"               label="Performance" onNav={closeDrawer} />
+        {surveyCount > 0 && <NavItem to="/my/surveys" icon="assignment"             label="Surveys" onNav={closeDrawer} />}
+        <NavItem to="/my/assets"      icon="laptop_mac"             label="My Assets"   onNav={closeDrawer} />
+        <NavItem to="/my/tickets"     icon="confirmation_number"    label="My Tickets"  onNav={closeDrawer} />
+        <NavItem to="/my/profile"     icon="person"                 label="Profile"     onNav={closeDrawer} />
+        <NavItem to="/my/resignation" icon="description"            label="Resignation" onNav={closeDrawer} />
+        {user?.status === "ONBOARDING" && <NavItem to="/my/onboarding" icon="rocket_launch" label="Onboarding" onNav={closeDrawer} />}
 
         <SectionLabel>Engage</SectionLabel>
-        <NavItem to="/announcements" icon="📢" label="Announcements" onNav={closeDrawer} />
-        <NavItem to="/recognition"   icon="🏆" label="Recognition"   onNav={closeDrawer} />
+        <NavItem to="/announcements" icon="campaign"     label="Announcements" onNav={closeDrawer} />
+        <NavItem to="/recognition"   icon="emoji_events" label="Recognition"   onNav={closeDrawer} />
 
         {showTeam && (
           <>
             <SectionLabel>Team</SectionLabel>
-            <NavItem to="/team/approvals"    icon="✅" label="Approvals" badge={pendingCount} onNav={closeDrawer} />
-            <NavItem to="/team/calendar"     icon="📅" label="Calendar"  onNav={closeDrawer} />
-            <NavItem to="/team/attendance"   icon="🕘" label="Team Attendance" onNav={closeDrawer} />
-            <NavItem to="/team/expenses"     icon="💰" label="Team Expenses"   onNav={closeDrawer} />
-            <NavItem to="/team/performance"  icon="📊" label="Team Performance" onNav={closeDrawer} />
+            <NavItem to="/team/approvals"    icon="task_alt"               label="Approvals" badge={pendingCount} onNav={closeDrawer} />
+            <NavItem to="/team/calendar"     icon="calendar_month"         label="Calendar"  onNav={closeDrawer} />
+            <NavItem to="/team/attendance"   icon="schedule"               label="Team Attendance" onNav={closeDrawer} />
+            <NavItem to="/team/expenses"     icon="account_balance_wallet" label="Team Expenses"   onNav={closeDrawer} />
+            <NavItem to="/team/performance"  icon="insights"               label="Team Performance" onNav={closeDrawer} />
           </>
         )}
 
         {isHR && (
           <>
             <SectionLabel>HR</SectionLabel>
-            <NavItem to="/hr/dashboard"   icon="◫"  label="HR Dashboard" onNav={closeDrawer} />
-            <NavItem to="/hr/employees"   icon="👥" label="Employees"    onNav={closeDrawer} />
-            <NavItem to="/hr/attendance"  icon="🕘" label="Attendance"   onNav={closeDrawer} />
-            <NavItem to="/hr/leave"       icon="🌴" label="Leave" badge={pendingCount} onNav={closeDrawer} />
-            <NavItem to="/hr/payroll"     icon="₹"  label="Payroll"      onNav={closeDrawer} />
-            <NavItem to="/hr/expenses"    icon="💰" label="Expenses"     onNav={closeDrawer} />
-            <NavItem to="/hr/recruitment" icon="📋" label="Recruitment"  onNav={closeDrawer} />
-            <NavItem to="/hr/performance" icon="📊" label="Performance"  onNav={closeDrawer} />
-            <NavItem to="/hr/engagement"  icon="💬" label="Engagement"   onNav={closeDrawer} />
-            <NavItem to="/hr/assets"      icon="💻" label="Assets"       onNav={closeDrawer} />
-            <NavItem to="/hr/helpdesk"    icon="🎫" label="Helpdesk"     onNav={closeDrawer} />
+            <NavItem to="/hr/dashboard"   icon="dashboard"              label="HR Dashboard" onNav={closeDrawer} />
+            <NavItem to="/hr/employees"   icon="groups"                 label="Employees"    onNav={closeDrawer} />
+            <NavItem to="/hr/attendance"  icon="schedule"               label="Attendance"   onNav={closeDrawer} />
+            <NavItem to="/hr/leave"       icon="beach_access"           label="Leave" badge={pendingCount} onNav={closeDrawer} />
+            <NavItem to="/hr/payroll"     icon="payments"               label="Payroll"      onNav={closeDrawer} />
+            <NavItem to="/hr/expenses"    icon="account_balance_wallet" label="Expenses"     onNav={closeDrawer} />
+            <NavItem to="/hr/recruitment" icon="work"                   label="Recruitment"  onNav={closeDrawer} />
+            <NavItem to="/hr/performance" icon="insights"               label="Performance"  onNav={closeDrawer} />
+            <NavItem to="/hr/engagement"  icon="forum"                  label="Engagement"   onNav={closeDrawer} />
+            <NavItem to="/hr/assets"      icon="laptop_mac"             label="Assets"       onNav={closeDrawer} />
+            <NavItem to="/hr/helpdesk"    icon="confirmation_number"    label="Helpdesk"     onNav={closeDrawer} />
           </>
         )}
 
         {isAdmin && (
           <>
             <SectionLabel>Admin</SectionLabel>
-            <NavItem to="/admin/settings" icon="⚙" label="Settings"  onNav={closeDrawer} />
-            <NavItem to="/admin/audit"    icon="📋" label="Audit Log" onNav={closeDrawer} />
+            <NavItem to="/admin/settings" icon="settings"     label="Settings"  onNav={closeDrawer} />
+            <NavItem to="/admin/audit"    icon="receipt_long" label="Audit Log" onNav={closeDrawer} />
           </>
         )}
       </nav>
@@ -256,12 +268,12 @@ export default function AppShell() {
       {/* User footer */}
       <div
         style={{
-          padding: "14px 4px 16px",
+          padding: "14px 6px 18px",
           borderTop: "1px solid rgba(255,255,255,.07)",
           display: "flex", alignItems: "center", gap: 10,
         }}
       >
-        <ProfilePhoto employee={user} size={30} style={{ background: "var(--charcoal)", color: "var(--lime)" }} />
+        <ProfilePhoto employee={user} size={30} style={{ background: "var(--charcoal)", color: "var(--lime-light)" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ color: "#fff", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</div>
           <div style={{ fontSize: 10, color: "rgba(255,255,255,.3)", letterSpacing: ".06em", textTransform: "uppercase" }}>{user?.role}</div>
@@ -277,11 +289,14 @@ export default function AppShell() {
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime-light)"}
           onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-faint)"}
-        >{theme === "dark" ? "☀" : "☾"}</button>
+        >
+          <Icon name={theme === "dark" ? "light_mode" : "dark_mode"} />
+        </button>
         <button
           onClick={handleLogout}
+          aria-label="Sign out"
           title="Sign out"
           style={{
             background: "none", border: "none",
@@ -291,9 +306,11 @@ export default function AppShell() {
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime-light)"}
           onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-faint)"}
-        >↪</button>
+        >
+          <Icon name="logout" />
+        </button>
       </div>
     </>
   );
@@ -357,7 +374,7 @@ export default function AppShell() {
               background: "transparent",
               transition: "background .2s",
             }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "var(--lime)"}
+              onMouseEnter={(e) => e.currentTarget.style.background = "var(--lime-light)"}
               onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             />
           </div>
@@ -369,8 +386,10 @@ export default function AppShell() {
         <div style={{
           display: "flex", alignItems: "center",
           justifyContent: isMobile ? "space-between" : "flex-end",
-          padding: isMobile ? "8px 12px 0" : "10px 28px 0", flexShrink: 0,
-          gap: 8,
+          padding: isMobile ? "10px 14px 10px" : "12px 28px 12px", flexShrink: 0,
+          gap: 10,
+          borderBottom: "1px solid var(--line)",
+          background: "var(--bg)",
         }}>
           {isMobile && (
             <button
@@ -393,7 +412,7 @@ export default function AppShell() {
           {!isMobile && <SearchBar />}
           <NotificationBell />
         </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "10px 12px 20px" : "14px 28px 24px" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "16px 14px 24px" : "24px 32px 32px" }}>
           <Outlet />
         </div>
       </div>

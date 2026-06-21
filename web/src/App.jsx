@@ -35,6 +35,8 @@ import MyAssets from "./pages/MyAssets.jsx";
 import MyTickets from "./pages/MyTickets.jsx";
 import HRAssets from "./pages/HRAssets.jsx";
 import HRHelpdesk from "./pages/HRHelpdesk.jsx";
+import MyResignation from "./pages/MyResignation.jsx";
+import Onboarding from "./pages/Onboarding.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 function ProtectedRoute({ children }) {
@@ -61,7 +63,7 @@ function LoadingScreen() {
         display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
-      <div style={{ color: "#dff140", fontSize: 18, fontWeight: 700 }}>
+      <div style={{ color: "var(--lime-light)", fontSize: 18, fontWeight: 700 }}>
         Loading…
       </div>
     </div>
@@ -112,6 +114,8 @@ function AppRoutes() {
         <Route path="my/surveys"     element={<MySurveys />} />
         <Route path="my/assets"      element={<MyAssets />} />
         <Route path="my/tickets"     element={<MyTickets />} />
+        <Route path="my/resignation" element={<MyResignation />} />
+        <Route path="my/onboarding"  element={<Onboarding />} />
 
         {/* Engagement (all users) */}
         <Route path="announcements"  element={<Announcements />} />

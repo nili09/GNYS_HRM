@@ -146,18 +146,23 @@ router.post("/", requireAuth, (req, res) => {
   indexEntity(db, "expense", id, `${cat.name} — ${d.amount}`, d.description || "",
     { status: "PENDING", employee_id: req.user.id });
 
+  // Manager and HR get different links because their approval UIs are on separate routes.
   const submitter = db.prepare("SELECT name, manager_id FROM employees WHERE id = ?").get(req.user.id);
-  const targets = new Set();
-  if (submitter?.manager_id) targets.add(submitter.manager_id);
+  const notifBase = {
+    type: "expense_submitted", title: "New expense claim",
+    body: `${submitter?.name || "Employee"} submitted ₹${d.amount} expense (${cat.name})`,
+    entity: "expense", entityId: id,
+  };
+  const expNotifiedIds = new Set();
+  if (submitter?.manager_id && submitter.manager_id !== req.user.id) {
+    notify(db, { ...notifBase, userId: submitter.manager_id, link: "/team/expenses" });
+    expNotifiedIds.add(submitter.manager_id);
+  }
   const hrIds = db.prepare("SELECT id FROM employees WHERE role IN ('HR','ADMIN') AND status = 'ACTIVE'").all();
-  for (const h of hrIds) targets.add(h.id);
-  targets.delete(req.user.id);
-  if (targets.size > 0) {
-    notifyMany(db, [...targets], {
-      type: "expense_submitted", title: "New expense claim",
-      body: `${submitter?.name || "Employee"} submitted ₹${d.amount} expense (${cat.name})`,
-      link: "/expenses", entity: "expense", entityId: id,
-    });
+  for (const h of hrIds) {
+    if (h.id !== req.user.id && !expNotifiedIds.has(h.id)) {
+      notify(db, { ...notifBase, userId: h.id, link: "/hr/expenses" });
+    }
   }
 
   res.status(201).json({ id, employee_id: req.user.id, status: "PENDING", ...d });
@@ -342,6 +347,25 @@ router.post("/advances", requireAuth, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "advance_request", entityId: id, detail: d });
   broadcast({ type: "advance_request", entity: "advance_requests", id });
+
+  const advSubmitter = db.prepare("SELECT name, manager_id FROM employees WHERE id = ?").get(req.user.id);
+  const advBase = {
+    type: "advance_submitted", title: "New advance request",
+    body: `${advSubmitter?.name || "Employee"} requested a ₹${d.amount} advance`,
+    entity: "advance_request", entityId: id,
+  };
+  const advNotifiedIds = new Set();
+  if (advSubmitter?.manager_id && advSubmitter.manager_id !== req.user.id) {
+    notify(db, { ...advBase, userId: advSubmitter.manager_id, link: "/team/expenses" });
+    advNotifiedIds.add(advSubmitter.manager_id);
+  }
+  const advHrIds = db.prepare("SELECT id FROM employees WHERE role IN ('HR','ADMIN') AND status = 'ACTIVE'").all();
+  for (const h of advHrIds) {
+    if (h.id !== req.user.id && !advNotifiedIds.has(h.id)) {
+      notify(db, { ...advBase, userId: h.id, link: "/hr/expenses" });
+    }
+  }
+
   res.status(201).json({ id, employee_id: req.user.id, status: "PENDING", ...d });
 });
 
@@ -359,6 +383,11 @@ router.post("/advances/:id/approve", requireAuth, (req, res) => {
   ).run(req.user.id, advId);
   audit(db, { actorId: req.user.id, action: "APPROVE", entity: "advance_request", entityId: advId });
   broadcast({ type: "advance_request", entity: "advance_requests", id: advId });
+  notify(db, {
+    userId: adv.employee_id, type: "advance_approved", title: "Advance approved",
+    body: `Your ₹${adv.amount} advance request has been approved`,
+    link: "/my/expenses", entity: "advance_request", entityId: advId,
+  });
   res.json({ ok: true, status: "APPROVED" });
 });
 
@@ -376,6 +405,11 @@ router.post("/advances/:id/reject", requireAuth, (req, res) => {
   ).run(req.user.id, advId);
   audit(db, { actorId: req.user.id, action: "REJECT", entity: "advance_request", entityId: advId });
   broadcast({ type: "advance_request", entity: "advance_requests", id: advId });
+  notify(db, {
+    userId: adv.employee_id, type: "advance_rejected", title: "Advance rejected",
+    body: `Your ₹${adv.amount} advance request has been rejected`,
+    link: "/my/expenses", entity: "advance_request", entityId: advId,
+  });
   res.json({ ok: true, status: "REJECTED" });
 });
 

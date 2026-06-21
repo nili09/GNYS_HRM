@@ -598,6 +598,63 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user     ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_read     ON notifications(user_id, read);
 CREATE INDEX IF NOT EXISTS idx_notifications_created  ON notifications(created_at);
 
+-- ── Employee Detail Sub-entities (self-service) ─────────────────────────
+
+CREATE TABLE IF NOT EXISTS employee_emergency_contacts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  name         TEXT    NOT NULL,
+  phone        TEXT    NOT NULL,
+  relationship TEXT,
+  is_primary   INTEGER NOT NULL DEFAULT 0,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_emerg_contacts_emp ON employee_emergency_contacts(employee_id);
+
+CREATE TABLE IF NOT EXISTS employee_family (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  name         TEXT    NOT NULL,
+  relationship TEXT    NOT NULL,
+  dob          TEXT,
+  is_dependent INTEGER NOT NULL DEFAULT 0,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_family_emp ON employee_family(employee_id);
+
+CREATE TABLE IF NOT EXISTS employee_nominees (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  name         TEXT    NOT NULL,
+  relationship TEXT    NOT NULL,
+  share_pct    REAL    NOT NULL DEFAULT 100,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_nominees_emp ON employee_nominees(employee_id);
+
+CREATE TABLE IF NOT EXISTS employee_education (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id  INTEGER NOT NULL REFERENCES employees(id),
+  degree       TEXT    NOT NULL,
+  institution  TEXT,
+  year         INTEGER,
+  grade        TEXT,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_education_emp ON employee_education(employee_id);
+
+CREATE TABLE IF NOT EXISTS employee_prev_employers (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  employee_id     INTEGER NOT NULL REFERENCES employees(id),
+  company         TEXT    NOT NULL,
+  designation     TEXT,
+  from_date       TEXT,
+  to_date         TEXT,
+  reason_leaving  TEXT,
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_prev_emp_emp ON employee_prev_employers(employee_id);
+
 -- ── Full-Text Search ──────────────────────────────────────────────────────
 CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
   entity,

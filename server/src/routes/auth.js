@@ -105,6 +105,7 @@ export function createAuthRouter(opts = {}) {
       name: req.user.name,
       email: req.user.email,
       role: req.user.role,
+      status: req.user.status,
       must_change_pw: !!req.user.must_change_pw,
       is_manager: reportCount > 0,
     });

@@ -89,6 +89,16 @@ router.post("/tickets", requireAuth, (req, res) => {
   broadcast({ type: "mutation", entity: "tickets" });
   indexEntity(db, "ticket", id, d.subject, d.description,
     { category: category.name, status: "OPEN", priority: d.priority, employee_id: req.user.id, assigned_to: assignedTo });
+
+  // Notify the assigned agent that a new ticket has been raised
+  if (assignedTo && assignedTo !== req.user.id) {
+    notify(db, {
+      userId: assignedTo, type: "ticket_assigned", title: "New ticket assigned",
+      body: `New ${d.priority} ticket: "${d.subject}"`,
+      link: "/hr/helpdesk", entity: "ticket", entityId: id,
+    });
+  }
+
   res.status(201).json({ id, employee_id: req.user.id, ...d, status: "OPEN", assigned_to: assignedTo });
 });
 
@@ -174,14 +184,18 @@ router.post("/tickets/:id/comments", requireAuth, (req, res) => {
   broadcast({ type: "mutation", entity: "tickets" });
 
   const commentAuthor = db.prepare("SELECT name FROM employees WHERE id = ?").get(req.user.id);
-  const targets = new Set([ticket.employee_id]);
-  if (ticket.assigned_to) targets.add(ticket.assigned_to);
-  targets.delete(req.user.id);
-  for (const uid of targets) {
+  const notifBody = `${commentAuthor?.name || "Someone"} replied on "${ticket.subject}"`;
+  // Ticket creator sees the ticket in My Tickets; assigned agent sees it in HR Helpdesk
+  if (ticket.employee_id !== req.user.id) {
     notify(db, {
-      userId: uid, type: "helpdesk_reply", title: "New reply on ticket",
-      body: `${commentAuthor?.name || "Someone"} replied on "${ticket.subject}"`,
-      link: `/helpdesk/${ticketId}`, entity: "ticket", entityId: ticketId,
+      userId: ticket.employee_id, type: "helpdesk_reply", title: "New reply on ticket",
+      body: notifBody, link: "/my/tickets", entity: "ticket", entityId: ticketId,
+    });
+  }
+  if (ticket.assigned_to && ticket.assigned_to !== req.user.id && ticket.assigned_to !== ticket.employee_id) {
+    notify(db, {
+      userId: ticket.assigned_to, type: "helpdesk_reply", title: "New reply on ticket",
+      body: notifBody, link: "/hr/helpdesk", entity: "ticket", entityId: ticketId,
     });
   }
 

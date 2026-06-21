@@ -12,8 +12,8 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
+  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
@@ -77,7 +77,7 @@ export default function MyAttendance() {
 
   return (
     <div style={{ maxWidth: isMobile ? "100%" : 860 }}>
-      <h2 style={{ margin: "0 0 4px", color: "var(--ink)", fontSize: 20, fontWeight: 700 }}>My Attendance</h2>
+      <h2 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>My Attendance</h2>
       <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>Your monthly attendance summary</p>
 
       {/* Month nav */}
@@ -98,14 +98,14 @@ export default function MyAttendance() {
             marginBottom: 20, display: "flex", alignItems: "center", gap: isMobile ? 12 : 24, flexWrap: "wrap",
           }}>
             <div>
-              <div style={{ fontSize: 12, color: "#8b9ac0", marginBottom: 2 }}>Payable days</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "var(--lime)" }}>
-                {data.payable}<span style={{ fontSize: 14, color: "#8b9ac0" }}>/{data.days}</span>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 2 }}>Payable days</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: "var(--lime-light)" }}>
+                {data.payable}<span style={{ fontSize: 14, color: "var(--text-muted)" }}>/{data.days}</span>
               </div>
             </div>
             {Object.entries(counts).map(([code, n]) => (
               <div key={code} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 11, color: "#8b9ac0", marginBottom: 2 }}>{ATT_LABEL[code] || code}</div>
+                <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 2 }}>{ATT_LABEL[code] || code}</div>
                 <div style={{
                   ...CODE_COLORS[code],
                   borderRadius: "var(--r-card)", padding: "3px 12px",

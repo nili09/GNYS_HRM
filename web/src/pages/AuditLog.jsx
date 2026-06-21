@@ -111,7 +111,7 @@ export default function AuditLog() {
 function ActionBadge({ action }) {
   const colors = {
     create: { bg: "var(--lime-pale)", c: "var(--charcoal)" },
-    update: { bg: "rgba(223,241,64,.15)", c: "var(--charcoal)" },
+    update: { bg: "rgba(25,25,112,.12)", c: "var(--charcoal)" },
     delete: { bg: "var(--badge-danger-bg)", c: "var(--danger)" },
     login: { bg: "var(--badge-tan-bg)", c: "var(--badge-tan-text)" },
     finalize: { bg: "var(--badge-indigo-bg)", c: "var(--badge-indigo-text)" },

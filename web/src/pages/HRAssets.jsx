@@ -220,7 +220,7 @@ export default function HRAssets() {
                     <td style={{ padding: "8px 10px" }}>
                       {a.status === "AVAILABLE" && (
                         <button onClick={() => { setAssignForm({ asset_id: a.id, employee_id: "", is_temporary: false }); setTab("assign"); }}
-                          style={{ padding: "4px 12px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+                          style={{ padding: "4px 12px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
                           Assign
                         </button>
                       )}
@@ -258,7 +258,7 @@ export default function HRAssets() {
           </label>
           <div style={{ display: "flex", gap: 8 }}>
             <button type="submit" disabled={acting}
-              style={{ padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+              style={{ padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
               Assign
             </button>
             <button type="button" onClick={() => { setAssignForm({ asset_id: null, employee_id: "", is_temporary: false }); setTab("inventory"); }}
@@ -308,7 +308,7 @@ export default function HRAssets() {
             <textarea value={assetForm.notes} onChange={e => setAssetForm(f => ({ ...f, notes: e.target.value }))} rows={3} style={{ ...inputStyle, resize: "vertical" }} />
           </label>
           <button type="submit"
-            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
             Add Asset
           </button>
         </form>
@@ -320,7 +320,7 @@ export default function HRAssets() {
             <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Asset Types</h3>
             <form onSubmit={addType} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <input value={typeForm.name} onChange={e => setTypeForm({ name: e.target.value })} placeholder="Type name" required style={{ ...inputStyle, flex: 1 }} />
-              <button type="submit" style={{ padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add</button>
+              <button type="submit" style={{ padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add</button>
             </form>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <tbody>
@@ -340,7 +340,7 @@ export default function HRAssets() {
                 <input value={vendorForm.contact_email} onChange={e => setVendorForm(f => ({ ...f, contact_email: e.target.value }))} placeholder="Email" style={{ ...inputStyle, flex: 1 }} />
                 <input value={vendorForm.contact_phone} onChange={e => setVendorForm(f => ({ ...f, contact_phone: e.target.value }))} placeholder="Phone" style={{ ...inputStyle, flex: 1 }} />
               </div>
-              <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add Vendor</button>
+              <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add Vendor</button>
             </form>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>

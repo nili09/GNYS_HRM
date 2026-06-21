@@ -117,14 +117,14 @@ export default function MyExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>Expenses</h2>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Expenses</h2>
 
       {/* Summary cards */}
       <div style={{ display: "flex", gap: 14, marginBottom: 18 }}>
         {[
           { label: "Pending", value: fmtAmount(totalPending), color: "var(--badge-tan-text)" },
           { label: "Approved (unsettled)", value: fmtAmount(totalApproved), color: "var(--charcoal)" },
-          { label: "Total Submitted", value: expenses.length, color: "var(--ink)" },
+          { label: "Total Submitted", value: expenses.length, color: "var(--text)" },
         ].map((c) => (
           <div key={c.label} style={{
             flex: 1, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "14px 16px", boxShadow: "var(--shadow-card)",
@@ -145,7 +145,7 @@ export default function MyExpenses() {
           <button key={t.key} onClick={() => { setTab(t.key); setError(""); setSuccess(""); }} style={{
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t.key ? 700 : 400,
-            color: tab === t.key ? "var(--ink)" : "var(--text-muted)",
+            color: tab === t.key ? "var(--text)" : "var(--text-muted)",
             borderBottom: tab === t.key ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>{t.label}</button>
@@ -224,7 +224,7 @@ export default function MyExpenses() {
       {tab === "advance" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
           <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 20, boxShadow: "var(--shadow-card)" }}>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14, color: "var(--ink)" }}>Request Advance</div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14, color: "var(--text)" }}>Request Advance</div>
             <form onSubmit={handleSubmitAdvance}>
               <div>
                 <label style={labelStyle}>Amount (INR)</label>
@@ -284,7 +284,7 @@ const tdStyle = { padding: "10px 12px" };
 function btnStyle(disabled) {
   return {
     marginTop: 16, padding: "9px 28px", borderRadius: "var(--r-pill)", border: "none",
-    background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 13.5,
+    background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 13.5,
     cursor: "pointer", opacity: disabled ? 0.6 : 1, fontFamily: "inherit",
   };
 }

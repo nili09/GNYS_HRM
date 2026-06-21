@@ -455,7 +455,7 @@ router.post("/recognitions", requireAuth, (req, res) => {
   notify(db, {
     userId: d.to_employee, type: "recognition", title: "You received a recognition!",
     body: `${giver?.name || "Someone"} gave you the "${badgeInfo?.name || "badge"}" badge: ${d.message}`,
-    link: "/engagement/recognitions", entity: "recognition", entityId: id,
+    link: "/recognition", entity: "recognition", entityId: id,
   });
 
   res.status(201).json({ id, from_employee: req.user.id, ...d });

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 const STATUS_BADGE = {
   PENDING:     { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -29,7 +30,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "var(--ink)",
+  background: "var(--lime)", color: "#ffffff",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -37,7 +38,7 @@ const tabStyle = (active) => ({
   padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
   background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "var(--ink)" : "var(--text-faint)",
+  color: active ? "#ffffff" : "var(--text-faint)",
   textTransform: "uppercase", letterSpacing: ".06rem",
   transition: "all .15s",
 });
@@ -154,8 +155,8 @@ export default function TeamPerformance() {
                         Weight: {g.weight}% {g.target_value && `| Target: ${g.target_value}`} {g.actual_value && `| Actual: ${g.actual_value}`}
                       </div>
                       <div style={{ fontSize: 11, marginTop: 4, display: "flex", gap: 12 }}>
-                        {g.self_rating && <span>Self: {"★".repeat(g.self_rating)}</span>}
-                        {g.manager_rating && <span>Manager: {"★".repeat(g.manager_rating)}</span>}
+                        {g.self_rating && <span>Self: {Array.from({length: g.self_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />)}</span>}
+                        {g.manager_rating && <span>Manager: {Array.from({length: g.manager_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />)}</span>}
                       </div>
                     </div>
                     <Badge status={g.status} />
@@ -164,7 +165,7 @@ export default function TeamPerformance() {
                     <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center" }}>
                       <select value={ratingForm.rating || ""} onChange={e => setRatingForm({ ...ratingForm, rating: e.target.value })} style={{ ...inputStyle, width: 80 }}>
                         <option value="">Rate</option>
-                        {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} ★</option>)}
+                        {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                       <button style={btnPrimary} onClick={() => submitManagerRating(g.id)}>Save</button>
                       <button style={{ ...btnPrimary, background: "var(--charcoal)", color: "var(--text-faint)" }} onClick={() => setRatingForm(null)}>Cancel</button>
@@ -193,7 +194,7 @@ export default function TeamPerformance() {
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{r.employee_name}</div>
                       <div style={{ fontSize: 11, color: "var(--text-faint)" }}>{r.cycle_name} | {r.relationship}</div>
-                      {r.overall_rating && <div style={{ marginTop: 4 }}>Rating: {"★".repeat(r.overall_rating)}</div>}
+                      {r.overall_rating && <div style={{ marginTop: 4 }}>Rating: {Array.from({length: r.overall_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />)}</div>}
                       {r.strengths && <div style={{ fontSize: 12, marginTop: 4 }}>Strengths: {r.strengths}</div>}
                       {r.improvements && <div style={{ fontSize: 12, marginTop: 2 }}>Improvements: {r.improvements}</div>}
                     </div>
@@ -204,7 +205,7 @@ export default function TeamPerformance() {
                       <div style={{ display: "flex", gap: 8 }}>
                         <select value={ratingForm.rating || ""} onChange={e => setRatingForm({ ...ratingForm, rating: e.target.value })} style={{ ...inputStyle, width: 80 }}>
                           <option value="">Rate</option>
-                          {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} ★</option>)}
+                          {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
                       </div>
                       <input placeholder="Strengths" value={ratingForm.strengths || ""} onChange={e => setRatingForm({ ...ratingForm, strengths: e.target.value })} style={inputStyle} />

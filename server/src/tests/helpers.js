@@ -23,6 +23,9 @@ import helpdeskRouter from "../routes/helpdesk.js";
 import searchRouter from "../routes/search.js";
 import notificationsRouter from "../routes/notifications.js";
 import attachmentsRouter from "../routes/attachments.js";
+import employeeDetailsRouter from "../routes/employee-details.js";
+import resignationRouter from "../routes/resignation.js";
+import onboardingRouter from "../routes/onboarding.js";
 
 /**
  * Build a fresh Express app backed by an in-memory SQLite DB.
@@ -62,6 +65,9 @@ export function buildApp(opts = {}) {
   app.use("/api/search", searchRouter);
   app.use("/api/notifications", notificationsRouter);
   app.use("/api/attachments", attachmentsRouter);
+  app.use("/api/employees", employeeDetailsRouter);
+  app.use("/api/resignation", resignationRouter);
+  app.use("/api/onboarding", onboardingRouter);
   app.get("/api/health", (req, res) => res.json({ ok: true }));
 
   return { app, db };
@@ -115,6 +121,8 @@ export async function insertEmployee(db, overrides = {}) {
     "approver_resignation_type", "approver_resignation_reason", "approver_remarks",
     "login_enabled", "invite_status", "login_status",
     "notice_period_confirm", "notice_period_probation", "wedding_anniversary",
+    "resignation_status", "resignation_submitted_at", "resignation_intended_last_day",
+    "resignation_acted_by", "resignation_acted_at",
   ];
   for (const col of extraCols) {
     if (col in overrides) {

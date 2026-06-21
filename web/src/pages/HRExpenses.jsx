@@ -138,7 +138,7 @@ export default function HRExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>Expense Management</h2>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Expense Management</h2>
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 0, borderBottom: "2px solid var(--line)", marginBottom: 18 }}>
@@ -150,7 +150,7 @@ export default function HRExpenses() {
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t.key ? 700 : 400,
-            color: tab === t.key ? "var(--ink)" : "var(--text-muted)",
+            color: tab === t.key ? "var(--text)" : "var(--text-muted)",
             borderBottom: tab === t.key ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>{t.label}</button>
@@ -253,7 +253,7 @@ export default function HRExpenses() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
           {/* Policies */}
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>Policies</div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--text)" }}>Policies</div>
             <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
               <form onSubmit={handleAddPolicy}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -284,7 +284,7 @@ export default function HRExpenses() {
 
           {/* Categories */}
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>Categories</div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--text)" }}>Categories</div>
             <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, marginBottom: 14 }}>
               <form onSubmit={handleAddCategory}>
                 <div>
@@ -326,7 +326,7 @@ const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "
 const tdStyle = { padding: "10px 12px" };
 const smallBtn = {
   padding: "6px 16px", borderRadius: "var(--r-pill)", border: "none",
-  background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 12,
+  background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 12,
   cursor: "pointer", fontFamily: "inherit",
 };
 function actionBtn(type) {

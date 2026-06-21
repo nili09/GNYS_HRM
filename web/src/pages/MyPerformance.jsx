@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 const STATUS_BADGE = {
   PENDING:     { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -32,7 +33,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "var(--ink)",
+  background: "var(--lime)", color: "#ffffff",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -40,7 +41,7 @@ const tabStyle = (active) => ({
   padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
   background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "var(--ink)" : "var(--text-faint)",
+  color: active ? "#ffffff" : "var(--text-faint)",
   textTransform: "uppercase", letterSpacing: ".06rem",
   transition: "all .15s",
 });
@@ -175,8 +176,8 @@ export default function MyPerformance() {
                       Weight: {g.weight}% {g.target_value && `| Target: ${g.target_value}`} {g.actual_value && `| Actual: ${g.actual_value}`}
                     </div>
                     <div style={{ fontSize: 11, marginTop: 4, display: "flex", gap: 12 }}>
-                      {g.self_rating && <span>Self: {"★".repeat(g.self_rating)}</span>}
-                      {g.manager_rating && <span>Manager: {"★".repeat(g.manager_rating)}</span>}
+                      {g.self_rating && <span>Self: {Array.from({length: g.self_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />)}</span>}
+                      {g.manager_rating && <span>Manager: {Array.from({length: g.manager_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />)}</span>}
                     </div>
                   </div>
                   <Badge status={g.status} />
@@ -185,7 +186,7 @@ export default function MyPerformance() {
                   <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <select value={ratingForm.rating || ""} onChange={e => setRatingForm({ ...ratingForm, rating: e.target.value })} style={{ ...inputStyle, width: 80 }}>
                       <option value="">Rate</option>
-                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} ★</option>)}
+                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
                     <input placeholder="Actual value" value={ratingForm.actual_value || ""} onChange={e => setRatingForm({ ...ratingForm, actual_value: e.target.value })} style={{ ...inputStyle, width: 150 }} />
                     <select value={ratingForm.status || ""} onChange={e => setRatingForm({ ...ratingForm, status: e.target.value })} style={{ ...inputStyle, width: 130 }}>
@@ -228,7 +229,7 @@ export default function MyPerformance() {
                     <td style={{ padding: "8px 10px" }}>{r.cycle_name}</td>
                     <td style={{ padding: "8px 10px" }}>{r.reviewer_name}</td>
                     <td style={{ padding: "8px 10px" }}>{r.relationship}</td>
-                    <td style={{ padding: "8px 10px" }}>{r.overall_rating ? "★".repeat(r.overall_rating) : "—"}</td>
+                    <td style={{ padding: "8px 10px" }}>{r.overall_rating ? Array.from({length: r.overall_rating}, (_, i) => <Icon key={i} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
                     <td style={{ padding: "8px 10px" }}><Badge status={r.status} /></td>
                   </tr>
                 ))}

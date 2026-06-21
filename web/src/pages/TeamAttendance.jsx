@@ -11,8 +11,8 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(223,241,64,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime)" },
+  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
@@ -92,7 +92,7 @@ export default function TeamAttendance() {
 
   return (
     <div style={{ maxWidth: 1400 }}>
-      <h2 style={{ margin: "0 0 4px", color: "var(--ink)", fontSize: 20, fontWeight: 700 }}>Team Attendance</h2>
+      <h2 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Team Attendance</h2>
       <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>
         Monthly view of your direct reports (read-only)
       </p>

@@ -59,7 +59,7 @@ export default function PayslipView({ lineId, onBack }) {
           <div style={{
             position: "absolute", top: "50%", left: "50%",
             transform: "translate(-50%, -50%) rotate(-30deg)",
-            fontSize: isMobile ? 50 : 80, fontWeight: 900, color: "rgba(223,241,64,.08)",
+            fontSize: isMobile ? 50 : 80, fontWeight: 900, color: "rgba(25,25,112,.10)",
             letterSpacing: 20, pointerEvents: "none", whiteSpace: "nowrap",
             zIndex: 1,
           }}>DRAFT</div>
@@ -136,8 +136,8 @@ export default function PayslipView({ lineId, onBack }) {
 
         {/* Employer contributions */}
         <div style={{
-          marginTop: 16, padding: "10px 14px", background: "var(--bg)",
-          borderRadius: "var(--r-pill)", fontSize: 11, color: "var(--text-muted)",
+          marginTop: 16, padding: "10px 14px", background: "var(--line)",
+          borderRadius: "var(--r-card)", fontSize: 11, color: "var(--text-muted)",
           position: "relative", zIndex: 2,
           lineHeight: 1.6,
         }}>
@@ -184,4 +184,4 @@ function SlipRow({ label, value, bold }) {
 }
 
 const backBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "8px 16px", cursor: "pointer", fontSize: 13, minHeight: 36 };
-const printBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 16px", cursor: "pointer", fontWeight: 600, fontSize: 13, minHeight: 36 };
+const printBtnStyle = { background: "var(--ink)", color: "var(--lime-light)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 16px", cursor: "pointer", fontWeight: 600, fontSize: 13, minHeight: 36 };

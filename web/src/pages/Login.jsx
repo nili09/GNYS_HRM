@@ -30,25 +30,34 @@ export default function Login() {
         display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
-      {/* Subtle lime accent shape */}
+      {/* Ambient lime glow — top-right */}
       <div style={{
-        position: "absolute", top: -120, right: -80,
-        width: 420, height: 420,
+        position: "absolute", top: -140, right: -100,
+        width: 480, height: 480,
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(223,241,64,.07) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(25,25,112,.14) 0%, transparent 65%)",
+        pointerEvents: "none",
+      }} />
+      {/* Ambient lime glow — bottom-left */}
+      <div style={{
+        position: "absolute", bottom: -120, left: -80,
+        width: 360, height: 360,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(25,25,112,.10) 0%, transparent 65%)",
         pointerEvents: "none",
       }} />
 
       <div
         style={{
-          width: 380,
-          background: "rgba(255,255,255,.04)",
-          border: "1px solid rgba(255,255,255,.1)",
-          borderRadius: 4,
-          padding: "40px 36px",
+          width: 390,
+          background: "rgba(255,255,255,.06)",
+          border: "1px solid rgba(255,255,255,.14)",
+          borderRadius: "var(--r-card)",
+          padding: "44px 40px",
           color: "#fff",
           animation: "fadeIn .4s ease",
           position: "relative",
+          boxShadow: "0 24px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06)",
         }}
       >
         {/* Logo */}
@@ -82,15 +91,15 @@ export default function Login() {
               autoComplete="username"
               required
               style={{
-                background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff",
-                borderRadius: "var(--r-card) 0 0 var(--r-card)", borderRight: "none", flex: 1,
+                background: "rgba(255,255,255,.07)", borderColor: "rgba(255,255,255,.16)", color: "#fff",
+                borderRadius: "10px 0 0 10px", borderRight: "none", flex: 1,
               }}
             />
             <span style={{
-              padding: "7px 12px", background: "rgba(255,255,255,.03)",
-              border: "1px solid rgba(255,255,255,.15)", borderLeft: "none",
-              borderRadius: "0 var(--r-card) var(--r-card) 0",
-              color: "rgba(255,255,255,.35)", fontSize: 13, whiteSpace: "nowrap",
+              padding: "7px 14px", background: "rgba(255,255,255,.03)",
+              border: "1px solid rgba(255,255,255,.16)", borderLeft: "none",
+              borderRadius: "0 10px 10px 0",
+              color: "rgba(255,255,255,.40)", fontSize: 13, whiteSpace: "nowrap",
               userSelect: "none",
             }}>@igenesys.com</span>
           </div>
@@ -105,7 +114,7 @@ export default function Login() {
             placeholder="••••••••"
             autoComplete="current-password"
             required
-            style={{ background: "rgba(255,255,255,.06)", borderColor: "rgba(255,255,255,.15)", color: "#fff", borderRadius: "var(--r-card)" }}
+            style={{ background: "rgba(255,255,255,.07)", borderColor: "rgba(255,255,255,.16)", color: "#fff", borderRadius: 10 }}
           />
 
           {error && (
@@ -134,14 +143,14 @@ export default function Login() {
           <div style={{
             marginTop: 18,
             padding: "14px 16px",
-            background: "rgba(223,241,64,.06)",
-            border: "1px solid rgba(223,241,64,.15)",
+            background: "rgba(25,25,112,.10)",
+            border: "1px solid rgba(25,25,112,.20)",
             borderRadius: "var(--r-card)",
             fontSize: 12.5,
             color: "rgba(255,255,255,.65)",
             lineHeight: 1.55,
           }}>
-            <div style={{ fontWeight: 700, color: "var(--lime)", marginBottom: 6, fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".06em" }}>
+            <div style={{ fontWeight: 700, color: "var(--lime-light)", marginBottom: 6, fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".06em" }}>
               Password reset
             </div>
             Contact your <strong style={{ color: "#fff" }}>HR or IT helpdesk</strong> to
@@ -165,7 +174,7 @@ export default function Login() {
               padding: "4px 0",
               transition: "color .2s",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime)"}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime-light)"}
             onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255,255,255,.35)"}
           >
             Forgot password?

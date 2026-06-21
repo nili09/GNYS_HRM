@@ -205,7 +205,7 @@ export default function HRHelpdesk() {
                     <td style={{ padding: "8px 10px" }}>
                       {t.status === "OPEN" && (
                         <button onClick={() => updateTicket(t.id, { status: "IN_PROGRESS" })} disabled={acting === `ticket-${t.id}`}
-                          style={{ padding: "3px 10px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 11, cursor: "pointer", marginRight: 4 }}>
+                          style={{ padding: "3px 10px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer", marginRight: 4 }}>
                           Start
                         </button>
                       )}
@@ -280,7 +280,7 @@ export default function HRHelpdesk() {
             <input value={commentBody} onChange={e => setCommentBody(e.target.value)} placeholder="Add a comment..."
               style={{ flex: 1, padding: "7px 10px", borderRadius: 4, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13 }} />
             <button type="submit"
-              style={{ padding: "7px 18px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+              style={{ padding: "7px 18px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
               Send
             </button>
           </form>
@@ -301,7 +301,7 @@ export default function HRHelpdesk() {
                 {employees.map(e => <option key={e.id} value={e.id}>{e.name} ({e.code})</option>)}
               </select>
             </label>
-            <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+            <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
               Add Category
             </button>
           </form>

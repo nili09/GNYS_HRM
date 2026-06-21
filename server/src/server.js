@@ -25,6 +25,9 @@ import helpdeskRouter from "./routes/helpdesk.js";
 import searchRouter from "./routes/search.js";
 import notificationsRouter from "./routes/notifications.js";
 import attachmentsRouter from "./routes/attachments.js";
+import employeeDetailsRouter from "./routes/employee-details.js";
+import resignationRouter from "./routes/resignation.js";
+import onboardingRouter from "./routes/onboarding.js";
 
 // ── Guard: refuse to boot with default/missing JWT_SECRET ────────────────────
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET === "changeme") {
@@ -94,6 +97,9 @@ app.use("/api/helpdesk", helpdeskRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/attachments", attachmentsRouter);
+app.use("/api/employees", employeeDetailsRouter);
+app.use("/api/resignation", resignationRouter);
+app.use("/api/onboarding", onboardingRouter);
 
 // Health check
 app.get("/api/health", (req, res) => res.json({ ok: true }));

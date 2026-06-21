@@ -85,10 +85,11 @@ describe("Employees API & RBAC", () => {
       .get(`/api/employees/${empUser1.id}`)
       .set("Cookie", emp1Cookie);
     expect(res.status).toBe(200);
-    // Salary fields should be stripped for non-HR
+    // Statutory fields should be stripped for non-HR
     expect(res.body.pan).toBeUndefined();
-    expect(res.body.bank_acc).toBeUndefined();
-    expect(res.body.ifsc).toBeUndefined();
+    // Bank fields are visible to self (self-service editing)
+    expect(res.body.bank_acc).toBeDefined();
+    expect(res.body.ifsc).toBeDefined();
     // But salary_structures are visible for self
     expect(res.body.salary_structures.length).toBe(1);
   });

@@ -60,7 +60,7 @@ export default function MyDashboard() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, marginBottom: 20 }}>Welcome, {user?.name}</h2>
+      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24, letterSpacing: "-.02rem" }}>Welcome, {user?.name}</h2>
 
       {/* KPI cards */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
@@ -161,7 +161,7 @@ export default function MyDashboard() {
       {/* Manager section */}
       {mgrData?.isManager && (
         <div style={{ marginTop: 22 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>Team Overview</h3>
+          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Team Overview</div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 14 }}>
             <KPI label="Team Size" value={mgrData.teamSize} sub="direct reports" />
             <KPI label="Out Today" value={mgrData.outToday.length} sub="on leave" />
@@ -226,25 +226,28 @@ function KPI({ label, value, sub, onClick }) {
     <div
       onClick={onClick}
       style={{
-        background: "var(--card)", border: "1px solid var(--line)",
+        background: "var(--grad-hero)",
+        border: "1px solid var(--line)",
         borderRadius: "var(--r-card)",
-        padding: "14px 16px", cursor: onClick ? "pointer" : "default",
-        transition: "box-shadow .2s",
+        padding: "16px 18px",
+        cursor: onClick ? "pointer" : "default",
+        transition: "box-shadow .2s, transform .15s",
+        boxShadow: "var(--shadow-sm)",
       }}
-      onMouseEnter={(e) => onClick && (e.currentTarget.style.boxShadow = "var(--lime-glow)")}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "")}
+      onMouseEnter={(e) => { if (onClick) { e.currentTarget.style.boxShadow = "var(--lime-glow)"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "var(--shadow-sm)"; e.currentTarget.style.transform = ""; }}
     >
-      <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: ".05rem" }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-.02rem", lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 3 }}>{sub}</div>
+      <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".055rem" }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "var(--font-display)", letterSpacing: "-.025rem", lineHeight: 1.1 }}>{value}</div>
+      <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>{sub}</div>
     </div>
   );
 }
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px", boxShadow: "var(--shadow-card)" }}>
-      <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>{title}</h4>
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
+      <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>{title}</h4>
       {children}
     </div>
   );
@@ -257,7 +260,7 @@ function Empty({ text }) {
 function Avatar({ name }) {
   const initials = (name || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--lime)", flexShrink: 0 }}>
+    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--lime-light)", flexShrink: 0 }}>
       {initials}
     </div>
   );

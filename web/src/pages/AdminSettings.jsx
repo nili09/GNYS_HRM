@@ -287,14 +287,14 @@ function Btn({ label, onClick, disabled, secondary }) {
     <button onClick={onClick} disabled={disabled} style={{
       marginTop: 12, padding: "7px 18px", border: secondary ? "1px solid var(--line)" : "none",
       borderRadius: "var(--r-card)", cursor: "pointer", fontSize: 12.5, fontWeight: 600,
-      background: secondary ? "var(--card)" : "var(--ink)", color: secondary ? "var(--charcoal)" : "var(--lime)",
+      background: secondary ? "var(--card)" : "var(--ink)", color: secondary ? "var(--charcoal)" : "var(--lime-light)",
       opacity: disabled ? 0.5 : 1,
     }}>{label}</button>
   );
 }
 
 function RoleBadge({ role }) {
-  const colors = { ADMIN: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" }, HR: { bg: "rgba(223,241,64,.15)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
+  const colors = { ADMIN: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" }, HR: { bg: "rgba(25,25,112,.12)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
   const { bg, c } = colors[role] || colors.EMPLOYEE;
   return <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: "var(--r-pill)", background: bg, color: c }}>{role}</span>;
 }

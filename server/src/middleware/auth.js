@@ -15,7 +15,7 @@ export async function attachUser(req, res, next) {
     // Re-read from DB to get fresh must_change_pw + role
     const db = req.app.locals.db || getDb();
     const row = db
-      .prepare("SELECT id, email, name, role, must_change_pw FROM employees WHERE id = ?")
+      .prepare("SELECT id, email, name, role, status, must_change_pw FROM employees WHERE id = ?")
       .get(payload.sub);
     if (row) {
       req.user = row;

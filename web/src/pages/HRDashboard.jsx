@@ -57,7 +57,7 @@ export default function HRDashboard() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 20 }}>HR Dashboard</h1>
+      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, letterSpacing: "-.025rem" }}>HR Dashboard</h1>
 
       {/* KPI cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))", gap: 10, marginBottom: 22 }}>
@@ -69,7 +69,7 @@ export default function HRDashboard() {
       </div>
 
       {/* Modules Overview */}
-      <h3 style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem", marginBottom: 10 }}>Modules Overview</h3>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem", marginBottom: 10 }}>Modules Overview</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))", gap: 10, marginBottom: 22 }}>
         {recruitment && <KPI label="Open Positions" value={recruitment.openPositions} sub={`${recruitment.candidatesInPipeline} in pipeline`} onClick={() => navigate("/hr/recruitment")} />}
         {recruitment && <KPI label="Hired This Month" value={recruitment.hiredThisMonth} sub={recruitment.avgDaysToHire ? `avg ${recruitment.avgDaysToHire}d to hire` : "no hires yet"} />}
@@ -92,13 +92,13 @@ export default function HRDashboard() {
             {deptDistribution.length ? deptDistribution.map((d) => (
               <div key={d.dept} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 0" }}>
                 <div style={{ width: 100, fontSize: 12, color: "var(--text-muted)", flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.dept}</div>
-                <div style={{ flex: 1, height: 14, background: "var(--line)", borderRadius: 1, overflow: "hidden" }}>
+                <div style={{ flex: 1, height: 10, background: "var(--line)", borderRadius: 6, overflow: "hidden" }}>
                   <div style={{
                     width: `${(d.count / maxDept * 100).toFixed(0)}%`,
                     height: "100%",
-                    background: "var(--charcoal)",
-                    borderRadius: 1,
-                    transition: "width .3s",
+                    background: "linear-gradient(90deg, var(--charcoal) 0%, rgba(25,25,112,.6) 100%)",
+                    borderRadius: 6,
+                    transition: "width .4s ease",
                   }} />
                 </div>
                 <div style={{ width: 28, fontSize: 12, fontWeight: 700, textAlign: "right", color: "var(--text)" }}>{d.count}</div>
@@ -200,28 +200,29 @@ function KPI({ label, value, sub, accent, onClick }) {
     <div
       onClick={onClick}
       style={{
-        background: accent ? "var(--ink)" : "var(--card)",
-        color: accent ? "var(--lime)" : "var(--text)",
-        border: accent ? "none" : "1px solid var(--line)",
+        background: accent ? "var(--grad-accent)" : "var(--grad-hero)",
+        color: accent ? "var(--lime-light)" : "var(--text)",
+        border: accent ? "1px solid rgba(25,25,112,.20)" : "1px solid var(--line)",
         borderRadius: "var(--r-card)",
-        padding: "14px 16px",
+        padding: "16px 18px",
         cursor: onClick ? "pointer" : "default",
-        transition: "box-shadow .2s",
+        transition: "box-shadow .2s, transform .15s",
+        boxShadow: "var(--shadow-sm)",
       }}
-      onMouseEnter={(e) => onClick && (e.currentTarget.style.boxShadow = "var(--lime-glow)")}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "")}
+      onMouseEnter={(e) => { if (onClick) { e.currentTarget.style.boxShadow = "var(--lime-glow)"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "var(--shadow-sm)"; e.currentTarget.style.transform = ""; }}
     >
-      <div style={{ fontSize: 10, color: accent ? "rgba(255,255,255,.35)" : "var(--text-muted)", fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: ".05rem" }}>{label}</div>
-      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-.02rem", lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontSize: 11, color: accent ? "rgba(255,255,255,.3)" : "var(--text-faint)", marginTop: 3 }}>{sub}</div>
+      <div style={{ fontSize: 10, color: accent ? "rgba(255,255,255,.45)" : "var(--text-muted)", fontWeight: 700, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".055rem" }}>{label}</div>
+      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--font-display)", letterSpacing: "-.025rem", lineHeight: 1.1 }}>{value}</div>
+      <div style={{ fontSize: 11, color: accent ? "rgba(255,255,255,.35)" : "var(--text-faint)", marginTop: 4 }}>{sub}</div>
     </div>
   );
 }
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "16px 18px", boxShadow: "var(--shadow-card)" }}>
-      <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06rem" }}>{title}</h4>
+    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
+      <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>{title}</h4>
       {children}
     </div>
   );
@@ -232,7 +233,7 @@ function Empty({ text }) { return <div style={{ fontSize: 13, color: "var(--text
 function Avatar({ name }) {
   const i = (name || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--lime)", flexShrink: 0 }}>{i}</div>
+    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--lime-light)", flexShrink: 0 }}>{i}</div>
   );
 }
 

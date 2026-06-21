@@ -132,7 +132,7 @@ export default function HRLeave() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
         HR — Leave Management
       </h2>
 
@@ -273,7 +273,7 @@ export default function HRLeave() {
             <button onClick={() => {
               setEditType("__new__");
               setTypeForm({ code: "", name: "", annual: 0, paid: 1, carry_fwd: 0, max_carry: 0 });
-            }} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>
+            }} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>
               + Add Type
             </button>
           </div>
@@ -340,7 +340,7 @@ export default function HRLeave() {
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
               <button onClick={() => setAdjustModal(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
-              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>Apply</button>
+              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>Apply</button>
             </div>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function HRLeave() {
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
               <button onClick={() => setEditType(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
-              <button onClick={saveType} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime)" }}>Save</button>
+              <button onClick={saveType} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>Save</button>
             </div>
           </div>
         </div>

@@ -84,9 +84,9 @@ export default function TeamExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>Team Expenses</h2>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Team Expenses</h2>
 
-      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>
+      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--text)" }}>
         Pending Expenses ({expenses.length})
       </div>
       <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", marginBottom: 24, boxShadow: "var(--shadow-card)" }}>
@@ -124,7 +124,7 @@ export default function TeamExpenses() {
         </table>
       </div>
 
-      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--ink)" }}>
+      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--text)" }}>
         Pending Advance Requests ({advances.length})
       </div>
       <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>

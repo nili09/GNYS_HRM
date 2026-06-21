@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useIsMobile } from "../hooks/useIsMobile.jsx";
+import Icon from "../components/Icon.jsx";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -296,7 +297,7 @@ export default function RecognitionWall() {
               padding: "10px 20px", borderRadius: "var(--r-pill)", border: "none",
               cursor: submitting ? "not-allowed" : "pointer",
               fontWeight: 700, fontSize: 13,
-              background: "var(--ink)", color: "var(--lime)",
+              background: "var(--ink)", color: "var(--lime-light)",
               opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
               width: isMobile ? "100%" : "auto", minHeight: 40,
             }}
@@ -335,13 +336,13 @@ export default function RecognitionWall() {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 24, flexShrink: 0,
               }}>
-                {r.badge_icon || "⭐"}
+                {r.badge_icon || <Icon name="star" filled={true} style={{ fontSize: 24 }} />}
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
                   <span style={{ fontWeight: 700, fontSize: 14 }}>{r.from_name}</span>
-                  <span style={{ fontSize: 13, color: "var(--text-faint)" }}>→</span>
+                  <Icon name="arrow_forward" style={{ fontSize: 13, color: "var(--text-faint)" }} />
                   <span style={{ fontWeight: 700, fontSize: 14 }}>{r.to_name}</span>
                 </div>
 

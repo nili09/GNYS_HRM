@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
 import PayslipView from "./PayslipView.jsx";
+import Icon from "../components/Icon.jsx";
 
 // ── Utilities ────────────────────────────────────────────────────────────────
 
@@ -163,9 +164,9 @@ export default function HRPayroll() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Payroll</h1>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <button onClick={() => setMonth(shiftMonth(month, -1))} className="btn-sm" style={navBtnStyle}>◀</button>
+          <button onClick={() => setMonth(shiftMonth(month, -1))} className="btn-sm" aria-label="Previous month" style={navBtnStyle}><Icon name="arrow_back" /></button>
           <span style={{ fontSize: 15, fontWeight: 600, minWidth: 140, textAlign: "center" }}>{fmtMonth(month)}</span>
-          <button onClick={() => setMonth(shiftMonth(month, 1))} className="btn-sm" style={navBtnStyle}>▶</button>
+          <button onClick={() => setMonth(shiftMonth(month, 1))} className="btn-sm" aria-label="Next month" style={navBtnStyle}><Icon name="arrow_forward" /></button>
         </div>
       </div>
 
@@ -300,7 +301,7 @@ function KPI({ label, value, accent }) {
   return (
     <div style={{
       background: accent ? "var(--ink)" : "var(--bg)",
-      color: accent ? "var(--lime)" : "var(--text)",
+      color: accent ? "var(--lime-light)" : "var(--text)",
       borderRadius: "var(--r-card)", padding: "12px 14px",
       border: accent ? "none" : "1px solid var(--line)",
     }}>
@@ -315,5 +316,5 @@ function KPI({ label, value, accent }) {
 const thStyle = { padding: "8px 10px", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".04rem", borderBottom: "1px solid var(--line)" };
 const tdStyle = { padding: "8px 10px" };
 const navBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "5px 10px", cursor: "pointer", fontSize: 13 };
-const primaryBtnStyle = { background: "var(--ink)", color: "var(--lime)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
+const primaryBtnStyle = { background: "var(--ink)", color: "var(--lime-light)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
 const secondaryBtnStyle = { background: "var(--bg)", color: "var(--charcoal)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 500, fontSize: 13 };

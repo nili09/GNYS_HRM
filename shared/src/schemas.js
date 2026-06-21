@@ -99,16 +99,60 @@ export const SalaryStructureSchema = z.object({
   other_earn_label: z.string().max(200).default("Other Allowance"),
 });
 
-/** Contact-only fields an EMPLOYEE can edit on their own profile.
+/** Fields an EMPLOYEE can edit on their own profile.
  *  `.strict()` rejects any other field with 400 — an employee cannot
- *  smuggle role/salary/manager_id changes through their self-patch. */
+ *  smuggle role/salary/manager_id/code/doj changes through their self-patch. */
 export const EmployeeSelfPatchSchema = z.object({
   phone: z.string().max(20).optional().nullable(),
   personal_email: z.string().email().optional().nullable(),
   address: z.string().max(500).optional().nullable(),
   emergency_name: z.string().max(200).optional().nullable(),
   emergency_phone: z.string().max(20).optional().nullable(),
+  blood_group: z.string().max(10).optional().nullable(),
+  nationality: z.string().max(60).optional().nullable(),
+  wedding_anniversary: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  prefix: z.string().max(20).optional().nullable(),
+  bank_name: z.string().max(100).optional().nullable(),
+  bank_acc: z.string().max(50).optional().nullable(),
+  ifsc: z.string().max(20).optional().nullable(),
 }).strict();
+
+// ── Employee Detail Sub-entities (self-service) ──────────────────────────
+
+export const EmergencyContactSchema = z.object({
+  name: z.string().min(1).max(200),
+  phone: z.string().min(1).max(20),
+  relationship: z.string().max(50).optional().nullable(),
+  is_primary: z.number().int().min(0).max(1).default(0),
+});
+
+export const FamilyMemberSchema = z.object({
+  name: z.string().min(1).max(200),
+  relationship: z.string().min(1).max(50),
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  is_dependent: z.number().int().min(0).max(1).default(0),
+});
+
+export const NomineeSchema = z.object({
+  name: z.string().min(1).max(200),
+  relationship: z.string().min(1).max(50),
+  share_pct: z.number().min(0).max(100).default(100),
+});
+
+export const EducationSchema = z.object({
+  degree: z.string().min(1).max(200),
+  institution: z.string().max(300).optional().nullable(),
+  year: z.number().int().min(1950).max(2100).optional().nullable(),
+  grade: z.string().max(50).optional().nullable(),
+});
+
+export const PrevEmployerSchema = z.object({
+  company: z.string().min(1).max(200),
+  designation: z.string().max(200).optional().nullable(),
+  from_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  to_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  reason_leaving: z.string().max(500).optional().nullable(),
+});
 
 /** CSV import payload from mapping wizard */
 export const CsvImportSchema = z.object({
@@ -471,3 +515,29 @@ export const TicketPatchSchema = z.object({
 export const TicketCommentSchema = z.object({
   body: z.string().min(1).max(5000),
 });
+
+// ── Resignation ──────────────────────────────────────────────────────────────
+
+export const ResignationSubmitSchema = z.object({
+  resignation_type: z.string().min(1).max(100),
+  resignation_reason: z.string().min(1).max(500),
+  intended_last_day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  requestee_remarks: z.string().max(1000).optional().nullable(),
+}).strict();
+
+export const ResignationActSchema = z.object({
+  action: z.enum(["APPROVE", "REJECT"]),
+  approver_remarks: z.string().max(1000).optional().nullable(),
+  last_working_day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+}).strict();
+
+// ── Onboarding ───────────────────────────────────────────────────────────────
+
+export const OnboardingDocCheckSchema = z.object({
+  key: z.string().min(1).max(100),
+  done: z.number().int().min(0).max(1),
+}).strict();
+
+export const OnboardingPolicyAckSchema = z.object({
+  policy_key: z.string().min(1).max(100),
+}).strict();

@@ -14,16 +14,16 @@ export default function NotificationBell() {
 
   const fetchCount = useCallback(async () => {
     try {
-      const res = await api.get("/notifications/unread-count");
-      setCount(res.data.count);
+      const data = await api.get("/notifications/unread-count");
+      setCount(data.count ?? 0);
     } catch { /* ignore */ }
   }, []);
 
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get("/notifications?limit=20");
-      setNotifications(res.data.rows || []);
+      const data = await api.get("/notifications?limit=20");
+      setNotifications(data.rows || []);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
@@ -34,22 +34,19 @@ export default function NotificationBell() {
     return () => clearInterval(iv);
   }, [fetchCount]);
 
-  // Listen for SSE notification events
+  // Listen for SSE notification events dispatched by AppShell via CustomEvent.
+  // Using a window CustomEvent avoids the React child-before-parent effect ordering
+  // problem (child effects run before parent effects, so window.__sseSource is null
+  // at the time this component mounts). fetchCount() is called instead of +1 so the
+  // displayed count always converges to the server's authoritative value.
   useEffect(() => {
-    const handleSSE = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        if (data.type === "notification") {
-          setCount(c => c + 1);
-          setNotifications(prev => [data.notification, ...prev].slice(0, 20));
-        }
-      } catch { /* ignore */ }
+    const handleNotification = (e) => {
+      fetchCount();
+      setNotifications(prev => [e.detail, ...prev].slice(0, 20));
     };
-
-    const es = window.__sseSource;
-    if (es) es.addEventListener("message", handleSSE);
-    return () => { if (es) es.removeEventListener("message", handleSSE); };
-  }, []);
+    window.addEventListener("hrms:notification", handleNotification);
+    return () => window.removeEventListener("hrms:notification", handleNotification);
+  }, [fetchCount]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -116,7 +113,7 @@ export default function NotificationBell() {
         {count > 0 && (
           <span style={{
             position: "absolute", top: 2, right: 2,
-            background: "#ef4444", color: "#fff",
+            background: "var(--danger)", color: "#fff",
             fontSize: 10, fontWeight: 700,
             minWidth: 16, height: 16,
             borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
@@ -173,11 +170,11 @@ export default function NotificationBell() {
                   padding: "10px 16px",
                   cursor: n.link ? "pointer" : "default",
                   borderBottom: "1px solid var(--border)",
-                  background: n.read ? "transparent" : "rgba(223,241,64,.05)",
+                  background: n.read ? "transparent" : "rgba(25,25,112,.06)",
                   transition: "background .15s",
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,.04)"}
-                onMouseLeave={(e) => e.currentTarget.style.background = n.read ? "transparent" : "rgba(223,241,64,.05)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = n.read ? "transparent" : "rgba(25,25,112,.06)"}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
                   <span style={{

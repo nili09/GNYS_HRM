@@ -70,4 +70,25 @@ function migrateHROneFields(db) {
       db.exec(`ALTER TABLE employees ADD COLUMN ${col} ${type}`);
     }
   }
+
+  // Stage 26: resignation tracking + onboarding policy acknowledgments
+  const resignCols = [
+    ["resignation_status", "TEXT"],
+    ["resignation_submitted_at", "TEXT"],
+    ["resignation_intended_last_day", "TEXT"],
+    ["resignation_acted_by", "INTEGER"],
+    ["resignation_acted_at", "TEXT"],
+  ];
+  for (const [col, type] of resignCols) {
+    if (!existing.has(col)) {
+      db.exec(`ALTER TABLE employees ADD COLUMN ${col} ${type}`);
+    }
+  }
+
+  db.exec(`CREATE TABLE IF NOT EXISTS onboarding_policy_acks (
+    employee_id  INTEGER NOT NULL REFERENCES employees(id),
+    policy_key   TEXT    NOT NULL,
+    acked_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY(employee_id, policy_key)
+  )`);
 }

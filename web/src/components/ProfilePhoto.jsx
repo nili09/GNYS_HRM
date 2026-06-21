@@ -38,7 +38,7 @@ export default function ProfilePhoto({ employee, size = 44, style = {} }) {
             // Fallback to initials on load error
             e.target.style.display = "none";
             e.target.parentElement.style.background = "var(--ink)";
-            e.target.parentElement.style.color = "var(--lime)";
+            e.target.parentElement.style.color = "var(--lime-light)";
             e.target.parentElement.style.fontSize = `${Math.round(size * 0.4)}px`;
             e.target.parentElement.style.fontWeight = "700";
             e.target.parentElement.textContent = initials;
@@ -52,7 +52,7 @@ export default function ProfilePhoto({ employee, size = 44, style = {} }) {
     <div style={{
       ...baseStyle,
       background: style.background || "var(--ink)",
-      color: style.color || "var(--lime)",
+      color: style.color || "var(--lime-light)",
       fontSize: Math.round(size * 0.4),
       fontWeight: 700,
     }}>

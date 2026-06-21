@@ -103,7 +103,7 @@ export default function TeamApprovals() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
         Team
       </h2>
 
@@ -113,7 +113,7 @@ export default function TeamApprovals() {
           <button key={k} onClick={() => setTab(k)} style={{
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === k ? 700 : 400,
-            color: tab === k ? "var(--ink)" : "var(--text-muted)",
+            color: tab === k ? "var(--text)" : "var(--text-muted)",
             borderBottom: tab === k ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>
@@ -199,7 +199,7 @@ export default function TeamApprovals() {
                         <th key={d} style={{
                           ...thStyle, textAlign: "center", minWidth: 26,
                           background: isToday ? "var(--lime)" : "var(--bg)",
-                          color: isToday ? "var(--ink)" : "var(--text-muted)",
+                          color: isToday ? "#ffffff" : "var(--text-muted)",
                         }}>{d}</th>
                       );
                     })}

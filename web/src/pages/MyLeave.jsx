@@ -126,7 +126,7 @@ export default function MyLeave() {
 
   const balancePanel = (
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-      <div style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 10, color: "var(--ink)" }}>
+      <div style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 10, color: "var(--text)" }}>
         Balances — {year}
       </div>
       {balances && types.filter((t) => t.annual > 0).map((t) => {
@@ -156,7 +156,7 @@ export default function MyLeave() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
         Leave
       </h2>
 
@@ -166,7 +166,7 @@ export default function MyLeave() {
           <button key={t} onClick={() => setTab(t)} style={{
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === t ? 700 : 400,
-            color: tab === t ? "var(--ink)" : "var(--text-muted)",
+            color: tab === t ? "var(--text)" : "var(--text-muted)",
             borderBottom: tab === t ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
             minHeight: 40,
@@ -239,7 +239,7 @@ export default function MyLeave() {
               <button type="submit" disabled={submitting || !form.date_from || !form.date_to}
                 style={{
                   marginTop: 16, padding: "12px 28px", borderRadius: "var(--r-pill)", border: "none",
-                  background: "var(--ink)", color: "var(--lime)", fontWeight: 700, fontSize: 13.5,
+                  background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 13.5,
                   cursor: "pointer", opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
                   width: isMobile ? "100%" : "auto",
                 }}>

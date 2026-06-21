@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 const STATUS_BADGE = {
   SCHEDULED: { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" },
@@ -26,7 +27,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "var(--ink)",
+  background: "var(--lime)", color: "#ffffff",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -114,7 +115,7 @@ export default function MyInterviews() {
                     <select value={feedbackForm.rating || ""} onChange={e => setFeedbackForm({ ...feedbackForm, rating: e.target.value })}
                       style={{ ...inputStyle, width: 80 }}>
                       <option value="">—</option>
-                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} ★</option>)}
+                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
@@ -158,7 +159,7 @@ export default function MyInterviews() {
                 <td style={{ padding: "8px 10px" }}>{i.job_title}</td>
                 <td style={{ padding: "8px 10px", fontSize: 12 }}>{new Date(i.scheduled_at).toLocaleDateString("en-IN")}</td>
                 <td style={{ padding: "8px 10px" }}><Badge status={i.status} /></td>
-                <td style={{ padding: "8px 10px" }}>{i.rating ? "★".repeat(i.rating) : "—"}</td>
+                <td style={{ padding: "8px 10px" }}>{i.rating ? Array.from({length: i.rating}, (_, idx) => <Icon key={idx} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
                 <td style={{ padding: "8px 10px", maxWidth: 250, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.feedback || "—"}</td>
               </tr>
             ))}

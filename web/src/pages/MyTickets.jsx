@@ -203,7 +203,7 @@ export default function MyTickets() {
               style={{ display: "block", width: "100%", marginTop: 4, padding: "7px 10px", borderRadius: 4, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, resize: "vertical" }} />
           </label>
           <button type="submit" disabled={submitting}
-            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
             {submitting ? "Submitting..." : "Create Ticket"}
           </button>
         </form>
@@ -254,7 +254,7 @@ export default function MyTickets() {
               <input value={commentBody} onChange={e => setCommentBody(e.target.value)} placeholder="Add a comment..."
                 style={{ flex: 1, padding: "7px 10px", borderRadius: 4, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13 }} />
               <button type="submit"
-                style={{ padding: "7px 18px", borderRadius: 4, border: "none", background: "var(--lime)", color: "var(--ink)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                style={{ padding: "7px 18px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
                 Send
               </button>
             </form>

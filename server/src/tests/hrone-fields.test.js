@@ -511,10 +511,9 @@ describe("RBAC — HROne fields", () => {
       .set("Cookie", empCookie);
 
     expect(res.status).toBe(200);
-    // Salary/statutory fields stripped
+    // Statutory fields stripped; bank visible to self
     expect(res.body.pan).toBeUndefined();
     expect(res.body.aadhaar).toBeUndefined();
-    expect(res.body.bank_acc).toBeUndefined();
     // But salary_structures are visible (own payslip data)
     expect(res.body.salary_structures).toBeDefined();
     // HROne extended fields ARE visible (non-statutory)

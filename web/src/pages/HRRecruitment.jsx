@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api.js";
+import Icon from "../components/Icon.jsx";
 
 const STATUS_BADGE = {
   DRAFT:     { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
@@ -44,7 +45,7 @@ const tabStyle = (active) => ({
   padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
   background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "var(--ink)" : "var(--text-faint)",
+  color: active ? "#ffffff" : "var(--text-faint)",
   textTransform: "uppercase", letterSpacing: ".06rem",
   transition: "all .15s",
 });
@@ -58,7 +59,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "var(--ink)",
+  background: "var(--lime)", color: "#ffffff",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -364,7 +365,7 @@ export default function HRRecruitment() {
                           <button key={s} onClick={() => patchAppStatus(a.id, s)}
                             style={{ ...btnPrimary, padding: "4px 10px", fontSize: 10,
                               background: s === "REJECTED" ? "var(--badge-danger-bg)" : s === "HIRED" ? "var(--lime)" : "var(--badge-blue-bg)",
-                              color: s === "REJECTED" ? "var(--danger)" : s === "HIRED" ? "var(--ink)" : "var(--badge-blue-text)",
+                              color: s === "REJECTED" ? "var(--danger)" : s === "HIRED" ? "#ffffff" : "var(--badge-blue-text)",
                             }}>
                             {s}
                           </button>
@@ -414,7 +415,7 @@ export default function HRRecruitment() {
                   <td style={{ padding: "8px 10px", fontSize: 12 }}>{i.scheduled_at ? new Date(i.scheduled_at).toLocaleString("en-IN") : "—"}</td>
                   <td style={{ padding: "8px 10px" }}>{i.mode}</td>
                   <td style={{ padding: "8px 10px" }}><Badge status={i.status} /></td>
-                  <td style={{ padding: "8px 10px" }}>{i.rating ? "★".repeat(i.rating) : "—"}</td>
+                  <td style={{ padding: "8px 10px" }}>{i.rating ? Array.from({length: i.rating}, (_, idx) => <Icon key={idx} name="star" filled={true} style={{ fontSize: "13px" }} />) : "—"}</td>
                 </tr>
               ))}
               {interviews.length === 0 && <tr><td colSpan={7} style={{ padding: 20, textAlign: "center", color: "var(--text-faint)" }}>No interviews scheduled</td></tr>}

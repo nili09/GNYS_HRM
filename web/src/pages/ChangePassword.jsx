@@ -34,31 +34,41 @@ export default function ChangePassword() {
         display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
+      {/* Ambient top-right glow */}
+      <div style={{
+        position: "absolute", top: -140, right: -100,
+        width: 400, height: 400,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(25,25,112,.14) 0%, transparent 65%)",
+        pointerEvents: "none",
+      }} />
+      {/* Ambient bottom-left glow */}
       <div style={{
         position: "absolute", bottom: -100, left: -60,
-        width: 360, height: 360,
+        width: 340, height: 340,
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(223,241,64,.06) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(25,25,112,.10) 0%, transparent 65%)",
         pointerEvents: "none",
       }} />
 
       <div
         style={{
-          width: 400,
-          background: "rgba(255,255,255,.04)",
-          border: "1px solid rgba(255,255,255,.1)",
-          borderRadius: 4,
-          padding: "40px 36px",
+          width: 410,
+          background: "rgba(255,255,255,.06)",
+          border: "1px solid rgba(255,255,255,.14)",
+          borderRadius: "var(--r-card)",
+          padding: "44px 40px",
           color: "#fff",
           animation: "fadeIn .4s ease",
           position: "relative",
+          boxShadow: "0 24px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
           <div
             style={{
               width: 40, height: 40, borderRadius: "var(--r-pill)",
-              background: "var(--lime)", color: "var(--ink)",
+              background: "var(--lime)", color: "#ffffff",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontWeight: 800, fontSize: 18, fontFamily: "var(--font-display)",
             }}

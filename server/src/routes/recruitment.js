@@ -9,6 +9,7 @@ import {
 } from "@hrms/shared/schemas";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
+import { notify } from "../utils/notify.js";
 import { indexEntity } from "../utils/search.js";
 
 const router = Router();
@@ -255,6 +256,22 @@ router.post("/interviews", ...requireHR, (req, res) => {
   const id = Number(result.lastInsertRowid);
   audit(db, { actorId: req.user.id, action: "CREATE", entity: "interview", entityId: id, detail: d });
   broadcast({ type: "interview", entity: "interviews" });
+
+  // Notify the interviewer they have been scheduled
+  const candidate = db.prepare(
+    `SELECT c.name FROM candidates c
+     JOIN applications a ON c.id = a.candidate_id
+     WHERE a.id = ?`
+  ).get(d.application_id);
+  const dt = new Date(d.scheduled_at).toLocaleString("en-IN", {
+    dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata",
+  });
+  notify(db, {
+    userId: d.interviewer_id, type: "interview_scheduled", title: "Interview scheduled",
+    body: `You are scheduled to interview ${candidate?.name || "a candidate"} on ${dt}`,
+    link: "/my/interviews", entity: "interview", entityId: id,
+  });
+
   res.status(201).json({ id, ...d, status: "SCHEDULED" });
 });
 
