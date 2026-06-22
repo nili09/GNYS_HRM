@@ -6,6 +6,7 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "seed": "node src/db/seed.js",
+    "reset:fresh": "node src/db/reset-fresh.js",
     "import:v1": "node src/db/import-v1.js",
     "test": "vitest run"
   },
