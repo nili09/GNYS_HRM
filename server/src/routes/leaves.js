@@ -59,6 +59,24 @@ function getEmployee(db, id) {
 }
 
 /**
+ * Returns { available } if `days` of `type` would exceed the employee's balance,
+ * or null if within balance or the type isn't balance-gated (annual <= 0, e.g. LWP).
+ * Single source of truth for both the apply and approve over-balance checks.
+ */
+function overBalanceCheck(db, employeeId, type, days, dateFrom) {
+  const lt = db.prepare("SELECT * FROM leave_types WHERE code = ?").get(type);
+  if (!lt || lt.annual <= 0) return null;
+  const emp = getEmployee(db, employeeId);
+  const types = getLeaveTypes(db);
+  const allLeaves = getEmployeeLeaves(db, employeeId);
+  const adjustments = getAdjustments(db, employeeId);
+  const year = parseInt(dateFrom.slice(0, 4), 10);
+  const bal = leaveBalance(employeeId, year, emp.doj, types, allLeaves, adjustments);
+  if (bal[type] && days > bal[type].available) return { available: bal[type].available };
+  return null;
+}
+
+/**
  * Who should approve this leave?
  * - If the employee has a direct manager → manager
  * - Else → any HR/ADMIN
@@ -169,6 +187,18 @@ router.post("/", requireAuth, (req, res) => {
   const overlap = findOverlap(employeeId, data.date_from, data.date_to, existingLeaves);
   if (overlap)
     return res.status(409).json({ error: "Overlaps an existing pending/approved leave", overlapId: overlap.id });
+
+  // Over-balance check (spec §4: no over-balance apply, except explicit acknowledgment).
+  // Skipped entirely for unpaid types like LWP — see overBalanceCheck.
+  const over = overBalanceCheck(db, employeeId, data.type, days, data.date_from);
+  if (over && !data.confirmOverBalance) {
+    return res.status(400).json({
+      error: `You have ${over.available} ${data.type}; requesting ${days}`,
+      available: over.available,
+      requested: days,
+      requiresConfirm: true,
+    });
+  }
 
   // Insert
   const result = db.prepare(
@@ -299,24 +329,14 @@ router.post("/:id/approve", requireAuth, (req, res) => {
   const { comment, confirmOverBalance } = parsed.data;
 
   // Over-balance check
-  const lt = db.prepare("SELECT * FROM leave_types WHERE code = ?").get(leave.type);
-  if (lt && lt.annual > 0) {
-    const emp = getEmployee(db, leave.employee_id);
-    const types = getLeaveTypes(db);
-    const allLeaves = getEmployeeLeaves(db, leave.employee_id);
-    const adjustments = getAdjustments(db, leave.employee_id);
-    const year = parseInt(leave.date_from.slice(0, 4), 10);
-    const bal = leaveBalance(leave.employee_id, year, emp.doj, types, allLeaves, adjustments);
-    if (bal[leave.type] && leave.days > bal[leave.type].available) {
-      if (!confirmOverBalance) {
-        return res.status(409).json({
-          error: "Over balance",
-          available: bal[leave.type].available,
-          requested: leave.days,
-          requiresConfirm: true,
-        });
-      }
-    }
+  const over = overBalanceCheck(db, leave.employee_id, leave.type, leave.days, leave.date_from);
+  if (over && !confirmOverBalance) {
+    return res.status(409).json({
+      error: "Over balance",
+      available: over.available,
+      requested: leave.days,
+      requiresConfirm: true,
+    });
   }
 
   db.prepare(

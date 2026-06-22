@@ -331,6 +331,58 @@ describe("Leave API", () => {
     });
   });
 
+  // ── Over-balance at apply ───────────────────────────────────────────────
+  // emp1's EL annual = 12 (doj 2024, non-joining year for 2025 → full entitlement).
+  // Jan 6 (Mon) – Jan 24 (Fri) under weekOffs:[0], satOff:"2_4" = 16 working days
+  // (off: 2nd Sat Jan 11, Sundays Jan 12 & 19) — i.e. 4 days over the 12-day balance.
+
+  describe("Over-balance at apply", () => {
+    it("allows apply within balance", async () => {
+      const res = await supertest(app)
+        .post("/api/leaves")
+        .set("Cookie", emp1Cookie)
+        .send({ type: "EL", date_from: "2025-01-06", date_to: "2025-01-10" }); // 5 days
+      expect(res.status).toBe(201);
+      expect(res.body.days).toBe(5);
+    });
+
+    it("rejects apply over balance with a clear message", async () => {
+      const res = await supertest(app)
+        .post("/api/leaves")
+        .set("Cookie", emp1Cookie)
+        .send({ type: "EL", date_from: "2025-01-06", date_to: "2025-01-24" }); // 16 days > 12
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/you have 12 el; requesting 16/i);
+      expect(res.body.requiresConfirm).toBe(true);
+    });
+
+    it("allows over-balance apply with confirmOverBalance acknowledgment", async () => {
+      const res = await supertest(app)
+        .post("/api/leaves")
+        .set("Cookie", emp1Cookie)
+        .send({ type: "EL", date_from: "2025-01-06", date_to: "2025-01-24", confirmOverBalance: true });
+      expect(res.status).toBe(201);
+      expect(res.body.days).toBe(16);
+    });
+
+    it("LWP is never balance-gated even far over typical limits", async () => {
+      const res = await supertest(app)
+        .post("/api/leaves")
+        .set("Cookie", emp1Cookie)
+        .send({ type: "LWP", date_from: "2025-01-06", date_to: "2025-01-31" });
+      expect(res.status).toBe(201);
+    });
+
+    it("HR applying on behalf is also balance-gated", async () => {
+      const res = await supertest(app)
+        .post("/api/leaves")
+        .set("Cookie", hrCookie)
+        .send({ employee_id: emp1.id, type: "EL", date_from: "2025-01-06", date_to: "2025-01-24" });
+      expect(res.status).toBe(400);
+      expect(res.body.requiresConfirm).toBe(true);
+    });
+  });
+
   // ── Approval chain ────────────────────────────────────────────────────
 
   describe("Approval chain", () => {

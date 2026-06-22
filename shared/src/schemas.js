@@ -174,6 +174,7 @@ export const LeaveApplySchema = z.object({
   half_from: z.number().int().min(0).max(1).default(0),
   half_to: z.number().int().min(0).max(1).default(0),
   reason: z.string().max(1000).optional().nullable(),
+  confirmOverBalance: z.boolean().optional(),
 });
 
 export const LeaveActSchema = z.object({

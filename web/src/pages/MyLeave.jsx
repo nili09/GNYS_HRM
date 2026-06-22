@@ -50,6 +50,8 @@ export default function MyLeave() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [overBalanceWarn, setOverBalanceWarn] = useState(null);
+  const [ackOverBalance, setAckOverBalance] = useState(false);
 
   const year = new Date().getFullYear();
 
@@ -63,12 +65,18 @@ export default function MyLeave() {
       setTypes(t);
       setBalances(b.balances);
       setLeaves(l);
-      if (!form.type && t.length > 0) setForm((f) => ({ ...f, type: t[0].code }));
     } catch { /* ignore */ }
     setLoading(false);
   }, [year, user.id]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // Default the type dropdown to the first leave type on initial load only —
+  // the updater form reads current state, so this won't clobber a later user pick.
+  useEffect(() => {
+    if (types.length === 0) return;
+    setForm((f) => (f.type ? f : { ...f, type: types[0].code }));
+  }, [types]);
 
   useEffect(() => {
     const es = new EventSource("/api/events", { withCredentials: true });
@@ -91,6 +99,12 @@ export default function MyLeave() {
     setPreview({ balAvail: bal?.available ?? null });
   }, [form.date_from, form.date_to, form.type, form.half_from, form.half_to, balances]);
 
+  // A change to the request invalidates any prior over-balance acknowledgment.
+  useEffect(() => {
+    setOverBalanceWarn(null);
+    setAckOverBalance(false);
+  }, [form.type, form.date_from, form.date_to, form.half_from, form.half_to]);
+
   async function handleApply(e) {
     e.preventDefault();
     setError(""); setSuccess(""); setSubmitting(true);
@@ -102,12 +116,19 @@ export default function MyLeave() {
         half_from: form.half_from,
         half_to: form.half_to,
         reason: form.reason || null,
+        ...(ackOverBalance ? { confirmOverBalance: true } : {}),
       });
       setSuccess(`Leave applied: ${res.days} day(s), status ${res.status}`);
       setForm({ type: types[0]?.code || "", date_from: "", date_to: "", half_from: 0, half_to: 0, reason: "" });
+      setOverBalanceWarn(null);
+      setAckOverBalance(false);
       fetchData();
     } catch (err) {
-      setError(err.data?.error || err.message);
+      if (err.data?.requiresConfirm) {
+        setOverBalanceWarn(err.data.error);
+      } else {
+        setError(err.data?.error || err.message);
+      }
     }
     setSubmitting(false);
   }
@@ -236,7 +257,19 @@ export default function MyLeave() {
               {error && <div style={{ marginTop: 12, color: "var(--danger)", fontSize: 13 }}>{error}</div>}
               {success && <div style={{ marginTop: 12, color: "var(--charcoal)", fontSize: 13 }}>{success}</div>}
 
-              <button type="submit" disabled={submitting || !form.date_from || !form.date_to}
+              {overBalanceWarn && (
+                <div style={{ marginTop: 12, padding: 10, borderRadius: "var(--r-card)", background: "var(--badge-danger-bg)", color: "var(--danger)", fontSize: 13 }}>
+                  {overBalanceWarn}
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--text)" }}>
+                    <input type="checkbox" checked={ackOverBalance}
+                      onChange={(e) => setAckOverBalance(e.target.checked)}
+                      style={{ width: 16, height: 16 }} />
+                    I understand, apply anyway
+                  </label>
+                </div>
+              )}
+
+              <button type="submit" disabled={submitting || !form.date_from || !form.date_to || (overBalanceWarn && !ackOverBalance)}
                 style={{
                   marginTop: 16, padding: "12px 28px", borderRadius: "var(--r-pill)", border: "none",
                   background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 13.5,
