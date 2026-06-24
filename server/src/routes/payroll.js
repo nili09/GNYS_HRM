@@ -59,7 +59,7 @@ function getActiveSalary(db, employeeId, ym) {
     .prepare(
       `SELECT * FROM salary_structures
        WHERE employee_id = ? AND effective_from <= ?
-       ORDER BY effective_from DESC LIMIT 1`
+       ORDER BY effective_from DESC, id DESC LIMIT 1`
     )
     .get(employeeId, monthStart);
 }
@@ -175,14 +175,6 @@ router.post("/runs", ...requireHR, (req, res) => {
     return res.status(409).json({ error: "Run already exists for this month" });
   }
 
-  const result = db
-    .prepare("INSERT INTO payroll_runs(month) VALUES(?)")
-    .run(month);
-  const runId = Number(result.lastInsertRowid);
-
-  const lines = generateLines(db, month);
-
-  // Insert lines
   const insertLine = db.prepare(
     `INSERT INTO payroll_lines(run_id, employee_id, payable, month_days,
        earn_basic, earn_hra, earn_conv, earn_medical, earn_lta, earn_special, earn_other,
@@ -190,7 +182,14 @@ router.post("/runs", ...requireHR, (req, res) => {
      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
 
-  const insertMany = db.transaction((lines) => {
+  const createRun = db.transaction(() => {
+    const result = db
+      .prepare("INSERT INTO payroll_runs(month) VALUES(?)")
+      .run(month);
+    const runId = Number(result.lastInsertRowid);
+
+    const lines = generateLines(db, month);
+
     for (const l of lines) {
       insertLine.run(
         runId,
@@ -216,8 +215,11 @@ router.post("/runs", ...requireHR, (req, res) => {
         l.esi_covered
       );
     }
+
+    return { runId, lines };
   });
-  insertMany(lines);
+
+  const { runId, lines } = createRun();
 
   audit(db, {
     actorId: req.user.id,
@@ -249,18 +251,18 @@ router.post("/runs/:id/regenerate", ...requireHR, (req, res) => {
     return res.status(400).json({ error: "Can only regenerate DRAFT runs" });
   }
 
-  // Delete old lines
-  db.prepare("DELETE FROM payroll_lines WHERE run_id=?").run(run.id);
-
-  const lines = generateLines(db, run.month);
-
   const insertLine = db.prepare(
     `INSERT INTO payroll_lines(run_id, employee_id, payable, month_days,
        earn_basic, earn_hra, earn_conv, earn_medical, earn_lta, earn_special, earn_other,
        gross, ded_pf, ded_esi, ded_pt, ded_tds, net, er_epf, er_eps, er_esi, esi_covered)
      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
-  const insertMany = db.transaction((lines) => {
+
+  const regenerateLines = db.transaction(() => {
+    db.prepare("DELETE FROM payroll_lines WHERE run_id=?").run(run.id);
+
+    const lines = generateLines(db, run.month);
+
     for (const l of lines) {
       insertLine.run(
         run.id,
@@ -287,7 +289,7 @@ router.post("/runs/:id/regenerate", ...requireHR, (req, res) => {
       );
     }
   });
-  insertMany(lines);
+  regenerateLines();
 
   const savedLines = db
     .prepare(
@@ -337,7 +339,8 @@ router.post("/runs/:id/finalize", ...requireHR, (req, res) => {
     });
   }
 
-  res.json({ ...run, status: "FINAL", finalized_at: new Date().toISOString() });
+  const updated = db.prepare("SELECT * FROM payroll_runs WHERE id=?").get(run.id);
+  res.json(updated);
 });
 
 // POST /payroll/runs/:id/reopen
@@ -362,7 +365,8 @@ router.post("/runs/:id/reopen", ...requireHR, (req, res) => {
   });
 
   broadcast({ type: "mutation", entity: "payroll", id: run.id });
-  res.json({ ...run, status: "DRAFT", finalized_at: null });
+  const updated = db.prepare("SELECT * FROM payroll_runs WHERE id=?").get(run.id);
+  res.json(updated);
 });
 
 // GET /payroll/runs/:id/register.csv — full register export (HR only)

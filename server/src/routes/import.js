@@ -12,6 +12,7 @@ import { broadcast } from "../utils/sse.js";
 import { sendWelcomeEmail } from "../utils/mailer.js";
 import { CsvImportSchema } from "@hrms/shared/schemas";
 import { rowToEmp } from "@hrms/shared/import";
+import { todayIST } from "@hrms/shared/datetime";
 
 const router = Router();
 
@@ -128,7 +129,7 @@ router.post("/", requireHR, async (req, res) => {
         if (mapping.doj >= 0) {
           problems.push(`Row ${ri + 2} (${e.name}): unreadable joining date "${row[mapping.doj] || ""}" — set to today`);
         }
-        e.doj = new Date().toISOString().slice(0, 10);
+        e.doj = todayIST();
       }
       if (!e.code) {
         e.code = "GIL" + String(nextCode).padStart(4, "0");

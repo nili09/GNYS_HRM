@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth, requireRole } from "../middleware/auth.js";
+import { currentYearIST } from "@hrms/shared/datetime";
 import { z } from "zod";
 
 const router = Router();
@@ -64,7 +65,7 @@ router.delete("/:date", requireRole("HR", "ADMIN"), (req, res) => {
 // POST /holidays/seed?year=YYYY  — seed national + Maharashtra fixed dates (HR)
 router.post("/seed", requireRole("HR", "ADMIN"), (req, res) => {
   const db = req.app.locals.db;
-  const yr = req.query.year ?? String(new Date().getFullYear());
+  const yr = req.query.year ?? String(currentYearIST());
   if (!/^\d{4}$/.test(yr)) return res.status(400).json({ error: "year must be YYYY" });
 
   const insert = db.prepare("INSERT OR IGNORE INTO holidays(date, name) VALUES(?,?)");

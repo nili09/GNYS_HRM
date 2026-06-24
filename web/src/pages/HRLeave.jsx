@@ -42,24 +42,28 @@ export default function HRLeave() {
   const [typeForm, setTypeForm] = useState({});
 
   const year = new Date().getFullYear();
+  const [leavePage, setLeavePage] = useState(1);
+  const [leaveTotal, setLeaveTotal] = useState(0);
+  const PAGE_SIZE = 50;
 
   const fetchData = useCallback(async () => {
     try {
       const [l, t, b, e] = await Promise.all([
-        api.get("/leaves"),
+        api.get(`/leaves?page=${leavePage}&limit=${PAGE_SIZE}`),
         api.get("/leaves/types"),
         api.get(`/leaves/balances?year=${year}`),
         // /leaves/balances returns one row per active employee with no name —
         // this needs the whole roster to resolve names, not a search picker.
         api.get("/employees?limit=5000"),
       ]);
-      setLeaves(l);
+      setLeaves(l.data);
+      setLeaveTotal(l.total);
       setTypes(t);
       setBalanceData(b);
       setEmployees(e.data || []);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [year]);
+  }, [year, leavePage]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -203,6 +207,29 @@ export default function HRLeave() {
               ))}
             </tbody>
           </table>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12, padding: "10px 16px" }}>
+            <span style={{ fontSize: 12, color: "var(--text-faint)" }}>
+              {leaveTotal === 0
+                ? "0 requests"
+                : `${(leavePage - 1) * PAGE_SIZE + 1}–${Math.min(leavePage * PAGE_SIZE, leaveTotal)} of ${leaveTotal}`}
+            </span>
+            <button
+              className="btn-sm"
+              disabled={leavePage <= 1}
+              onClick={() => setLeavePage(p => p - 1)}
+              style={{ opacity: leavePage <= 1 ? 0.5 : 1 }}
+            >
+              ‹ Prev
+            </button>
+            <button
+              className="btn-sm"
+              disabled={leavePage * PAGE_SIZE >= leaveTotal}
+              onClick={() => setLeavePage(p => p + 1)}
+              style={{ opacity: leavePage * PAGE_SIZE >= leaveTotal ? 0.5 : 1 }}
+            >
+              Next ›
+            </button>
+          </div>
         </div>
       )}
 

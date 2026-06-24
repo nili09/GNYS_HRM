@@ -74,7 +74,7 @@ function applyRBAC(db, results, userId, userRole) {
       case "announcement":
         return true;
       case "job":
-        return true;
+        return false;
       default:
         return false;
     }

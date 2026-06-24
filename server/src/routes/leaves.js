@@ -23,6 +23,7 @@ import {
   LeaveTypeCreateSchema,
   LeaveTypePatchSchema,
 } from "@hrms/shared/schemas";
+import { todayIST, currentYearIST } from "@hrms/shared/datetime";
 import { countWorkingDays, findOverlap, leaveBalance } from "@hrms/shared/leave";
 import { broadcast } from "../utils/sse.js";
 import { audit } from "../utils/audit.js";
@@ -33,9 +34,11 @@ const router = Router();
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function getSettings(db) {
-  const row = db.prepare("SELECT value FROM settings WHERE key = 'calendar'").get();
-  if (row) return JSON.parse(row.value);
-  return { weekOffs: [0], satOff: "none" };
+  const rows = db
+    .prepare("SELECT key, value FROM settings WHERE key IN ('weekOffs','satOff')")
+    .all();
+  const m = Object.fromEntries(rows.map((r) => [r.key, JSON.parse(r.value)]));
+  return { weekOffs: m.weekOffs ?? [0], satOff: m.satOff ?? "none" };
 }
 
 function getHolidays(db) {
@@ -270,40 +273,54 @@ router.get("/pending", requireAuth, (req, res) => {
   res.json(leaves);
 });
 
+const LEAVES_DEFAULT_LIMIT = 50;
+const LEAVES_MAX_LIMIT = 1000;
+
 router.get("/", requireAuth, (req, res) => {
   const db = req.app.locals.db;
   const isHR = ["HR", "ADMIN"].includes(req.user.role);
   const { employee_id, status, year } = req.query;
 
-  let sql = `SELECT l.*, e.name as employee_name, e.code as employee_code
-             FROM leaves l JOIN employees e ON l.employee_id = e.id WHERE 1=1`;
+  let where = "1=1";
   const params = [];
 
   if (employee_id) {
-    // Specific employee — must be self, own report, or HR
     const targetId = parseInt(employee_id, 10);
     if (targetId !== req.user.id && !isHR && !isManagerOf(db, req.user.id, targetId)) {
       return res.status(403).json({ error: "Forbidden" });
     }
-    sql += " AND l.employee_id = ?";
+    where += " AND l.employee_id = ?";
     params.push(targetId);
   } else if (!isHR) {
-    // Non-HR, non-specific: own leaves only
-    sql += " AND l.employee_id = ?";
+    where += " AND l.employee_id = ?";
     params.push(req.user.id);
   }
 
   if (status) {
-    sql += " AND l.status = ?";
-    params.push(status.toUpperCase());
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    where += ` AND l.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
   }
   if (year) {
-    sql += " AND l.date_from LIKE ?";
+    where += " AND l.date_from LIKE ?";
     params.push(`${year}-%`);
   }
 
-  sql += " ORDER BY l.applied_at DESC";
-  res.json(db.prepare(sql).all(...params));
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(LEAVES_MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || LEAVES_DEFAULT_LIMIT));
+  const offset = (page - 1) * limit;
+
+  const total = db.prepare(
+    `SELECT COUNT(*) as c FROM leaves l JOIN employees e ON l.employee_id = e.id WHERE ${where}`
+  ).get(...params).c;
+
+  const data = db.prepare(
+    `SELECT l.*, e.name as employee_name, e.code as employee_code
+     FROM leaves l JOIN employees e ON l.employee_id = e.id
+     WHERE ${where} ORDER BY l.applied_at DESC LIMIT ? OFFSET ?`
+  ).all(...params, limit, offset);
+
+  res.json({ data, total, page, pageSize: limit });
 });
 
 // ── Approve / Reject / Cancel ───────────────────────────────────────────────
@@ -415,7 +432,7 @@ router.post("/:id/cancel", requireAuth, (req, res) => {
       // HR can always cancel approved
     } else if (isSelf) {
       // Employee can cancel only if date_from is in the future
-      const today = new Date().toISOString().slice(0, 10);
+      const today = todayIST();
       if (leave.date_from <= today) {
         return res.status(400).json({ error: "Cannot cancel: leave has already started" });
       }
@@ -443,7 +460,7 @@ router.post("/:id/cancel", requireAuth, (req, res) => {
 router.get("/balances", requireAuth, (req, res) => {
   const db = req.app.locals.db;
   const isHR = ["HR", "ADMIN"].includes(req.user.role);
-  const year = parseInt(req.query.year || new Date().getFullYear(), 10);
+  const year = parseInt(req.query.year || currentYearIST(), 10);
   const targetId = req.query.employeeId ? parseInt(req.query.employeeId, 10) : null;
 
   // RBAC
@@ -469,15 +486,28 @@ router.get("/balances", requireAuth, (req, res) => {
     employees = db.prepare("SELECT id, doj FROM employees WHERE id = ?").all(req.user.id);
   }
 
-  const results = employees.map((emp) => {
-    const leaves = getEmployeeLeaves(db, emp.id);
-    const adjustments = getAdjustments(db, emp.id);
-    return {
-      employeeId: emp.id,
-      year,
-      balances: leaveBalance(emp.id, year, emp.doj, types, leaves, adjustments),
-    };
-  });
+  if (employees.length === 0) return res.json([]);
+
+  const ids = employees.map(e => e.id);
+  const placeholders = ids.map(() => "?").join(",");
+
+  const allLeaves = db.prepare(
+    `SELECT * FROM leaves WHERE employee_id IN (${placeholders})`
+  ).all(...ids);
+  const allAdj = db.prepare(
+    `SELECT * FROM leave_adjustments WHERE employee_id IN (${placeholders})`
+  ).all(...ids);
+
+  const leavesByEmp = {};
+  for (const l of allLeaves) (leavesByEmp[l.employee_id] ??= []).push(l);
+  const adjByEmp = {};
+  for (const a of allAdj) (adjByEmp[a.employee_id] ??= []).push(a);
+
+  const results = employees.map((emp) => ({
+    employeeId: emp.id,
+    year,
+    balances: leaveBalance(emp.id, year, emp.doj, types, leavesByEmp[emp.id] || [], adjByEmp[emp.id] || []),
+  }));
 
   res.json(results);
 });
@@ -518,7 +548,11 @@ router.get("/pending-count", requireAuth, (req, res) => {
 
   let count;
   if (isHR) {
-    count = db.prepare("SELECT COUNT(*) as c FROM leaves WHERE status = 'PENDING'").get().c;
+    count = db.prepare(
+      `SELECT COUNT(*) as c FROM leaves l
+       JOIN employees e ON l.employee_id = e.id
+       WHERE l.status = 'PENDING'`
+    ).get().c;
   } else {
     count = db.prepare(
       `SELECT COUNT(*) as c FROM leaves l

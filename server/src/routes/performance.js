@@ -19,7 +19,11 @@ router.get("/review-cycles", requireAuth, (req, res) => {
   const { status, year } = req.query;
   let sql = "SELECT * FROM review_cycles WHERE 1=1";
   const params = [];
-  if (status) { sql += " AND status = ?"; params.push(status.toUpperCase()); }
+  if (status) {
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    sql += ` AND status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
+  }
   if (year) { sql += " AND year = ?"; params.push(parseInt(year, 10)); }
   sql += " ORDER BY year DESC, created_at DESC";
   res.json(db.prepare(sql).all(...params));

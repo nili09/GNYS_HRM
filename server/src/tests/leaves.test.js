@@ -229,10 +229,9 @@ describe("Leave API", () => {
     db.prepare("INSERT INTO leave_types(code, name, annual, paid) VALUES(?,?,?,?)").run("SL", "Sick Leave", 6, 1);
     db.prepare("INSERT INTO leave_types(code, name, annual, paid) VALUES(?,?,?,?)").run("LWP", "Leave Without Pay", 0, 0);
 
-    // Seed calendar settings
-    db.prepare("INSERT INTO settings(key, value) VALUES(?, ?)").run(
-      "calendar", JSON.stringify({ weekOffs: [0], satOff: "2_4" })
-    );
+    // Seed calendar settings (individual keys, matching seed.js / attendance.js)
+    db.prepare("INSERT INTO settings(key, value) VALUES(?, ?)").run("weekOffs", JSON.stringify([0]));
+    db.prepare("INSERT INTO settings(key, value) VALUES(?, ?)").run("satOff", JSON.stringify("2_4"));
 
     // Create users
     hr = await insertEmployee(db, { code: "HR01", name: "HR User", email: "hr@test.com", role: "HR", doj: "2024-01-01" });
@@ -720,7 +719,7 @@ describe("Leave API", () => {
         .get("/api/leaves")
         .set("Cookie", emp1Cookie);
       expect(res.status).toBe(200);
-      expect(res.body.every((l) => l.employee_id === emp1.id)).toBe(true);
+      expect(res.body.data.every((l) => l.employee_id === emp1.id)).toBe(true);
     });
 
     it("HR sees all leaves", async () => {
@@ -733,7 +732,7 @@ describe("Leave API", () => {
         .get("/api/leaves")
         .set("Cookie", hrCookie);
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThanOrEqual(2);
+      expect(res.body.data.length).toBeGreaterThanOrEqual(2);
     });
 
     it("filters by status", async () => {
@@ -745,7 +744,48 @@ describe("Leave API", () => {
       const res = await supertest(app)
         .get("/api/leaves?status=APPROVED")
         .set("Cookie", emp1Cookie);
-      expect(res.body.every((l) => l.status === "APPROVED")).toBe(true);
+      expect(res.body.data.every((l) => l.status === "APPROVED")).toBe(true);
     });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REGRESSION: getSettings reads real keys (weekOffs, satOff), not 'calendar'
+// ═══════════════════════════════════════════════════════════════════════════
+
+describe("Leave getSettings regression — satOff honored", () => {
+  let app, db, emp, cookie;
+
+  beforeEach(async () => {
+    ({ app, db } = buildApp());
+    db.prepare("INSERT INTO leave_types(code, name, annual, paid) VALUES(?,?,?,?)").run("EL", "Earned Leave", 30, 1);
+    emp = await insertEmployee(db, { code: "REG01", name: "Reg Test", email: "reg@test.com", role: "EMPLOYEE", doj: "2024-01-01" });
+    cookie = await loginAs(app, "reg@test.com");
+  });
+
+  it("skips 2nd/4th Saturdays when satOff=2_4 is configured via individual keys", async () => {
+    // Seed the CORRECT way (individual keys, as seed.js / attendance.js do)
+    db.prepare("INSERT INTO settings(key, value) VALUES(?, ?)").run("weekOffs", JSON.stringify([0]));
+    db.prepare("INSERT INTO settings(key, value) VALUES(?, ?)").run("satOff", JSON.stringify("2_4"));
+
+    // Jan 2025: 2nd Sat = Jan 11, 4th Sat = Jan 25
+    // Jan 6 (Mon) – Jan 25 (Sat): 20 calendar days
+    // Sundays: 12, 19 = 2 off;  2nd Sat (11) + 4th Sat (25) = 2 off
+    // Working = 20 - 2 - 2 = 16
+    const res = await supertest(app).post("/api/leaves").set("Cookie", cookie)
+      .send({ type: "EL", date_from: "2025-01-06", date_to: "2025-01-25", confirmOverBalance: true });
+    expect(res.status).toBe(201);
+    expect(res.body.days).toBe(16);
+  });
+
+  it("defaults to Sundays-only when no settings rows exist", async () => {
+    // No settings seeded — fallback weekOffs:[0], satOff:"none"
+    // Jan 6 (Mon) – Jan 25 (Sat): 20 calendar days
+    // Sundays: 12, 19 = 2 off;  all Saturdays are working
+    // Working = 20 - 2 = 18
+    const res = await supertest(app).post("/api/leaves").set("Cookie", cookie)
+      .send({ type: "EL", date_from: "2025-01-06", date_to: "2025-01-25", confirmOverBalance: true });
+    expect(res.status).toBe(201);
+    expect(res.body.days).toBe(18);
   });
 });

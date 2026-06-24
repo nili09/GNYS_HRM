@@ -24,7 +24,11 @@ router.get("/jobs", ...requireHR, (req, res) => {
              LEFT JOIN departments d ON j.dept_id = d.id
              LEFT JOIN locations l ON j.location_id = l.id WHERE 1=1`;
   const params = [];
-  if (status) { sql += " AND j.status = ?"; params.push(status.toUpperCase()); }
+  if (status) {
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    sql += ` AND j.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
+  }
   sql += " ORDER BY j.created_at DESC";
   res.json(db.prepare(sql).all(...params));
 });
@@ -148,7 +152,11 @@ router.get("/applications", ...requireHR, (req, res) => {
              JOIN job_openings j ON a.job_id = j.id WHERE 1=1`;
   const params = [];
   if (job_id) { sql += " AND a.job_id = ?"; params.push(parseInt(job_id, 10)); }
-  if (status) { sql += " AND a.status = ?"; params.push(status.toUpperCase()); }
+  if (status) {
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    sql += ` AND a.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
+  }
   sql += " ORDER BY a.applied_at DESC";
   res.json(db.prepare(sql).all(...params));
 });
@@ -234,8 +242,9 @@ router.get("/interviews", requireAuth, (req, res) => {
     params.push(parseInt(req.query.application_id, 10));
   }
   if (req.query.status) {
-    sql += " AND i.status = ?";
-    params.push(req.query.status.toUpperCase());
+    const statuses = (Array.isArray(req.query.status) ? req.query.status : [req.query.status]).map(s => s.toUpperCase());
+    sql += ` AND i.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
   }
   sql += " ORDER BY i.scheduled_at ASC";
   res.json(db.prepare(sql).all(...params));

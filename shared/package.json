@@ -9,7 +9,8 @@
     "./import": "./src/import.js",
     "./attendance": "./src/attendance.js",
     "./leave": "./src/leave.js",
-    "./payroll": "./src/payroll.js"
+    "./payroll": "./src/payroll.js",
+    "./datetime": "./src/datetime.js"
   },
   "dependencies": {
     "zod": "^3.23.8"

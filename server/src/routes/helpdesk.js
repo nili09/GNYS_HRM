@@ -60,7 +60,11 @@ router.get("/tickets", requireAuth, (req, res) => {
     conditions.push("(t.employee_id = ? OR t.assigned_to = ?)");
     params.push(req.user.id, req.user.id);
   }
-  if (status) { conditions.push("t.status = ?"); params.push(status); }
+  if (status) {
+    const statuses = Array.isArray(status) ? status : [status];
+    conditions.push(`t.status IN (${statuses.map(() => "?").join(",")})`);
+    params.push(...statuses);
+  }
   if (category_id) { conditions.push("t.category_id = ?"); params.push(parseInt(category_id, 10)); }
 
   if (conditions.length) sql += " WHERE " + conditions.join(" AND ");

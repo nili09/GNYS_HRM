@@ -60,11 +60,11 @@ export default function MyLeave() {
       const [t, b, l] = await Promise.all([
         api.get("/leaves/types"),
         api.get(`/leaves/balances?year=${year}&employeeId=${user.id}`),
-        api.get("/leaves"),
+        api.get("/leaves?limit=1000"),
       ]);
       setTypes(t);
       setBalances(b.balances);
-      setLeaves(l);
+      setLeaves(l.data);
     } catch { /* ignore */ }
     setLoading(false);
   }, [year, user.id]);

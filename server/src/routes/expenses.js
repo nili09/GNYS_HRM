@@ -192,7 +192,11 @@ router.get("/", requireAuth, (req, res) => {
     params.push(req.user.id);
   }
 
-  if (status) { sql += " AND x.status = ?"; params.push(status.toUpperCase()); }
+  if (status) {
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    sql += ` AND x.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
+  }
   if (month) { sql += " AND x.date LIKE ?"; params.push(`${month}-%`); }
 
   sql += " ORDER BY x.applied_at DESC";
@@ -331,7 +335,11 @@ router.get("/advances", requireAuth, (req, res) => {
     params.push(req.user.id);
   }
 
-  if (status) { sql += " AND a.status = ?"; params.push(status.toUpperCase()); }
+  if (status) {
+    const statuses = (Array.isArray(status) ? status : [status]).map(s => s.toUpperCase());
+    sql += ` AND a.status IN (${statuses.map(() => "?").join(",")})`;
+    params.push(...statuses);
+  }
   sql += " ORDER BY a.applied_at DESC";
   res.json(db.prepare(sql).all(...params));
 });

@@ -126,6 +126,18 @@ describe("Search: RBAC", () => {
     expect(empResults.every(r => r.entity_id === 99)).toBe(true);
   });
 
+  test("employee cannot see job openings", () => {
+    indexEntity(db, "job", 400, "Software Engineer", "React Node", { dept: "Tech", status: "OPEN" });
+    const results = search(db, "Software Engineer", { userId: 99, userRole: "EMPLOYEE" });
+    expect(results.filter(r => r.entity === "job")).toHaveLength(0);
+  });
+
+  test("HR sees job openings", () => {
+    indexEntity(db, "job", 401, "Product Manager", "roadmap strategy", { dept: "Product", status: "OPEN" });
+    const results = search(db, "Product Manager", { userId: 1, userRole: "HR" });
+    expect(results.some(r => r.entity === "job")).toBe(true);
+  });
+
   test("manager sees direct reports", async () => {
     const app = buildApp().app;
     const localDb = app.locals.db;

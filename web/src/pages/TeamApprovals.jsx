@@ -50,10 +50,10 @@ export default function TeamApprovals() {
     try {
       const [p, all] = await Promise.all([
         api.get("/leaves/pending"),
-        api.get(`/leaves?status=APPROVED`),
+        api.get(`/leaves?status=APPROVED&limit=1000`),
       ]);
       setPending(p);
-      setApproved(all.filter(
+      setApproved((all.data || []).filter(
         (l) => l.status === "APPROVED" && l.date_from.slice(0, 7) <= calMonth && l.date_to.slice(0, 7) >= calMonth
       ));
     } catch { /* ignore */ }
