@@ -5,7 +5,7 @@ const ThemeContext = createContext();
 function getInitialTheme() {
   const stored = localStorage.getItem("hrms-theme");
   if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 export function ThemeProvider({ children }) {

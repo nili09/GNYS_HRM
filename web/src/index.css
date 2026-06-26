@@ -132,6 +132,16 @@
   --ease:    .25s cubic-bezier(.4, 0, .2, 1);
   --ease-em: cubic-bezier(.215, .62, .34, 1);
 
+  /* ── Sidebar (light) ── */
+  --sidebar-bg:        #ffffff;
+  --sidebar-fg:        #6e6e73;
+  --sidebar-fg-hover:  #1d1d1f;
+  --sidebar-fg-active: #191970;
+  --sidebar-hover-bg:  rgba(25, 25, 112, .06);
+  --sidebar-active-bg: var(--grad-active);
+  --sidebar-border:    #e5e5e3;
+  --sidebar-muted:     #aeaeb2;
+
   /* ── Backward-compat aliases (some older pages use these names) ── */
   --border:    var(--line);
   --bg-raised: var(--card);
@@ -196,6 +206,16 @@
   /* ── Dark-mode glow ring uses lighter periwinkle to stay visible ── */
   --lime-glow:   0 0 0 3px rgba(120, 120, 220, .40);
 
+  /* ── Sidebar (dark — pixel-identical to previous hardcoded look) ── */
+  --sidebar-bg:        #0e0e0f;
+  --sidebar-fg:        rgba(255,255,255,.55);
+  --sidebar-fg-hover:  rgba(255,255,255,.85);
+  --sidebar-fg-active: var(--lime-light);
+  --sidebar-hover-bg:  rgba(255,255,255,.06);
+  --sidebar-active-bg: var(--grad-active);
+  --sidebar-border:    rgba(255,255,255,.07);
+  --sidebar-muted:     rgba(255,255,255,.25);
+
   /* ── Gradient tokens — theme-aware variants ── */
   --grad-cta:    linear-gradient(135deg, #2a2a9f 0%, #191970 100%);
   --grad-active: linear-gradient(135deg, rgba(25,25,112,.17) 0%, rgba(25,25,112,.06) 100%);
@@ -216,14 +236,14 @@
 .sidebar-scroll::-webkit-scrollbar { width: 4px; }
 .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, .08);
+  background: rgba(128, 128, 128, .18);
   border-radius: 2px;
 }
-.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .22); }
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, .35); }
 
 /* Firefox scrollbar */
 * { scrollbar-width: thin; scrollbar-color: rgba(128,128,128,.22) transparent; }
-.sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.08) transparent; }
+.sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(128,128,128,.18) transparent; }
 
 /* ── Reset & base ──────────────────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }

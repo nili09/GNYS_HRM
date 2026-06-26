@@ -22,12 +22,12 @@ function NavItem({ to, icon, label, badge, onNav }) {
         display: "flex", alignItems: "center", gap: 11,
         padding: "9px 12px 9px 10px",
         borderRadius: 8,
-        color: isActive ? "var(--lime-light)" : hovered ? "rgba(255,255,255,.85)" : "rgba(255,255,255,.55)",
+        color: isActive ? "var(--sidebar-fg-active)" : hovered ? "var(--sidebar-fg-hover)" : "var(--sidebar-fg)",
         fontSize: 12, textDecoration: "none",
         cursor: "pointer",
         transition: "background .2s, color .2s",
-        borderLeft: isActive ? "3px solid var(--lime-light)" : "3px solid transparent",
-        background: isActive ? "var(--grad-active)" : hovered ? "rgba(255,255,255,.06)" : "transparent",
+        borderLeft: isActive ? "3px solid var(--sidebar-fg-active)" : "3px solid transparent",
+        background: isActive ? "var(--sidebar-active-bg)" : hovered ? "var(--sidebar-hover-bg)" : "transparent",
         fontWeight: 600,
         textTransform: "uppercase",
         letterSpacing: ".05rem",
@@ -53,7 +53,7 @@ function SectionLabel({ children }) {
   return (
     <div style={{
       fontSize: 9.5, fontWeight: 700, letterSpacing: ".12em",
-      color: "rgba(255,255,255,.25)", textTransform: "uppercase",
+      color: "var(--sidebar-muted)", textTransform: "uppercase",
       padding: "12px 14px 4px", marginTop: 4,
     }}>
       {children}
@@ -174,7 +174,7 @@ export default function AppShell() {
       <div
         style={{
           padding: "22px 6px 18px",
-          borderBottom: "1px solid rgba(255,255,255,.07)",
+          borderBottom: "1px solid var(--sidebar-border)",
           marginBottom: 6,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}
@@ -185,11 +185,11 @@ export default function AppShell() {
             alt="Genesys HRMS"
             style={{
               height: 22, width: "auto",
-              filter: "brightness(0) invert(1)",
+              filter: theme === "dark" ? "brightness(0) invert(1)" : "none",
               opacity: 0.9, display: "block",
             }}
           />
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,.3)", letterSpacing: ".02em", marginTop: 4, display: "block" }}>
+          <span style={{ fontSize: 10, color: "var(--sidebar-muted)", letterSpacing: ".02em", marginTop: 4, display: "block" }}>
             International Corp Ltd
           </span>
         </div>
@@ -197,7 +197,7 @@ export default function AppShell() {
           <button
             onClick={closeDrawer}
             style={{
-              background: "none", border: "none", color: "rgba(255,255,255,.5)",
+              background: "none", border: "none", color: "var(--sidebar-fg)",
               fontSize: 22, cursor: "pointer", padding: "4px 8px", lineHeight: 1,
             }}
             aria-label="Close menu"
@@ -269,28 +269,28 @@ export default function AppShell() {
       <div
         style={{
           padding: "14px 6px 18px",
-          borderTop: "1px solid rgba(255,255,255,.07)",
+          borderTop: "1px solid var(--sidebar-border)",
           display: "flex", alignItems: "center", gap: 10,
         }}
       >
-        <ProfilePhoto employee={user} size={30} style={{ background: "var(--charcoal)", color: "var(--lime-light)" }} />
+        <ProfilePhoto employee={user} size={30} style={{ background: "var(--sidebar-hover-bg)", color: "var(--sidebar-fg-active)" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: "#fff", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</div>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,.3)", letterSpacing: ".06em", textTransform: "uppercase" }}>{user?.role}</div>
+          <div style={{ color: "var(--sidebar-fg-hover)", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</div>
+          <div style={{ fontSize: 10, color: "var(--sidebar-muted)", letterSpacing: ".06em", textTransform: "uppercase" }}>{user?.role}</div>
         </div>
         <button
           onClick={toggleTheme}
           title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           style={{
             background: "none", border: "none",
-            color: "var(--text-faint)", cursor: "pointer",
+            color: "var(--sidebar-fg)", cursor: "pointer",
             fontSize: 14, padding: "4px 8px", minWidth: 36, minHeight: 36,
             display: "flex", alignItems: "center", justifyContent: "center",
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime-light)"}
-          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-faint)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--sidebar-fg-active)"}
+          onMouseLeave={(e) => e.currentTarget.style.color = "var(--sidebar-fg)"}
         >
           <Icon name={theme === "dark" ? "light_mode" : "dark_mode"} />
         </button>
@@ -300,14 +300,14 @@ export default function AppShell() {
           title="Sign out"
           style={{
             background: "none", border: "none",
-            color: "var(--text-faint)", cursor: "pointer",
+            color: "var(--sidebar-fg)", cursor: "pointer",
             fontSize: 14, padding: "4px 8px", minWidth: 36, minHeight: 36,
             display: "flex", alignItems: "center", justifyContent: "center",
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--lime-light)"}
-          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-faint)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--sidebar-fg-active)"}
+          onMouseLeave={(e) => e.currentTarget.style.color = "var(--sidebar-fg)"}
         >
           <Icon name="logout" />
         </button>
@@ -322,7 +322,7 @@ export default function AppShell() {
         <div
           onClick={closeDrawer}
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+            position: "fixed", inset: 0, background: "var(--overlay)",
             zIndex: 999, animation: "fadeIn .15s ease-out",
           }}
         />
@@ -334,7 +334,7 @@ export default function AppShell() {
           style={{
             position: "fixed", top: 0, left: 0, bottom: 0,
             width: 280,
-            background: "var(--ink)", color: "var(--text-faint)",
+            background: "var(--sidebar-bg)", color: "var(--sidebar-fg)",
             display: "flex", flexDirection: "column",
             padding: "0 10px",
             zIndex: 1000,
@@ -350,10 +350,10 @@ export default function AppShell() {
         <aside
           style={{
             width: sidebarWidth, minWidth: MIN_WIDTH, maxWidth: MAX_WIDTH,
-            background: "var(--ink)", color: "var(--text-faint)",
+            background: "var(--sidebar-bg)", color: "var(--sidebar-fg)",
             display: "flex", flexDirection: "column",
             padding: "0 10px",
-            borderRight: "1px solid rgba(255,255,255,.06)",
+            borderRight: "1px solid var(--sidebar-border)",
             position: "relative",
             flexShrink: 0,
           }}
@@ -374,7 +374,7 @@ export default function AppShell() {
               background: "transparent",
               transition: "background .2s",
             }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "var(--lime-light)"}
+              onMouseEnter={(e) => e.currentTarget.style.background = "var(--sidebar-fg-active)"}
               onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             />
           </div>
