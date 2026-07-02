@@ -124,6 +124,26 @@ export default function Announcements() {
               {a.body}
             </div>
 
+            {a.attachments?.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
+                  <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
+                    style={{ maxWidth: 200, maxHeight: 140, borderRadius: 6, objectFit: "cover", border: "1px solid #e2e8f0" }} />
+                ))}
+                {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
+                  <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      padding: "4px 10px", background: "#f7f7f8", borderRadius: 6,
+                      fontSize: 12, fontWeight: 500, color: "var(--text)", textDecoration: "none",
+                      border: "1px solid #e2e8f0",
+                    }}>
+                    📎 {att.filename}
+                  </a>
+                ))}
+              </div>
+            )}
+
             <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 12, color: "var(--text-faint)" }}>
               <span>Published by <span style={{ fontWeight: 600, color: "var(--text-muted)" }}>{a.published_by_name}</span></span>
               <span>{fmtDate(a.published_at)}</span>

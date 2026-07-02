@@ -102,7 +102,12 @@ describe("reset-fresh — getResetTablePlan / previewReset", () => {
   test("categorizes every non-special table as wipe or reseed, nothing missing", () => {
     const db = createTestDb();
     const { wipe, reseed } = getResetTablePlan(db);
-    expect(reseed.sort()).toEqual(["departments", "designations", "leave_types", "locations", "settings"]);
+    expect(reseed.sort()).toEqual([
+      "asset_types", "badges", "departments", "designations",
+      "expense_categories", "expense_policies", "holidays",
+      "leave_types", "locations", "settings",
+      "survey_questions", "surveys", "ticket_categories",
+    ]);
     // A representative sample that must land in "wipe", including a table
     // that's added via migrate.js rather than schema.sql.
     for (const t of ["leaves", "attendance", "expenses", "tickets", "onboarding_policy_acks", "attachments", "audit_log"]) {
@@ -140,6 +145,14 @@ describe("reset-fresh — resetToFresh", () => {
     expect(result.after.departments).toBe(8);
     expect(result.after.designations).toBe(15);
     expect(result.after.locations).toBe(5);
+    expect(result.after.badges).toBe(13);
+    expect(result.after.holidays).toBeGreaterThanOrEqual(12); // 6 per year × 2 years
+    expect(result.after.expense_policies).toBe(2);
+    expect(result.after.expense_categories).toBe(4);
+    expect(result.after.asset_types).toBe(4);
+    expect(result.after.ticket_categories).toBe(4);
+    expect(result.after.surveys).toBe(4);
+    expect(result.after.survey_questions).toBeGreaterThanOrEqual(15);
 
     // Search index rebuilt clean — only the surviving admin profile, the
     // stale "ticket 999" entry is gone.

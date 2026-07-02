@@ -45,6 +45,25 @@ import { notify, notifyMany } from "../utils/notify.js";
 
 const router = Router();
 
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+function attachAnnouncementFiles(db, rows) {
+  const ids = rows.map(r => r.id);
+  if (!ids.length) return;
+  const strIds = ids.map(String);
+  const ph = strIds.map(() => "?").join(",");
+  const atts = db.prepare(
+    `SELECT id, owner_id, filename, mime FROM attachments WHERE owner_type='announcement' AND owner_id IN (${ph})`
+  ).all(...strIds);
+  const m = new Map();
+  for (const a of atts) {
+    const key = Number(a.owner_id);
+    if (!m.has(key)) m.set(key, []);
+    m.get(key).push({ id: a.id, filename: a.filename, mime: a.mime });
+  }
+  for (const r of rows) r.attachments = m.get(r.id) || [];
+}
+
 // ── Announcements ─────────────────────────────────────────────────────────
 
 router.get("/announcements", requireAuth, (req, res) => {
@@ -69,7 +88,9 @@ router.get("/announcements", requireAuth, (req, res) => {
              CASE a.priority WHEN 'URGENT' THEN 0 WHEN 'IMPORTANT' THEN 1 ELSE 2 END,
              a.published_at DESC`;
   }
-  res.json(db.prepare(sql).all());
+  const rows = db.prepare(sql).all();
+  attachAnnouncementFiles(db, rows);
+  res.json(rows);
 });
 
 router.post("/announcements", ...requireHR, (req, res) => {

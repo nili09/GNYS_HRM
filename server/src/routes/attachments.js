@@ -53,7 +53,7 @@ router.post("/", requireAuth, (req, res) => {
     const { owner_type, owner_id } = req.body;
     if (!owner_type || !owner_id) return res.status(400).json({ error: "owner_type and owner_id required" });
 
-    const validTypes = ["expense", "ticket", "doc_checklist", "profile_photo"];
+    const validTypes = ["expense", "ticket", "doc_checklist", "profile_photo", "announcement"];
     if (!validTypes.includes(owner_type)) return res.status(400).json({ error: "Invalid owner_type" });
 
     const db = req.app.locals.db;
@@ -125,8 +125,7 @@ router.get("/:id/thumb", requireAuth, (req, res) => {
   if (!att) return res.status(404).json({ error: "Not found" });
   if (!att.mime.startsWith("image/")) return res.status(400).json({ error: "Not an image" });
 
-  // Profile photos are viewable by anyone authenticated
-  if (att.owner_type !== "profile_photo" && !canDownload(db, req.user, att)) {
+  if (att.owner_type !== "profile_photo" && att.owner_type !== "announcement" && !canDownload(db, req.user, att)) {
     return res.status(403).json({ error: "Not authorized" });
   }
 
@@ -156,6 +155,8 @@ function canUpload(db, user, ownerType, ownerId) {
       const empId = parseInt(ownerId, 10);
       return empId === user.id || isHR;
     }
+    case "announcement":
+      return isHR;
     default:
       return false;
   }
@@ -178,7 +179,8 @@ function canDownload(db, user, att) {
       return empId === user.id;
     }
     case "profile_photo":
-      return true; // Profile photos visible to all authenticated users
+    case "announcement":
+      return true;
     default:
       return false;
   }

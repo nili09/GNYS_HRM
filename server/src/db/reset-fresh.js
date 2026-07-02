@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { getDb } from "./index.js";
-import { seedLeaveTypes, seedSettings, seedOrgLists } from "./seed.js";
+import { seedLeaveTypes, seedSettings, seedOrgLists, seedBadges, seedSurveyTemplates, seedHolidays, seedStarterContent } from "./seed.js";
 import { reindexAll } from "../utils/search.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -37,7 +37,11 @@ const DEFAULT_UPLOAD_DIR = join(__dirname, "../../../data/uploads");
 
 // Tables whose default rows are reseeded from seed.js after the wipe — every
 // other table ends up at zero rows.
-const RESEED_TABLE_NAMES = new Set(["leave_types", "settings", "departments", "designations", "locations"]);
+const RESEED_TABLE_NAMES = new Set([
+  "leave_types", "settings", "departments", "designations", "locations",
+  "badges", "holidays", "expense_policies", "expense_categories",
+  "asset_types", "ticket_categories", "surveys", "survey_questions",
+]);
 
 /**
  * Enumerate every data table actually present in the schema (sqlite_master),
@@ -116,6 +120,10 @@ export async function resetToFresh(db, { resetAdminPw = false, adminPassword } =
     seedLeaveTypes(db);
     seedSettings(db);
     seedOrgLists(db);
+    seedBadges(db);
+    seedHolidays(db);
+    seedStarterContent(db);
+    seedSurveyTemplates(db);
 
     if (resetAdminPw) {
       db.prepare(`UPDATE employees SET password_hash = ?, must_change_pw = 1 WHERE role = 'ADMIN'`).run(adminPwHash);

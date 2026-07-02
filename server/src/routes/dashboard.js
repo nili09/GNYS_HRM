@@ -39,6 +39,31 @@ function getApprovedLeaves(db) {
     .all();
 }
 
+function getAnnouncementsFeed(db) {
+  const rows = db.prepare(
+    `SELECT a.id, a.title, a.body, a.priority, a.published_at, a.expires_at,
+            e.name as published_by_name
+     FROM announcements a
+     JOIN employees e ON a.published_by = e.id
+     WHERE a.active = 1 AND (a.expires_at IS NULL OR a.expires_at >= date('now'))
+     ORDER BY a.published_at DESC LIMIT 10`
+  ).all();
+  if (!rows.length) return rows;
+  const ids = rows.map(r => String(r.id));
+  const ph = ids.map(() => "?").join(",");
+  const atts = db.prepare(
+    `SELECT id, owner_id, filename, mime FROM attachments WHERE owner_type='announcement' AND owner_id IN (${ph})`
+  ).all(...ids);
+  const m = new Map();
+  for (const a of atts) {
+    const key = Number(a.owner_id);
+    if (!m.has(key)) m.set(key, []);
+    m.get(key).push({ id: a.id, filename: a.filename, mime: a.mime });
+  }
+  for (const r of rows) r.attachments = m.get(r.id) || [];
+  return rows;
+}
+
 // ── GET /dashboard/hr — HR head dashboard ────────────────────────────────────
 
 router.get("/hr", ...requireHR, (req, res) => {
@@ -214,6 +239,7 @@ router.get("/hr", ...requireHR, (req, res) => {
     engagement: { activeSurveys, participationRate: surveyParticipation, recognitionsThisWeek },
     assets: { total: totalAssets, assigned: assignedAssets, inRepair: inRepairAssets },
     helpdesk: { openTickets, avgResolutionHours, urgentCount: urgentTickets },
+    announcementsFeed: getAnnouncementsFeed(db),
   });
 });
 
@@ -232,7 +258,7 @@ router.get("/manager", requireAuth, (req, res) => {
     .all(req.user.id);
 
   if (reports.length === 0) {
-    return res.json({ isManager: false, reports: [], outToday: [], pending: [], summary: {} });
+    return res.json({ isManager: false, reports: [], outToday: [], pending: [], summary: {}, announcementsFeed: getAnnouncementsFeed(db) });
   }
 
   // Who's out today
@@ -319,6 +345,7 @@ router.get("/manager", requireAuth, (req, res) => {
     summary: { present: totalPresent, leave: totalLeave },
     pendingExpenses,
     teamGoals,
+    announcementsFeed: getAnnouncementsFeed(db),
   });
 });
 
@@ -452,6 +479,7 @@ router.get("/me", requireAuth, (req, res) => {
     myInterviews,
     activeSurveys,
     recentRecognitions,
+    announcementsFeed: getAnnouncementsFeed(db),
   });
 });
 

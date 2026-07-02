@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../lib/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 import Icon from "../components/Icon.jsx";
+import FileUpload from "../components/FileUpload.jsx";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
 
@@ -127,6 +128,8 @@ function AnnouncementsTab() {
   const [form, setForm] = useState({ title: "", body: "", priority: "NORMAL", expires_at: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [pendingFiles, setPendingFiles] = useState([]);
+  const pendingInputRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -157,6 +160,7 @@ function AnnouncementsTab() {
     setEditId(null);
     setShowForm(false);
     setError("");
+    setPendingFiles([]);
   }
 
   function handleEdit(a) {
@@ -187,7 +191,16 @@ function AnnouncementsTab() {
       if (editId) {
         await api.patch(`/engagement/announcements/${editId}`, payload);
       } else {
-        await api.post("/engagement/announcements", payload);
+        const created = await api.post("/engagement/announcements", payload);
+        if (pendingFiles.length && created.id) {
+          for (const f of pendingFiles) {
+            const fd = new FormData();
+            fd.append("file", f);
+            fd.append("owner_type", "announcement");
+            fd.append("owner_id", String(created.id));
+            await fetch("/api/attachments", { method: "POST", credentials: "include", body: fd });
+          }
+        }
       }
       resetForm();
       fetchData();
@@ -277,6 +290,51 @@ function AnnouncementsTab() {
               </div>
             </div>
 
+            {/* Attachments */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={labelStyle}>Attachments</label>
+              {editId ? (
+                <FileUpload ownerType="announcement" ownerId={String(editId)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" label="" />
+              ) : (
+                <div>
+                  <label style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "6px 14px", background: "var(--bg)", color: "var(--charcoal)",
+                    border: "1px dashed var(--line)", borderRadius: "var(--r-card)",
+                    fontSize: 12, fontWeight: 600, cursor: "pointer",
+                  }}>
+                    <span style={{ fontSize: 14 }}>+</span> Add files
+                    <input
+                      ref={pendingInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                      onChange={(e) => {
+                        if (e.target.files?.length) setPendingFiles(prev => [...prev, ...Array.from(e.target.files)]);
+                        e.target.value = "";
+                      }}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                  {pendingFiles.length > 0 && (
+                    <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {pendingFiles.map((f, i) => (
+                        <span key={i} style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          padding: "4px 10px", background: "var(--bg)", borderRadius: "var(--r-card)",
+                          fontSize: 12, fontWeight: 500,
+                        }}>
+                          {f.name}
+                          <span style={{ cursor: "pointer", color: "var(--danger)", fontWeight: 700 }}
+                            onClick={() => setPendingFiles(prev => prev.filter((_, j) => j !== i))}>×</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 8 }}>{error}</div>}
 
             <div style={{ display: "flex", gap: 8 }}>
@@ -299,6 +357,7 @@ function AnnouncementsTab() {
               <th style={thStyle}>Published By</th>
               <th style={thStyle}>Published</th>
               <th style={thStyle}>Expires</th>
+              <th style={thStyle}>Files</th>
               <th style={thStyle}>Active</th>
               <th style={thStyle}>Actions</th>
             </tr>
@@ -306,7 +365,7 @@ function AnnouncementsTab() {
           <tbody>
             {announcements.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "var(--text-faint)" }}>
+                <td colSpan={8} style={{ padding: 24, textAlign: "center", color: "var(--text-faint)" }}>
                   No announcements yet.
                 </td>
               </tr>
@@ -320,6 +379,7 @@ function AnnouncementsTab() {
                 <td style={tdStyle}>{a.published_by_name}</td>
                 <td style={tdStyle}>{fmtDate(a.published_at)}</td>
                 <td style={tdStyle}>{a.expires_at ? fmtDate(a.expires_at) : "—"}</td>
+                <td style={tdStyle}>{a.attachments?.length || 0}</td>
                 <td style={tdStyle}>
                   <span style={{
                     padding: "2px 8px", borderRadius: 10, fontSize: 11, fontWeight: 600,

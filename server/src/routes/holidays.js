@@ -11,7 +11,7 @@ const HolidaySchema = z.object({
 });
 
 // National + Maharashtra fixed holidays (seeded from v1's seedHolidays)
-const FIXED_HOLIDAYS = [
+export const FIXED_HOLIDAYS = [
   ["01-01", "New Year's Day"],
   ["01-26", "Republic Day"],
   ["05-01", "Maharashtra Day / Labour Day"],

@@ -191,6 +191,43 @@ export default function HRDashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Announcements feed */}
+      {data.announcementsFeed?.length > 0 && (
+        <div style={{ marginTop: 22 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Recent Announcements</div>
+          <div style={{ display: "grid", gap: 10 }}>
+            {data.announcementsFeed.map((a) => (
+              <div key={a.id} style={{
+                background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
+                padding: "14px 18px", boxShadow: "var(--shadow-sm)",
+                borderLeft: a.priority === "URGENT" ? "4px solid var(--danger)" : a.priority === "IMPORTANT" ? "4px solid var(--badge-amber-text)" : "4px solid var(--line)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", flex: 1 }}>{a.title}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-faint)" }}>{daysAgo(a.published_at)}</span>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 4 }}>{a.body}</div>
+                {a.attachments?.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
+                    {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
+                      <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
+                        style={{ maxWidth: 140, maxHeight: 90, borderRadius: 4, objectFit: "cover", border: "1px solid var(--line)" }} />
+                    ))}
+                    {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
+                      <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "3px 8px", background: "var(--bg)", borderRadius: 4, fontSize: 11, color: "var(--text)", textDecoration: "none", border: "1px solid var(--line)" }}>
+                        📎 {att.filename}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>By {a.published_by_name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

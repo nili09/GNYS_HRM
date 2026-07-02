@@ -25,6 +25,20 @@ function daysAgo(dt) {
   return `${diff} days ago`;
 }
 
+function relTime(dt) {
+  if (!dt) return "";
+  const ms = Date.now() - new Date(dt).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days === 1) return "1d ago";
+  if (days < 30) return `${days}d ago`;
+  return fmtDate(dt?.slice?.(0, 10) || dt);
+}
+
 export default function MyDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -155,6 +169,56 @@ export default function MyDashboard() {
               ))}
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* Announcements feed */}
+      {data?.announcementsFeed?.length > 0 && (
+        <div style={{ marginTop: 22 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Announcements</div>
+          <div style={{ display: "grid", gap: 12 }}>
+            {data.announcementsFeed.map((a) => (
+              <div key={a.id} style={{
+                background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)",
+                padding: "16px 20px", boxShadow: "var(--shadow-sm)",
+                borderLeft: a.priority === "URGENT" ? "4px solid var(--danger)" : a.priority === "IMPORTANT" ? "4px solid var(--badge-amber-text)" : "4px solid var(--line)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                  <span style={{
+                    padding: "2px 8px", borderRadius: "var(--r-pill)", fontSize: 10, fontWeight: 700,
+                    background: a.priority === "URGENT" ? "var(--badge-danger-bg)" : a.priority === "IMPORTANT" ? "var(--badge-amber-bg)" : "var(--badge-blue-bg)",
+                    color: a.priority === "URGENT" ? "var(--badge-danger-text)" : a.priority === "IMPORTANT" ? "var(--badge-amber-text)" : "var(--badge-blue-text)",
+                    textTransform: "uppercase", letterSpacing: ".04rem",
+                  }}>{a.priority}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", flex: 1 }}>{a.title}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-faint)", flexShrink: 0 }}>{relTime(a.published_at)}</span>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: a.attachments?.length ? 10 : 4 }}>{a.body}</div>
+                {a.attachments?.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
+                    {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
+                      <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
+                        style={{ maxWidth: 180, maxHeight: 120, borderRadius: 6, objectFit: "cover", border: "1px solid var(--line)" }} />
+                    ))}
+                    {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
+                      <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          padding: "4px 10px", background: "var(--bg)", borderRadius: "var(--r-card)",
+                          fontSize: 12, fontWeight: 500, color: "var(--text)", textDecoration: "none",
+                          border: "1px solid var(--line)",
+                        }}>
+                        <span style={{ fontSize: 14 }}>📎</span> {att.filename}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 11, color: "var(--text-faint)" }}>
+                  By <span style={{ fontWeight: 600, color: "var(--text-muted)" }}>{a.published_by_name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
