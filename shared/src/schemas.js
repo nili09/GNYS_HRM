@@ -215,6 +215,14 @@ export const AttendanceMarkSchema = z.object({
   marks: z.record(z.string(), z.enum(["P", "A", "HD", "WFH", "OD"])),
 });
 
+export const AttendanceMonthApproveSchema = z.object({
+  comment: z.string().max(1000).optional().nullable(),
+});
+
+export const AttendanceMonthRejectSchema = z.object({
+  comment: z.string().min(1).max(1000),
+});
+
 export const SettingsPutSchema = z.object({
   key: z.string().min(1),
   value: z.any(),

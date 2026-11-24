@@ -40,9 +40,11 @@ export default function HRPayroll() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payslipLineId, setPayslipLineId] = useState(null);
+  const [unapproved, setUnapproved] = useState([]);
 
   const loadRun = useCallback(async () => {
     setError("");
+    setUnapproved([]);
     try {
       const runs = await api.get("/payroll/runs");
       const match = runs.find((r) => r.month === month);
@@ -80,6 +82,7 @@ export default function HRPayroll() {
       const data = await api.post("/payroll/runs", { month });
       setRun(data.run);
       setLines(data.lines);
+      setUnapproved(data.unapproved || []);
     } catch (e) {
       setError(e.message);
     }
@@ -94,6 +97,7 @@ export default function HRPayroll() {
       const data = await api.post(`/payroll/runs/${run.id}/regenerate`);
       setRun(data.run);
       setLines(data.lines);
+      setUnapproved(data.unapproved || []);
     } catch (e) {
       setError(e.message);
     }
@@ -171,6 +175,22 @@ export default function HRPayroll() {
       </div>
 
       {error && <div style={{ background: "var(--badge-danger-bg)", color: "var(--danger)", padding: "8px 14px", borderRadius: "var(--r-pill)", marginBottom: 12, fontSize: 13 }}>{error}</div>}
+
+      {unapproved.length > 0 && (
+        <div style={{
+          background: "var(--badge-amber-bg)", color: "var(--badge-amber-text)",
+          padding: "10px 16px", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 12.5,
+        }}>
+          <b>{unapproved.length} employee{unapproved.length > 1 ? "s" : ""} in this run don't have approved attendance for {fmtMonth(month)}:</b>
+          <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {unapproved.map((u) => (
+              <span key={u.employee_id} style={{ background: "var(--card)", borderRadius: "var(--r-card)", padding: "2px 8px", fontSize: 11.5 }}>
+                {u.name} ({u.code}) — {u.status}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Actions bar */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>

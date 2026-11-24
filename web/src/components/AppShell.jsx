@@ -234,6 +234,7 @@ export default function AppShell() {
             <NavItem to="/team/approvals"    icon="task_alt"               label="Approvals" badge={pendingCount} onNav={closeDrawer} />
             <NavItem to="/team/calendar"     icon="calendar_month"         label="Calendar"  onNav={closeDrawer} />
             <NavItem to="/team/attendance"   icon="schedule"               label="Team Attendance" onNav={closeDrawer} />
+            <NavItem to="/team/attendance-approvals" icon="fact_check"     label="Attendance Approvals" onNav={closeDrawer} />
             <NavItem to="/team/expenses"     icon="account_balance_wallet" label="Team Expenses"   onNav={closeDrawer} />
             <NavItem to="/team/performance"  icon="insights"               label="Team Performance" onNav={closeDrawer} />
           </>
