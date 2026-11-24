@@ -84,14 +84,14 @@ export default function ImportWizard({ onClose, onDone }) {
           {step === 1 && !result && (
             <div>
               <div style={{ marginBottom: 18 }}>
-                <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>
+                <label style={{ display: "block", fontSize: 10.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>
                   Upload CSV file
                 </label>
                 <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFile} style={{ width: "auto", fontSize: 13 }} />
               </div>
               <div style={{ textAlign: "center", color: "var(--neutral)", fontSize: 12, margin: "18px 0", letterSpacing: ".06rem", textTransform: "uppercase" }}>— or —</div>
               <div>
-                <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>
+                <label style={{ display: "block", fontSize: 10.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>
                   Paste CSV data
                 </label>
                 <textarea
@@ -144,7 +144,7 @@ export default function ImportWizard({ onClose, onDone }) {
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".04rem" }}>Duplicate handling (by code):</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".04rem" }}>Duplicate handling (by code):</label>
                 <select value={dupMode} onChange={e => setDupMode(e.target.value)} style={{ width: "auto", padding: "6px 10px", fontSize: 13 }}>
                   <option value="skip">Skip existing</option>
                   <option value="update">Update existing</option>
@@ -163,7 +163,7 @@ export default function ImportWizard({ onClose, onDone }) {
               </div>
               {result.problems?.length > 0 && (
                 <div>
-                  <h4 style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>Issues</h4>
+                  <h4 style={{ fontSize: 11, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05rem", marginBottom: 8 }}>Issues</h4>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: 12, maxHeight: 150, overflowY: "auto" }}>
                     {result.problems.map((p, i) => <div key={i} style={{ fontSize: 12, color: "var(--badge-tan-text)", marginBottom: 3 }}>{p}</div>)}
                   </div>

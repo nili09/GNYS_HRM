@@ -177,7 +177,7 @@ export default function HRRecruitment() {
 
   return (
     <div>
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>Recruitment</h2>
+      <h2 className="page-title" style={{ margin: 0 }}>Recruitment</h2>
       <p style={{ color: "var(--text-faint)", fontSize: 12, margin: "4px 0 20px" }}>Manage jobs, candidates, and hiring pipeline</p>
 
       {/* Dashboard KPIs */}

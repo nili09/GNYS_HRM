@@ -103,7 +103,7 @@ export default function TeamApprovals() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>
         Team
       </h2>
 
@@ -236,7 +236,7 @@ export default function TeamApprovals() {
   );
 }
 
-const thStyle = { padding: "6px 8px", fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase" };
+const thStyle = { padding: "6px 8px", fontSize: 11, fontWeight: 600, color: "var(--text)", textTransform: "uppercase" };
 const tdStyle = { padding: "8px 10px" };
 const btnStyle = {
   padding: "4px 12px", borderRadius: "var(--r-card)", border: "none", cursor: "pointer",

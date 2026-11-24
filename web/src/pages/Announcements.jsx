@@ -65,12 +65,12 @@ export default function Announcements() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Announcements</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>Announcements</h1>
 
       {announcements.length === 0 && (
         <div style={{
           background: "#fff",
-          borderRadius: 10,
+          borderRadius: 0,
           padding: 32,
           border: "1px solid #e2e8f0",
           textAlign: "center",
@@ -91,7 +91,7 @@ export default function Announcements() {
             key={a.id}
             style={{
               background: "#fff",
-              borderRadius: 10,
+              borderRadius: 0,
               padding: 16,
               border: "1px solid #e2e8f0",
               marginBottom: 12,
@@ -105,7 +105,7 @@ export default function Announcements() {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <span style={{
                 padding: "2px 8px",
-                borderRadius: 10,
+                borderRadius: 0,
                 fontSize: 11,
                 fontWeight: 600,
                 background: PRIORITY_BG[a.priority] || PRIORITY_BG.NORMAL,
@@ -128,13 +128,13 @@ export default function Announcements() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
                 {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
                   <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
-                    style={{ maxWidth: 200, maxHeight: 140, borderRadius: 6, objectFit: "cover", border: "1px solid #e2e8f0" }} />
+                    style={{ maxWidth: 200, maxHeight: 140, borderRadius: 0, objectFit: "cover", border: "1px solid #e2e8f0" }} />
                 ))}
                 {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
                   <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
                     style={{
                       display: "inline-flex", alignItems: "center", gap: 4,
-                      padding: "4px 10px", background: "#f7f7f8", borderRadius: 6,
+                      padding: "4px 10px", background: "#f7f7f8", borderRadius: 0,
                       fontSize: 12, fontWeight: 500, color: "var(--text)", textDecoration: "none",
                       border: "1px solid #e2e8f0",
                     }}>

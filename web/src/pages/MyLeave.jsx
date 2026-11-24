@@ -177,7 +177,7 @@ export default function MyLeave() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>
         Leave
       </h2>
 
@@ -272,7 +272,7 @@ export default function MyLeave() {
               <button type="submit" disabled={submitting || !form.date_from || !form.date_to || (overBalanceWarn && !ackOverBalance)}
                 style={{
                   marginTop: 16, padding: "12px 28px", borderRadius: "var(--r-pill)", border: "none",
-                  background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 13.5,
+                  background: "var(--text)", color: "var(--bg)", fontWeight: 700, fontSize: 13.5,
                   cursor: "pointer", opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
                   width: isMobile ? "100%" : "auto",
                 }}>
@@ -378,5 +378,5 @@ const inputStyle = {
   width: "100%", padding: "10px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 14, fontFamily: "inherit", boxSizing: "border-box",
 };
-const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
+const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };

@@ -12,6 +12,7 @@ import HRAttendance from "./pages/HRAttendance.jsx";
 import TeamAttendance from "./pages/TeamAttendance.jsx";
 import MyLeave from "./pages/MyLeave.jsx";
 import TeamApprovals from "./pages/TeamApprovals.jsx";
+import TeamAttendanceApprovals from "./pages/TeamAttendanceApprovals.jsx";
 import TeamCalendar from "./pages/TeamCalendar.jsx";
 import HRLeave from "./pages/HRLeave.jsx";
 import HRPayroll from "./pages/HRPayroll.jsx";
@@ -125,6 +126,7 @@ function AppRoutes() {
         <Route path="team/approvals"  element={<TeamApprovals />} />
         <Route path="team/calendar"   element={<TeamCalendar />} />
         <Route path="team/attendance" element={<TeamAttendance />} />
+        <Route path="team/attendance-approvals" element={<TeamAttendanceApprovals />} />
         <Route path="team/expenses"  element={<TeamExpenses />} />
         <Route path="team/performance" element={<TeamPerformance />} />
 

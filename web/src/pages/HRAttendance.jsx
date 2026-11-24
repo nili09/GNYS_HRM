@@ -15,13 +15,29 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
+  WFH: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
   "":  { bg: "transparent", color: "var(--text-faint)" },
 };
+
+const APPROVAL_BADGE = {
+  OPEN:      { bg: "var(--bg)", color: "var(--text-muted)", label: "Open" },
+  SUBMITTED: { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)", label: "Submitted" },
+  APPROVED:  { bg: "var(--lime-pale)", color: "var(--charcoal)", label: "Approved" },
+  REJECTED:  { bg: "var(--badge-danger-bg)", color: "var(--danger)", label: "Rejected" },
+};
+
+function ApprovalBadge({ status }) {
+  const b = APPROVAL_BADGE[status] || APPROVAL_BADGE.OPEN;
+  return (
+    <span style={{ background: b.bg, color: b.color, borderRadius: "var(--r-card)", padding: "2px 9px", fontSize: 11, fontWeight: 600 }}>
+      {b.label}
+    </span>
+  );
+}
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -238,7 +254,7 @@ function DailyRegister({ onSseEvent }) {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{
                           width: 30, height: 30, borderRadius: "50%",
-                          background: "var(--ink)", color: "var(--lime-light)",
+                          background: "var(--text)", color: "var(--bg)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontWeight: 700, fontSize: 11, flexShrink: 0,
                         }}>
@@ -267,26 +283,33 @@ function DailyRegister({ onSseEvent }) {
                       {locked ? (
                         <span style={{ fontSize: 11.5, color: "var(--text-faint)" }}>auto</span>
                       ) : (
-                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                          {ATT_CODES.map((code) => (
-                            <button
-                              key={code}
-                              onClick={() => mark(emp.id, emp.attCode === code ? "" : code)}
-                              disabled={!!saving[emp.id]}
-                              style={{
-                                ...CODE_COLORS[code],
-                                border: `2px solid ${emp.attCode === code ? CODE_COLORS[code].color : "transparent"}`,
-                                borderRadius: "var(--r-card)", padding: "2px 8px",
-                                fontWeight: 700, fontSize: 11.5,
-                                cursor: "pointer", opacity: saving[emp.id] ? 0.5 : 1,
-                                minWidth: 34,
-                              }}
-                              title={ATT_LABEL[code]}
-                            >
-                              {code}
-                            </button>
-                          ))}
-                        </div>
+                        <>
+                          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                            {ATT_CODES.map((code) => (
+                              <button
+                                key={code}
+                                onClick={() => mark(emp.id, emp.attCode === code ? "" : code)}
+                                disabled={!!saving[emp.id]}
+                                style={{
+                                  ...CODE_COLORS[code],
+                                  border: `2px solid ${emp.attCode === code ? CODE_COLORS[code].color : "transparent"}`,
+                                  borderRadius: "var(--r-card)", padding: "2px 8px",
+                                  fontWeight: 700, fontSize: 11.5,
+                                  cursor: "pointer", opacity: saving[emp.id] ? 0.5 : 1,
+                                  minWidth: 34,
+                                }}
+                                title={ATT_LABEL[code]}
+                              >
+                                {code}
+                              </button>
+                            ))}
+                          </div>
+                          {emp.approvalStatus === "APPROVED" && (
+                            <div style={{ fontSize: 10.5, color: "var(--badge-amber-text)", marginTop: 4 }}>
+                              Month is approved — changing this will be logged as an override
+                            </div>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>
@@ -318,6 +341,7 @@ function MonthlyGrid() {
   const [month, setMonth] = useState(thisMonth());
   const [data, setData]   = useState(null);
   const [loading, setLoading] = useState(false);
+  const [approvalFilter, setApprovalFilter] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -326,6 +350,10 @@ function MonthlyGrid() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [month]);
+
+  const filteredEmployees = data
+    ? data.employees.filter((e) => !approvalFilter || (e.approvalStatus || "OPEN") === approvalFilter)
+    : [];
 
   function exportCSV() {
     if (!data) return;
@@ -343,6 +371,17 @@ function MonthlyGrid() {
         <button className="btn-sm" onClick={() => setMonth(shiftMonth(month, -1))}>‹</button>
         <b style={{ minWidth: 150, textAlign: "center", fontSize: 14 }}>{fmtMonth(month)}</b>
         <button className="btn-sm" onClick={() => setMonth(shiftMonth(month, 1))}>›</button>
+        <select
+          value={approvalFilter}
+          onChange={(e) => setApprovalFilter(e.target.value)}
+          style={{ padding: "5px 8px", borderRadius: "var(--r-card)", border: "1px solid var(--line)", fontSize: 12.5 }}
+        >
+          <option value="">All approval statuses</option>
+          <option value="OPEN">Not submitted</option>
+          <option value="SUBMITTED">Submitted</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
         <div style={{ flex: 1 }} />
         <button className="btn-sm" onClick={exportCSV}>⬇ Export CSV</button>
       </div>
@@ -359,6 +398,7 @@ function MonthlyGrid() {
                   <col key={i} style={{ width: 36, minWidth: 36 }} />
                 ))}
                 <col style={{ width: 64, minWidth: 64 }} />
+                <col style={{ width: 84, minWidth: 84 }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "var(--bg)", position: "sticky", top: 0, zIndex: 2 }}>
@@ -376,10 +416,11 @@ function MonthlyGrid() {
                     );
                   })}
                   <th style={{ ...thStyle, textAlign: "center" }}>Payable</th>
+                  <th style={{ ...thStyle, textAlign: "center" }}>Approval</th>
                 </tr>
               </thead>
               <tbody>
-                {data.employees.map((emp) => (
+                {filteredEmployees.map((emp) => (
                   <tr key={emp.id} style={{ borderBottom: "1px solid var(--line)" }}>
                     <td style={{
                       ...tdStyle, position: "sticky", left: 0, background: "var(--card)",
@@ -408,10 +449,13 @@ function MonthlyGrid() {
                     <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700 }}>
                       {emp.payable}/{data.days}
                     </td>
+                    <td style={{ ...tdStyle, textAlign: "center" }}>
+                      <ApprovalBadge status={emp.approvalStatus} />
+                    </td>
                   </tr>
                 ))}
-                {data.employees.length === 0 && (
-                  <tr><td colSpan={data.days + 2} style={{ padding: 32, textAlign: "center", color: "var(--text-faint)" }}>No employees</td></tr>
+                {filteredEmployees.length === 0 && (
+                  <tr><td colSpan={data.days + 3} style={{ padding: 32, textAlign: "center", color: "var(--text-faint)" }}>No employees</td></tr>
                 )}
               </tbody>
             </table>
@@ -465,7 +509,7 @@ export default function HRAttendance() {
   }, []);
 
   const tabStyle = (t) => ({
-    padding: "8px 18px", borderRadius: "8px 8px 0 0",
+    padding: "8px 18px", borderRadius: 0,
     border: "none", background: tab === t ? "var(--card)" : "transparent",
     color: tab === t ? "var(--text)" : "var(--text-muted)",
     fontWeight: tab === t ? 700 : 400, fontSize: 13.5,
@@ -475,7 +519,7 @@ export default function HRAttendance() {
   return (
     <div style={{ maxWidth: 1400 }}>
       <div style={{ marginBottom: 4 }}>
-        <h2 style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Attendance</h2>
+        <h2 className="page-title" style={{ margin: "0 0 2px" }}>Attendance</h2>
         <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 13 }}>Daily register and monthly view</p>
       </div>
 
@@ -487,7 +531,7 @@ export default function HRAttendance() {
 
       <div style={{
         background: "var(--card)", border: "1px solid var(--line)", borderTop: "none",
-        borderRadius: "0 0 10px 10px", padding: 20,
+        borderRadius: 0, padding: 20,
       }}>
         {tab === "daily"   && <DailyRegister onSseEvent={sseEvent} />}
         {tab === "monthly" && <MonthlyGrid />}

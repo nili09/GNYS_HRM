@@ -87,7 +87,7 @@ export default function SearchBar() {
         onClick={() => setOpen(true)}
         style={{
           display: "flex", alignItems: "center", gap: 8,
-          padding: "6px 14px", borderRadius: 6,
+          padding: "6px 14px", borderRadius: 0,
           border: "1px solid var(--border)", background: "var(--card)",
           color: "var(--text-muted)", fontSize: 12, cursor: "pointer",
           minWidth: 180,
@@ -96,7 +96,7 @@ export default function SearchBar() {
         <Icon name="search" style={{ fontSize: 16 }} />
         <span style={{ flex: 1, textAlign: "left" }}>Search...</span>
         <kbd style={{
-          fontSize: 10, padding: "1px 5px", borderRadius: 3,
+          fontSize: 10, padding: "1px 5px", borderRadius: 0,
           border: "1px solid var(--border)", color: "var(--text-faint)",
           fontFamily: "monospace",
         }}>Ctrl+K</kbd>
@@ -116,7 +116,7 @@ export default function SearchBar() {
     >
       <div style={{
         width: "100%", maxWidth: 560, background: "var(--card)",
-        borderRadius: 12, border: "1px solid var(--border)",
+        borderRadius: 0, border: "1px solid var(--border)",
         boxShadow: "0 20px 60px rgba(0,0,0,.3)",
         overflow: "hidden",
       }}>
@@ -137,7 +137,7 @@ export default function SearchBar() {
           <kbd
             onClick={() => setOpen(false)}
             style={{
-              fontSize: 10, padding: "2px 6px", borderRadius: 3,
+              fontSize: 10, padding: "2px 6px", borderRadius: 0,
               border: "1px solid var(--border)", color: "var(--text-faint)",
               fontFamily: "monospace", cursor: "pointer", marginLeft: 8,
             }}
@@ -173,7 +173,7 @@ export default function SearchBar() {
                       onMouseEnter={() => setSelectedIdx(flatIdx)}
                       style={{
                         padding: "8px 16px", cursor: "pointer",
-                        background: isSelected ? "rgba(25,25,112,.10)" : "transparent",
+                        background: isSelected ? "var(--lime-pale)" : "transparent",
                         borderLeft: isSelected ? "2px solid var(--lime)" : "2px solid transparent",
                       }}
                     >

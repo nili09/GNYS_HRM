@@ -155,7 +155,7 @@ export default function HRAssets() {
   });
 
   const inputStyle = {
-    display: "block", width: "100%", marginTop: 4, padding: "7px 10px", borderRadius: 4,
+    display: "block", width: "100%", marginTop: 4, padding: "7px 10px", borderRadius: 0,
     border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13,
   };
 
@@ -163,7 +163,7 @@ export default function HRAssets() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: "var(--font-display)" }}>
+      <h2 className="page-title" style={{ marginBottom: 16 }}>
         Asset Management
       </h2>
 
@@ -219,13 +219,13 @@ export default function HRAssets() {
                     <td style={{ padding: "8px 10px" }}>
                       {a.status === "AVAILABLE" && (
                         <button onClick={() => { setAssignForm({ asset_id: a.id, employee: null, is_temporary: false }); setTab("assign"); }}
-                          style={{ padding: "4px 12px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+                          style={{ padding: "4px 12px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
                           Assign
                         </button>
                       )}
                       {a.status === "ASSIGNED" && (
                         <button onClick={() => handleReturn(a.id)} disabled={acting === `return-${a.id}`}
-                          style={{ padding: "4px 12px", borderRadius: 4, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 11, cursor: "pointer" }}>
+                          style={{ padding: "4px 12px", borderRadius: 0, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 11, cursor: "pointer" }}>
                           {acting === `return-${a.id}` ? "..." : "Return"}
                         </button>
                       )}
@@ -260,11 +260,11 @@ export default function HRAssets() {
           </label>
           <div style={{ display: "flex", gap: 8 }}>
             <button type="submit" disabled={acting || !assignForm.employee}
-              style={{ padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+              style={{ padding: "8px 24px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
               Assign
             </button>
             <button type="button" onClick={() => { setAssignForm({ asset_id: null, employee: null, is_temporary: false }); setTab("inventory"); }}
-              style={{ padding: "8px 24px", borderRadius: 4, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
+              style={{ padding: "8px 24px", borderRadius: 0, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
               Cancel
             </button>
           </div>
@@ -310,7 +310,7 @@ export default function HRAssets() {
             <textarea value={assetForm.notes} onChange={e => setAssetForm(f => ({ ...f, notes: e.target.value }))} rows={3} style={{ ...inputStyle, resize: "vertical" }} />
           </label>
           <button type="submit"
-            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+            style={{ alignSelf: "flex-start", padding: "8px 24px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
             Add Asset
           </button>
         </form>
@@ -322,7 +322,7 @@ export default function HRAssets() {
             <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Asset Types</h3>
             <form onSubmit={addType} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <input value={typeForm.name} onChange={e => setTypeForm({ name: e.target.value })} placeholder="Type name" required style={{ ...inputStyle, flex: 1 }} />
-              <button type="submit" style={{ padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add</button>
+              <button type="submit" style={{ padding: "7px 16px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add</button>
             </form>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <tbody>
@@ -342,7 +342,7 @@ export default function HRAssets() {
                 <input value={vendorForm.contact_email} onChange={e => setVendorForm(f => ({ ...f, contact_email: e.target.value }))} placeholder="Email" style={{ ...inputStyle, flex: 1 }} />
                 <input value={vendorForm.contact_phone} onChange={e => setVendorForm(f => ({ ...f, contact_phone: e.target.value }))} placeholder="Phone" style={{ ...inputStyle, flex: 1 }} />
               </div>
-              <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add Vendor</button>
+              <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Add Vendor</button>
             </form>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
@@ -369,12 +369,12 @@ export default function HRAssets() {
       {tab === "dashboard" && dashboard && (
         <div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-            <div style={{ background: "var(--card)", borderRadius: 8, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
+            <div style={{ background: "var(--card)", borderRadius: 0, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
               <div style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Total Assets</div>
               <div style={{ fontSize: 28, fontWeight: 700 }}>{dashboard.totalAssets}</div>
             </div>
             {dashboard.byStatus.map(s => (
-              <div key={s.status} style={{ background: "var(--card)", borderRadius: 8, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 120 }}>
+              <div key={s.status} style={{ background: "var(--card)", borderRadius: 0, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 120 }}>
                 <div style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>{s.status.replace("_", " ")}</div>
                 <div style={{ fontSize: 28, fontWeight: 700 }}>{s.count}</div>
               </div>

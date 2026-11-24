@@ -162,6 +162,22 @@ CREATE TABLE IF NOT EXISTS attendance (
   PRIMARY KEY(date, employee_id)
 );
 
+CREATE TABLE IF NOT EXISTS attendance_months (
+  employee_id     INTEGER NOT NULL REFERENCES employees(id),
+  month           TEXT    NOT NULL,
+  status          TEXT    NOT NULL DEFAULT 'OPEN'
+                  CHECK(status IN ('OPEN','SUBMITTED','APPROVED','REJECTED')),
+  submitted_at    TEXT,
+  acted_by        INTEGER REFERENCES employees(id),
+  acted_at        TEXT,
+  act_comment     TEXT,
+  hr_override_at  TEXT,
+  hr_override_by  INTEGER REFERENCES employees(id),
+  PRIMARY KEY(employee_id, month)
+);
+
+CREATE INDEX IF NOT EXISTS idx_attendance_months_month_status ON attendance_months(month, status);
+
 CREATE TABLE IF NOT EXISTS payroll_runs (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   month         TEXT    NOT NULL UNIQUE,

@@ -63,9 +63,9 @@ function StatusBadge({ status }) {
 
 const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 4 };
 const inputStyle = { width: "100%", padding: "9px 12px", borderRadius: "var(--r-card)", border: "1px solid var(--line)", fontSize: 13, boxSizing: "border-box", fontFamily: "inherit", background: "var(--card)", color: "var(--text)" };
-const thStyle = { textAlign: "left", padding: "10px 12px", borderBottom: "1px solid var(--line)", background: "var(--bg)", fontWeight: 700, fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.045em" };
+const thStyle = { textAlign: "left", padding: "10px 12px", borderBottom: "1px solid var(--text)", background: "var(--bg)", fontWeight: 600, fontSize: 11, color: "var(--text)", textTransform: "uppercase", letterSpacing: "0.045em" };
 const tdStyle = { padding: "10px 12px", borderBottom: "1px solid var(--line)", fontSize: 13 };
-const btnPrimary = { padding: "7px 16px", borderRadius: "var(--r-pill)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13, background: "var(--grad-cta)", color: "var(--ink)" };
+const btnPrimary = { padding: "7px 16px", borderRadius: "var(--r-pill)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13, background: "var(--grad-cta)", color: "var(--bg)" };
 const btnDanger = { padding: "7px 16px", borderRadius: "var(--r-pill)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13, background: "var(--danger)", color: "#fff" };
 const btnSmall = { padding: "5px 12px", borderRadius: "var(--r-pill)", border: "1px solid var(--line)", cursor: "pointer", fontWeight: 600, fontSize: 12, background: "var(--card)", color: "var(--text)" };
 const cardStyle = { background: "var(--card)", borderRadius: "var(--r-card)", padding: 16, border: "1px solid var(--line)", marginBottom: 12, boxShadow: "var(--shadow-sm)" };
@@ -80,7 +80,7 @@ export default function HREngagement() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Employee Engagement</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>Employee Engagement</h1>
 
       {/* Tab bar */}
       <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--line)", marginBottom: 20 }}>
@@ -382,7 +382,7 @@ function AnnouncementsTab() {
                 <td style={tdStyle}>{a.attachments?.length || 0}</td>
                 <td style={tdStyle}>
                   <span style={{
-                    padding: "2px 8px", borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    padding: "2px 8px", borderRadius: 0, fontSize: 11, fontWeight: 600,
                     background: a.active ? "var(--badge-green-bg)" : "var(--line)",
                     color: a.active ? "var(--badge-green-text)" : "var(--text-faint)",
                     cursor: "pointer",
@@ -586,7 +586,7 @@ function SurveysTab() {
             {questions.map((q, idx) => (
               <div key={idx} style={{
                 background: "var(--bg)",
-                borderRadius: 8,
+                borderRadius: 0,
                 padding: 12,
                 border: "1px solid #e2e8f0",
                 marginBottom: 8,
@@ -713,7 +713,7 @@ function SurveysTab() {
               {results.questions.map((q) => (
                 <div key={q.question_id} style={{
                   background: "var(--bg)",
-                  borderRadius: 8,
+                  borderRadius: 0,
                   padding: 12,
                   border: "1px solid #e2e8f0",
                   marginBottom: 10,
@@ -738,7 +738,7 @@ function SurveysTab() {
                               width: 32,
                               height: Math.max(4, ((q.distribution?.[String(n)] || 0) / Math.max(q.totalResponses, 1)) * 60),
                               background: "var(--lime)",
-                              borderRadius: 4,
+                              borderRadius: 0,
                               marginBottom: 2,
                             }} />
                             <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{n}</div>
@@ -754,13 +754,13 @@ function SurveysTab() {
                       {Object.entries(q.counts).map(([option, count]) => (
                         <div key={option} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <div style={{
-                            flex: 1, height: 20, background: "var(--line)", borderRadius: 4, overflow: "hidden",
+                            flex: 1, height: 20, background: "var(--line)", borderRadius: 0, overflow: "hidden",
                           }}>
                             <div style={{
                               width: `${q.totalResponses > 0 ? (count / q.totalResponses) * 100 : 0}%`,
                               height: "100%",
                               background: "var(--lime)",
-                              borderRadius: 4,
+                              borderRadius: 0,
                               transition: "width 0.3s",
                             }} />
                           </div>
@@ -931,7 +931,7 @@ function BadgesTab() {
               <span style={{
                 width: 40,
                 height: 40,
-                borderRadius: 10,
+                borderRadius: 0,
                 background: "var(--bg)",
                 border: "1px solid #e2e8f0",
                 display: "flex",
@@ -1025,7 +1025,7 @@ function DashboardTab() {
                       justifyContent: "center",
                       width: 24,
                       height: 24,
-                      borderRadius: 12,
+                      borderRadius: 0,
                       background: i === 0 ? "var(--badge-amber-bg)" : i === 1 ? "var(--line)" : i === 2 ? "var(--badge-danger-bg)" : "var(--bg)",
                       fontSize: 12,
                       fontWeight: 700,

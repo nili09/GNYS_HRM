@@ -128,7 +128,7 @@ export default function MyPerformance() {
 
   return (
     <div>
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>My Performance</h2>
+      <h2 className="page-title" style={{ margin: 0 }}>My Performance</h2>
       <p style={{ color: "var(--text-faint)", fontSize: 12, margin: "4px 0 20px" }}>Goals, reviews & 1-on-1 history</p>
 
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>

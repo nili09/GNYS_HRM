@@ -138,7 +138,7 @@ export default function HRLeave() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>
         HR — Leave Management
       </h2>
 
@@ -302,7 +302,7 @@ export default function HRLeave() {
             <button onClick={() => {
               setEditType("__new__");
               setTypeForm({ code: "", name: "", annual: 0, paid: 1, carry_fwd: 0, max_carry: 0 });
-            }} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>
+            }} style={{ ...btnStyle, background: "var(--text)", color: "var(--bg)" }}>
               + Add Type
             </button>
           </div>
@@ -369,7 +369,7 @@ export default function HRLeave() {
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
               <button onClick={() => setAdjustModal(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
-              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>Apply</button>
+              <button onClick={submitAdjust} style={{ ...btnStyle, background: "var(--text)", color: "var(--bg)" }}>Apply</button>
             </div>
           </div>
         </div>
@@ -426,7 +426,7 @@ export default function HRLeave() {
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
               <button onClick={() => setEditType(null)} style={{ ...btnStyle, border: "1px solid var(--line)" }}>Cancel</button>
-              <button onClick={saveType} style={{ ...btnStyle, background: "var(--ink)", color: "var(--lime-light)" }}>Save</button>
+              <button onClick={saveType} style={{ ...btnStyle, background: "var(--text)", color: "var(--bg)" }}>Save</button>
             </div>
           </div>
         </div>
@@ -435,7 +435,7 @@ export default function HRLeave() {
   );
 }
 
-const thStyle = { padding: "8px 12px", fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
+const thStyle = { padding: "8px 12px", fontSize: 11, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };
 const btnStyle = {
   padding: "5px 14px", borderRadius: "var(--r-card)", border: "none", cursor: "pointer",

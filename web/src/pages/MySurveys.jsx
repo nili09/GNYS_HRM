@@ -111,12 +111,12 @@ export default function MySurveys() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>My Surveys</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>My Surveys</h1>
 
       {surveys.length === 0 && (
         <div style={{
           background: "#fff",
-          borderRadius: 10,
+          borderRadius: 0,
           padding: 32,
           border: "1px solid var(--line)",
           textAlign: "center",
@@ -136,7 +136,7 @@ export default function MySurveys() {
           <div key={s.id} style={{ marginBottom: 12 }}>
             <div style={{
               background: "#fff",
-              borderRadius: 10,
+              borderRadius: 0,
               padding: 16,
               border: isActive ? "2px solid var(--lime)" : "1px solid var(--line)",
             }}>
@@ -162,7 +162,7 @@ export default function MySurveys() {
                   {isCompleted ? (
                     <span style={{
                       padding: "2px 8px",
-                      borderRadius: 10,
+                      borderRadius: 0,
                       fontSize: 11,
                       fontWeight: 600,
                       background: "var(--badge-green-bg)",
@@ -175,7 +175,7 @@ export default function MySurveys() {
                       onClick={() => isActive ? handleCloseForm() : handleTakeSurvey(s.id)}
                       style={{
                         padding: "7px 16px",
-                        borderRadius: 6,
+                        borderRadius: 0,
                         border: "none",
                         cursor: "pointer",
                         fontWeight: 600,
@@ -223,7 +223,7 @@ export default function MySurveys() {
                                 style={{
                                   width: 40,
                                   height: 40,
-                                  borderRadius: 8,
+                                  borderRadius: 0,
                                   border: answers[q.id] === n ? "2px solid var(--lime)" : "1px solid var(--line)",
                                   background: answers[q.id] === n ? "var(--lime)" : "var(--card)",
                                   color: answers[q.id] === n ? "#ffffff" : "var(--text)",
@@ -249,7 +249,7 @@ export default function MySurveys() {
                             style={{
                               width: "100%",
                               padding: "8px 10px",
-                              borderRadius: 6,
+                              borderRadius: 0,
                               border: "1px solid #cbd5e1",
                               fontSize: 13,
                               resize: "vertical",
@@ -273,7 +273,7 @@ export default function MySurveys() {
                                     alignItems: "center",
                                     gap: 8,
                                     padding: "8px 12px",
-                                    borderRadius: 6,
+                                    borderRadius: 0,
                                     border: selected ? "2px solid var(--lime)" : "1px solid var(--line)",
                                     background: selected ? "var(--lime-subtle)" : "var(--card)",
                                     cursor: "pointer",
@@ -285,7 +285,7 @@ export default function MySurveys() {
                                     name={`q_${q.id}`}
                                     checked={selected}
                                     onChange={() => setAnswer(q.id, trimmed)}
-                                    style={{ accentColor: "#191970" }}
+                                    style={{ accentColor: "var(--text)" }}
                                   />
                                   {trimmed}
                                 </label>
@@ -308,7 +308,7 @@ export default function MySurveys() {
                       disabled={submitting}
                       style={{
                         padding: "7px 16px",
-                        borderRadius: 6,
+                        borderRadius: 0,
                         border: "none",
                         cursor: submitting ? "not-allowed" : "pointer",
                         fontWeight: 600,

@@ -129,7 +129,7 @@ export default function HRPerformance() {
 
   return (
     <div>
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>Performance Management</h2>
+      <h2 className="page-title" style={{ margin: 0 }}>Performance Management</h2>
       <p style={{ color: "var(--text-faint)", fontSize: 12, margin: "4px 0 20px" }}>Manage review cycles, goals, and reviews across the organization</p>
 
       {/* Dashboard KPIs */}
@@ -329,8 +329,8 @@ export default function HRPerformance() {
               <div key={cr.cycle_name} style={{ padding: "14px 20px", borderRadius: "var(--r-sm)", background: "var(--bg-raised)", border: "1px solid var(--border)", minWidth: 160 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-faint)" }}>{cr.cycle_name}</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginTop: 2 }}>{cr.pct}%</div>
-                <div style={{ marginTop: 6, height: 4, borderRadius: 2, background: "var(--border)" }}>
-                  <div style={{ height: 4, borderRadius: 2, background: "var(--lime)", width: `${cr.pct}%`, transition: "width .3s" }} />
+                <div style={{ marginTop: 6, height: 4, borderRadius: 0, background: "var(--border)" }}>
+                  <div style={{ height: 4, borderRadius: 0, background: "var(--lime)", width: `${cr.pct}%`, transition: "width .3s" }} />
                 </div>
               </div>
             ))}

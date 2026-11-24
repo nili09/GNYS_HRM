@@ -79,7 +79,7 @@ export default function HREmployees() {
     <div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-        <h2 style={{ fontSize: 20, margin: 0 }}>Employees</h2>
+        <h2 className="page-title" style={{ margin: 0 }}>Employees</h2>
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={() => { window.location.href = "/api/employees/export"; }} className="btn-sm">
             Export CSV

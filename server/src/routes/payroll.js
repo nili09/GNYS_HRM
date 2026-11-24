@@ -135,6 +135,29 @@ function generateLines(db, ym) {
   return lines;
 }
 
+/**
+ * Non-blocking payroll warning: which employees in this run don't have an
+ * APPROVED attendance_months row for the run's month (missing row = OPEN).
+ */
+function getUnapprovedForRun(db, ym, employeeIds) {
+  if (!employeeIds.length) return [];
+  const ph = employeeIds.map(() => "?").join(",");
+  const statusRows = db
+    .prepare(`SELECT employee_id, status FROM attendance_months WHERE month = ? AND employee_id IN (${ph})`)
+    .all(ym, ...employeeIds);
+  const statusMap = new Map(statusRows.map((r) => [r.employee_id, r.status]));
+  const empRows = db.prepare(`SELECT id, code, name FROM employees WHERE id IN (${ph})`).all(...employeeIds);
+
+  const unapproved = [];
+  for (const e of empRows) {
+    const status = statusMap.get(e.id) || "OPEN";
+    if (status !== "APPROVED") {
+      unapproved.push({ employee_id: e.id, code: e.code, name: e.name, status });
+    }
+  }
+  return unapproved;
+}
+
 // ── Routes ───────────────────────────────────────────────────────────────────
 
 // GET /payroll/runs — list all runs (HR only)
@@ -237,9 +260,10 @@ router.post("/runs", ...requireHR, (req, res) => {
        WHERE pl.run_id=? ORDER BY e.code`
     )
     .all(runId);
+  const unapproved = getUnapprovedForRun(db, month, lines.map((l) => l.employee_id));
 
   broadcast({ type: "mutation", entity: "payroll", id: runId });
-  res.status(201).json({ run, lines: savedLines });
+  res.status(201).json({ run, lines: savedLines, unapproved, unapprovedCount: unapproved.length });
 });
 
 // POST /payroll/runs/:id/regenerate — re-calc a DRAFT run
@@ -288,8 +312,10 @@ router.post("/runs/:id/regenerate", ...requireHR, (req, res) => {
         l.esi_covered
       );
     }
+
+    return lines;
   });
-  regenerateLines();
+  const lines = regenerateLines();
 
   const savedLines = db
     .prepare(
@@ -298,9 +324,10 @@ router.post("/runs/:id/regenerate", ...requireHR, (req, res) => {
        WHERE pl.run_id=? ORDER BY e.code`
     )
     .all(run.id);
+  const unapproved = getUnapprovedForRun(db, run.month, lines.map((l) => l.employee_id));
 
   broadcast({ type: "mutation", entity: "payroll", id: run.id });
-  res.json({ run, lines: savedLines });
+  res.json({ run, lines: savedLines, unapproved, unapprovedCount: unapproved.length });
 });
 
 // POST /payroll/runs/:id/finalize

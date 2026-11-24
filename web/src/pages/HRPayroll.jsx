@@ -40,9 +40,11 @@ export default function HRPayroll() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payslipLineId, setPayslipLineId] = useState(null);
+  const [unapproved, setUnapproved] = useState([]);
 
   const loadRun = useCallback(async () => {
     setError("");
+    setUnapproved([]);
     try {
       const runs = await api.get("/payroll/runs");
       const match = runs.find((r) => r.month === month);
@@ -80,6 +82,7 @@ export default function HRPayroll() {
       const data = await api.post("/payroll/runs", { month });
       setRun(data.run);
       setLines(data.lines);
+      setUnapproved(data.unapproved || []);
     } catch (e) {
       setError(e.message);
     }
@@ -94,6 +97,7 @@ export default function HRPayroll() {
       const data = await api.post(`/payroll/runs/${run.id}/regenerate`);
       setRun(data.run);
       setLines(data.lines);
+      setUnapproved(data.unapproved || []);
     } catch (e) {
       setError(e.message);
     }
@@ -162,7 +166,7 @@ export default function HRPayroll() {
     <div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Payroll</h1>
+        <h1 className="page-title" style={{ margin: 0 }}>Payroll</h1>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={() => setMonth(shiftMonth(month, -1))} className="btn-sm" aria-label="Previous month" style={navBtnStyle}><Icon name="arrow_back" /></button>
           <span style={{ fontSize: 15, fontWeight: 600, minWidth: 140, textAlign: "center" }}>{fmtMonth(month)}</span>
@@ -171,6 +175,22 @@ export default function HRPayroll() {
       </div>
 
       {error && <div style={{ background: "var(--badge-danger-bg)", color: "var(--danger)", padding: "8px 14px", borderRadius: "var(--r-pill)", marginBottom: 12, fontSize: 13 }}>{error}</div>}
+
+      {unapproved.length > 0 && (
+        <div style={{
+          background: "var(--badge-amber-bg)", color: "var(--badge-amber-text)",
+          padding: "10px 16px", borderRadius: "var(--r-card)", marginBottom: 12, fontSize: 12.5,
+        }}>
+          <b>{unapproved.length} employee{unapproved.length > 1 ? "s" : ""} in this run don't have approved attendance for {fmtMonth(month)}:</b>
+          <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {unapproved.map((u) => (
+              <span key={u.employee_id} style={{ background: "var(--card)", borderRadius: "var(--r-card)", padding: "2px 8px", fontSize: 11.5 }}>
+                {u.name} ({u.code}) — {u.status}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Actions bar */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
@@ -300,12 +320,12 @@ export default function HRPayroll() {
 function KPI({ label, value, accent }) {
   return (
     <div style={{
-      background: accent ? "var(--ink)" : "var(--bg)",
-      color: accent ? "var(--lime-light)" : "var(--text)",
+      background: accent ? "var(--signal)" : "var(--bg)",
+      color: accent ? "var(--signal-ink)" : "var(--text)",
       borderRadius: "var(--r-card)", padding: "12px 14px",
       border: accent ? "none" : "1px solid var(--line)",
     }}>
-      <div style={{ fontSize: 11, color: accent ? "var(--badge-blue-text)" : "var(--text-muted)", marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, color: accent ? "inherit" : "var(--text-muted)", marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 18, fontWeight: 700 }}>{value}</div>
     </div>
   );
@@ -313,8 +333,8 @@ function KPI({ label, value, accent }) {
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
-const thStyle = { padding: "8px 10px", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".04rem", borderBottom: "1px solid var(--line)" };
+const thStyle = { padding: "8px 10px", fontSize: 10.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".04rem", borderBottom: "1px solid var(--text)" };
 const tdStyle = { padding: "8px 10px" };
 const navBtnStyle = { background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "5px 10px", cursor: "pointer", fontSize: 13 };
-const primaryBtnStyle = { background: "var(--ink)", color: "var(--lime-light)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
+const primaryBtnStyle = { background: "var(--text)", color: "var(--bg)", border: "none", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 600, fontSize: 13 };
 const secondaryBtnStyle = { background: "var(--bg)", color: "var(--charcoal)", border: "1px solid var(--line)", borderRadius: "var(--r-pill)", padding: "8px 18px", cursor: "pointer", fontWeight: 500, fontSize: 13 };

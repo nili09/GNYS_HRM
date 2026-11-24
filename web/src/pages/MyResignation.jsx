@@ -69,23 +69,23 @@ export default function MyResignation() {
 
   return (
     <div style={{ maxWidth: 640 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Resignation</h1>
+      <h1 className="page-title" style={{ marginBottom: 20 }}>Resignation</h1>
 
       {error && (
-        <div style={{ background: "#ef444422", color: "#ef4444", padding: "10px 14px", borderRadius: 6, marginBottom: 16, fontSize: 13 }}>
+        <div style={{ background: "#ef444422", color: "#ef4444", padding: "10px 14px", borderRadius: 0, marginBottom: 16, fontSize: 13 }}>
           {error}
         </div>
       )}
 
       {hasResignation ? (
-        <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, padding: 24 }}>
+        <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 0, padding: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Resignation Status</h2>
             {badge && (
               <span style={{
                 background: badge.bg, color: badge.color,
                 fontSize: 11, fontWeight: 700, padding: "3px 10px",
-                borderRadius: 12, textTransform: "uppercase",
+                borderRadius: 0, textTransform: "uppercase",
               }}>{badge.label}</span>
             )}
           </div>
@@ -126,7 +126,7 @@ export default function MyResignation() {
               style={{
                 marginTop: 20, padding: "8px 20px", fontSize: 13, fontWeight: 600,
                 background: "var(--danger)", color: "#fff", border: "none",
-                borderRadius: 6, cursor: "pointer",
+                borderRadius: 0, cursor: "pointer",
               }}
             >
               {submitting ? "Withdrawing..." : "Withdraw Resignation"}
@@ -136,7 +136,7 @@ export default function MyResignation() {
       ) : (
         <>
           {!showForm ? (
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, padding: 32, textAlign: "center" }}>
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 0, padding: 32, textAlign: "center" }}>
               <p style={{ color: "var(--text-muted)", marginBottom: 16, fontSize: 14 }}>
                 No resignation on record. If you wish to resign, you can submit a request below.
               </p>
@@ -145,14 +145,14 @@ export default function MyResignation() {
                 style={{
                   padding: "10px 24px", fontSize: 13, fontWeight: 600,
                   background: "var(--lime)", color: "#ffffff", border: "none",
-                  borderRadius: 6, cursor: "pointer",
+                  borderRadius: 0, cursor: "pointer",
                 }}
               >
                 Submit Resignation
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, padding: 24 }}>
+            <form onSubmit={handleSubmit} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 0, padding: 24 }}>
               <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Submit Resignation</h2>
 
               <label style={{ display: "block", marginBottom: 14 }}>
@@ -160,7 +160,7 @@ export default function MyResignation() {
                 <select
                   value={form.resignation_type}
                   onChange={e => setForm(f => ({ ...f, resignation_type: e.target.value }))}
-                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13 }}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13 }}
                 >
                   <option>Voluntary</option>
                   <option>Retirement</option>
@@ -177,7 +177,7 @@ export default function MyResignation() {
                   rows={3}
                   value={form.resignation_reason}
                   onChange={e => setForm(f => ({ ...f, resignation_reason: e.target.value }))}
-                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13, resize: "vertical" }}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13, resize: "vertical" }}
                 />
               </label>
 
@@ -188,7 +188,7 @@ export default function MyResignation() {
                   required
                   value={form.intended_last_day}
                   onChange={e => setForm(f => ({ ...f, intended_last_day: e.target.value }))}
-                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13 }}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13 }}
                 />
               </label>
 
@@ -198,7 +198,7 @@ export default function MyResignation() {
                   rows={2}
                   value={form.requestee_remarks}
                   onChange={e => setForm(f => ({ ...f, requestee_remarks: e.target.value }))}
-                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13, resize: "vertical" }}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: 13, resize: "vertical" }}
                 />
               </label>
 
@@ -209,7 +209,7 @@ export default function MyResignation() {
                   style={{
                     padding: "8px 20px", fontSize: 13, fontWeight: 600,
                     background: "var(--danger)", color: "#fff", border: "none",
-                    borderRadius: 6, cursor: "pointer",
+                    borderRadius: 0, cursor: "pointer",
                   }}
                 >
                   {submitting ? "Submitting..." : "Confirm Resignation"}
@@ -220,7 +220,7 @@ export default function MyResignation() {
                   style={{
                     padding: "8px 20px", fontSize: 13, fontWeight: 600,
                     background: "transparent", color: "var(--text-muted)", border: "1px solid var(--border)",
-                    borderRadius: 6, cursor: "pointer",
+                    borderRadius: 0, cursor: "pointer",
                   }}
                 >
                   Cancel

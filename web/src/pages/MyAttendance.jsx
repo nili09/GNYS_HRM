@@ -12,12 +12,24 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
+  WFH: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
   "":  { bg: "var(--bg)", color: "var(--text-faint)" },
+};
+
+// Locked codes are computed (leave/holiday/week-off) — never directly editable.
+const LOCKED_CODES = new Set(["L", "H", "WO"]);
+// Click-to-cycle order for editable days.
+const CYCLE = ["", "P", "A", "HD", "WFH", "OD"];
+
+const APPROVAL_BADGE = {
+  OPEN:      { bg: "var(--bg)", color: "var(--text-muted)", label: "Not submitted" },
+  SUBMITTED: { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)", label: "Submitted — awaiting approval" },
+  APPROVED:  { bg: "var(--lime-pale)", color: "var(--charcoal)", label: "Approved" },
+  REJECTED:  { bg: "var(--badge-danger-bg)", color: "var(--danger)", label: "Rejected — edit and resubmit" },
 };
 
 function thisMonth() { return new Date().toISOString().slice(0, 7); }
@@ -25,6 +37,11 @@ function thisMonth() { return new Date().toISOString().slice(0, 7); }
 function fmtMonth(ym) {
   const [y, m] = ym.split("-");
   return new Date(Number(y), Number(m) - 1, 1).toLocaleString("en-IN", { month: "long", year: "numeric" });
+}
+
+function fmtDateTime(s) {
+  if (!s) return "";
+  return new Date(s.replace(" ", "T") + "Z").toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
 function shiftMonth(ym, n) {
@@ -35,13 +52,15 @@ function shiftMonth(ym, n) {
   return `${y}-${String(m).padStart(2, "0")}`;
 }
 
-function dowChar(idx) { return "SMTWTFS"[idx]; }
-
 export default function MyAttendance() {
   const isMobile = useIsMobile();
   const [month, setMonth] = useState(thisMonth());
   const [data, setData]   = useState(null);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast]   = useState("");
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(""), 3500); };
 
   const fetchData = useCallback(() => {
     setLoading(true);
@@ -59,12 +78,41 @@ export default function MyAttendance() {
     es.onmessage = (e) => {
       try {
         const d = JSON.parse(e.data);
-        if (d.entity === "attendance") fetchData();
+        if (d.entity === "attendance" || d.entity === "attendance_months") fetchData();
       } catch {}
     };
     const poll = setInterval(fetchData, 30000);
     return () => { es.close(); clearInterval(poll); };
   }, [fetchData]);
+
+  const approval = data?.approval || { status: "OPEN" };
+  const editable = approval.status === "OPEN" || approval.status === "REJECTED";
+
+  async function cycleDay(dateStr, currentCode) {
+    if (!editable || saving) return;
+    const next = CYCLE[(CYCLE.indexOf(currentCode || "") + 1) % CYCLE.length];
+    setSaving(true);
+    try {
+      await api.put(`/attendance/my?month=${month}`, { marks: { [dateStr]: next } });
+      await fetchData();
+    } catch (e) {
+      showToast(e.data?.error || e.message || "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function submit() {
+    setSaving(true);
+    try {
+      await api.post("/attendance/my/submit", { month });
+      await fetchData();
+    } catch (e) {
+      showToast(e.data?.error || e.message || "Submit failed");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   // Summary counts
   const counts = {};
@@ -75,13 +123,16 @@ export default function MyAttendance() {
     }
   }
 
+  const badge = APPROVAL_BADGE[approval.status] || APPROVAL_BADGE.OPEN;
+  const missingCount = data?.missingDates?.length || 0;
+
   return (
     <div style={{ maxWidth: isMobile ? "100%" : 860 }}>
-      <h2 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>My Attendance</h2>
-      <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>Your monthly attendance summary</p>
+      <h2 className="page-title" style={{ margin: "0 0 4px" }}>My Attendance</h2>
+      <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>Mark your month, then submit it for your manager's approval</p>
 
       {/* Month nav */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
         <button onClick={() => setMonth(shiftMonth(month, -1))} className="btn-sm">‹</button>
         <b style={{ minWidth: 160, textAlign: "center", fontSize: 14 }}>{fmtMonth(month)}</b>
         <button onClick={() => setMonth(shiftMonth(month, 1))} className="btn-sm">›</button>
@@ -91,9 +142,51 @@ export default function MyAttendance() {
 
       {!loading && data && (
         <>
+          {/* Status banner */}
+          <div style={{
+            background: badge.bg, color: badge.color, borderRadius: "var(--r-card)",
+            padding: "10px 16px", marginBottom: 14, display: "flex", alignItems: "center",
+            gap: 10, flexWrap: "wrap", fontSize: 13,
+          }}>
+            <span style={{ fontWeight: 700 }}>{badge.label}</span>
+            {approval.status === "SUBMITTED" && approval.submitted_at && (
+              <span>· submitted {fmtDateTime(approval.submitted_at)}</span>
+            )}
+            {approval.status === "APPROVED" && (
+              <span>· by {approval.acted_by || "manager"}{approval.acted_at ? ` on ${fmtDateTime(approval.acted_at)}` : ""}</span>
+            )}
+            {editable && (
+              <span>· {missingCount === 0 ? "all working days marked" : `${missingCount} day${missingCount > 1 ? "s" : ""} still need marking`}</span>
+            )}
+            <div style={{ flex: 1 }} />
+            {editable && (
+              <button
+                onClick={submit}
+                disabled={missingCount > 0 || saving}
+                style={{
+                  background: missingCount > 0 ? "var(--line)" : "var(--lime)",
+                  color: missingCount > 0 ? "var(--text-faint)" : "#ffffff",
+                  border: "none", borderRadius: "var(--r-pill)", padding: "6px 16px",
+                  fontWeight: 700, fontSize: 12.5, cursor: missingCount > 0 || saving ? "default" : "pointer",
+                }}
+              >
+                Submit for approval
+              </button>
+            )}
+          </div>
+
+          {approval.status === "REJECTED" && approval.act_comment && (
+            <div style={{
+              background: "var(--badge-danger-bg)", color: "var(--danger)", borderRadius: "var(--r-card)",
+              padding: "10px 16px", marginBottom: 14, fontSize: 13,
+            }}>
+              <b>{approval.acted_by || "Manager"}'s comment:</b> {approval.act_comment}
+            </div>
+          )}
+
           {/* Payable summary */}
           <div style={{
-            background: "linear-gradient(135deg, var(--ink) 0%, #1e2d5c 100%)",
+            background: "var(--ink)", border: "1px solid var(--line)",
             color: "#fff", borderRadius: "var(--r-card)", padding: "18px 24px",
             marginBottom: 20, display: "flex", alignItems: "center", gap: isMobile ? 12 : 24, flexWrap: "wrap",
           }}>
@@ -140,18 +233,26 @@ export default function MyAttendance() {
               // Day cells
               for (let i = 0; i < data.days; i++) {
                 const dayNum = i + 1;
+                const dateStr = `${month}-${String(dayNum).padStart(2, "0")}`;
                 const code   = data.dayCodes[i] || "";
                 const c      = CODE_COLORS[code];
-                const hol    = data.holidays?.find((h) => h.date === `${month}-${String(dayNum).padStart(2, "0")}`);
+                const hol    = data.holidays?.find((h) => h.date === dateStr);
+                const isMissing = data.missingDates?.includes(dateStr);
+                const clickable = editable && !LOCKED_CODES.has(code) && !saving;
 
                 cells.push(
-                  <div key={dayNum} title={`${dayNum}: ${ATT_LABEL[code] || "Unmarked"}${hol ? " – " + hol.name : ""}`} style={{
-                    borderRadius: "var(--r-pill)", padding: "8px 4px",
-                    background: c?.bg || "var(--bg)",
-                    border: `1px solid ${code ? "transparent" : "var(--line)"}`,
-                    textAlign: "center", cursor: "default",
-                    position: "relative",
-                  }}>
+                  <div
+                    key={dayNum}
+                    onClick={clickable ? () => cycleDay(dateStr, code) : undefined}
+                    title={`${dayNum}: ${ATT_LABEL[code] || "Unmarked"}${hol ? " – " + hol.name : ""}${clickable ? " (click to change)" : ""}`}
+                    style={{
+                      borderRadius: "var(--r-pill)", padding: "8px 4px",
+                      background: c?.bg || "var(--bg)",
+                      border: `1px solid ${isMissing ? "var(--danger)" : code ? "transparent" : "var(--line)"}`,
+                      textAlign: "center", cursor: clickable ? "pointer" : "default",
+                      position: "relative", opacity: saving ? 0.7 : 1,
+                    }}
+                  >
                     <div style={{ fontSize: 11, color: "var(--text-faint)", marginBottom: 2 }}>{dayNum}</div>
                     <div style={{ fontWeight: 700, fontSize: 12, color: c?.color || "var(--neutral)" }}>
                       {code || "–"}
@@ -196,7 +297,24 @@ export default function MyAttendance() {
               </span>
             ))}
           </div>
+          {editable && (
+            <p style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 10 }}>
+              Click a day to cycle P → A → HD → WFH → OD → blank. Leave, holiday and week-off days are automatic.
+            </p>
+          )}
         </>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+          background: "var(--text)", color: "#fff",
+          padding: "10px 20px", borderRadius: "var(--r-pill)", fontSize: 13.5, fontWeight: 500,
+          zIndex: 9999,
+        }}>
+          {toast}
+        </div>
       )}
     </div>
   );
