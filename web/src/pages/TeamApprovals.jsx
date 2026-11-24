@@ -162,7 +162,7 @@ export default function TeamApprovals() {
                   <td style={tdStyle}>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button onClick={() => act(l.id, "approve")} disabled={acting === l.id}
-                        style={{ ...btnStyle, background: "var(--charcoal)", color: "#fff" }}>
+                        style={{ ...btnStyle, background: "var(--charcoal)", color: "var(--bg)" }}>
                         Approve
                       </button>
                       <button onClick={() => act(l.id, "reject")} disabled={acting === l.id}
@@ -199,7 +199,7 @@ export default function TeamApprovals() {
                         <th key={d} style={{
                           ...thStyle, textAlign: "center", minWidth: 26,
                           background: isToday ? "var(--lime)" : "var(--bg)",
-                          color: isToday ? "#ffffff" : "var(--text-muted)",
+                          color: isToday ? "var(--bg)" : "var(--text-muted)",
                         }}>{d}</th>
                       );
                     })}

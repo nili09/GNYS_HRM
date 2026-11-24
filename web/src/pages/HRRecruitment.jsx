@@ -42,12 +42,12 @@ function fmtAmount(n) {
 }
 
 const tabStyle = (active) => ({
-  padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
-  border: "none", borderRadius: "var(--r-sm)",
-  background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "#ffffff" : "var(--text-faint)",
-  textTransform: "uppercase", letterSpacing: ".06rem",
-  transition: "all .15s",
+  padding: "8px 2px", marginRight: 22, fontSize: 13, fontWeight: active ? 600 : 500, cursor: "pointer",
+  border: "none", borderBottom: active ? "2px solid var(--text)" : "2px solid transparent", borderRadius: 0,
+  background: "transparent",
+  color: active ? "var(--text)" : "var(--text-muted)",
+  letterSpacing: "-.005em",
+  transition: "color .15s linear, border-color .15s linear",
 });
 
 const inputStyle = {
@@ -59,7 +59,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "#ffffff",
+  background: "var(--lime)", color: "var(--bg)",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -212,7 +212,7 @@ export default function HRRecruitment() {
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
         {["jobs", "candidates", "applications", "interviews"].map(t => (
           <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>
-            {t}
+            {t[0].toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -365,7 +365,7 @@ export default function HRRecruitment() {
                           <button key={s} onClick={() => patchAppStatus(a.id, s)}
                             style={{ ...btnPrimary, padding: "4px 10px", fontSize: 10,
                               background: s === "REJECTED" ? "var(--badge-danger-bg)" : s === "HIRED" ? "var(--lime)" : "var(--badge-blue-bg)",
-                              color: s === "REJECTED" ? "var(--danger)" : s === "HIRED" ? "#ffffff" : "var(--badge-blue-text)",
+                              color: s === "REJECTED" ? "var(--danger)" : s === "HIRED" ? "var(--bg)" : "var(--badge-blue-text)",
                             }}>
                             {s}
                           </button>

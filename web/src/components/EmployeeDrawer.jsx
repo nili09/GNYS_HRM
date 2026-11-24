@@ -230,7 +230,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
             {TABS.map((t, i) => (
               <button key={t} onClick={() => setTab(i)} style={{
                 padding: "9px 13px", fontSize: 12, fontWeight: tab === i ? 700 : 400,
-                color: tab === i ? "var(--ink)" : "var(--text-faint)",
+                color: tab === i ? "var(--text)" : "var(--text-faint)",
                 background: "none", border: "none",
                 borderBottom: tab === i ? "2px solid var(--lime)" : "2px solid transparent",
                 cursor: "pointer", marginBottom: -1,

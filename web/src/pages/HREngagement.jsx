@@ -588,7 +588,7 @@ function SurveysTab() {
                 background: "var(--bg)",
                 borderRadius: 0,
                 padding: 12,
-                border: "1px solid #e2e8f0",
+                border: "1px solid var(--line)",
                 marginBottom: 8,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -715,7 +715,7 @@ function SurveysTab() {
                   background: "var(--bg)",
                   borderRadius: 0,
                   padding: 12,
-                  border: "1px solid #e2e8f0",
+                  border: "1px solid var(--line)",
                   marginBottom: 10,
                 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
@@ -933,7 +933,7 @@ function BadgesTab() {
                 height: 40,
                 borderRadius: 0,
                 background: "var(--bg)",
-                border: "1px solid #e2e8f0",
+                border: "1px solid var(--line)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

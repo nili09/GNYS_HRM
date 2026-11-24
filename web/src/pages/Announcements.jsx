@@ -69,10 +69,10 @@ export default function Announcements() {
 
       {announcements.length === 0 && (
         <div style={{
-          background: "#fff",
+          background: "var(--card)",
           borderRadius: 0,
           padding: 32,
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--line)",
           textAlign: "center",
           color: "var(--text-faint)",
           fontSize: 14,
@@ -90,16 +90,16 @@ export default function Announcements() {
           <div
             key={a.id}
             style={{
-              background: "#fff",
+              background: "var(--card)",
               borderRadius: 0,
               padding: 16,
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--line)",
               marginBottom: 12,
               borderLeft: isUrgent
                 ? "4px solid #ef4444"
                 : isImportant
                   ? "4px solid #f59e0b"
-                  : "4px solid #e2e8f0",
+                  : "4px solid var(--line)",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
@@ -128,15 +128,15 @@ export default function Announcements() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
                 {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
                   <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
-                    style={{ maxWidth: 200, maxHeight: 140, borderRadius: 0, objectFit: "cover", border: "1px solid #e2e8f0" }} />
+                    style={{ maxWidth: 200, maxHeight: 140, borderRadius: 0, objectFit: "cover", border: "1px solid var(--line)" }} />
                 ))}
                 {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
                   <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
                     style={{
                       display: "inline-flex", alignItems: "center", gap: 4,
-                      padding: "4px 10px", background: "#f7f7f8", borderRadius: 0,
+                      padding: "4px 10px", background: "var(--lime-pale)", borderRadius: 0,
                       fontSize: 12, fontWeight: 500, color: "var(--text)", textDecoration: "none",
-                      border: "1px solid #e2e8f0",
+                      border: "1px solid var(--line)",
                     }}>
                     📎 {att.filename}
                   </a>

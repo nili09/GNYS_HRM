@@ -144,7 +144,7 @@ export default function MyResignation() {
                 onClick={() => setShowForm(true)}
                 style={{
                   padding: "10px 24px", fontSize: 13, fontWeight: 600,
-                  background: "var(--lime)", color: "#ffffff", border: "none",
+                  background: "var(--lime)", color: "var(--bg)", border: "none",
                   borderRadius: 0, cursor: "pointer",
                 }}
               >

@@ -115,7 +115,7 @@ export default function MySurveys() {
 
       {surveys.length === 0 && (
         <div style={{
-          background: "#fff",
+          background: "var(--card)",
           borderRadius: 0,
           padding: 32,
           border: "1px solid var(--line)",
@@ -135,7 +135,7 @@ export default function MySurveys() {
         return (
           <div key={s.id} style={{ marginBottom: 12 }}>
             <div style={{
-              background: "#fff",
+              background: "var(--card)",
               borderRadius: 0,
               padding: 16,
               border: isActive ? "2px solid var(--lime)" : "1px solid var(--line)",
@@ -181,7 +181,7 @@ export default function MySurveys() {
                         fontWeight: 600,
                         fontSize: 13,
                         background: isActive ? "var(--line)" : "var(--lime)",
-                        color: isActive ? "var(--text)" : "#ffffff",
+                        color: isActive ? "var(--text)" : "var(--bg)",
                       }}
                     >
                       {isActive ? "Close" : "Take Survey"}
@@ -226,7 +226,7 @@ export default function MySurveys() {
                                   borderRadius: 0,
                                   border: answers[q.id] === n ? "2px solid var(--lime)" : "1px solid var(--line)",
                                   background: answers[q.id] === n ? "var(--lime)" : "var(--card)",
-                                  color: answers[q.id] === n ? "#ffffff" : "var(--text)",
+                                  color: answers[q.id] === n ? "var(--bg)" : "var(--text)",
                                   fontSize: 15,
                                   fontWeight: 700,
                                   cursor: "pointer",
@@ -250,7 +250,7 @@ export default function MySurveys() {
                               width: "100%",
                               padding: "8px 10px",
                               borderRadius: 0,
-                              border: "1px solid #cbd5e1",
+                              border: "1px solid var(--line)",
                               fontSize: 13,
                               resize: "vertical",
                               boxSizing: "border-box",
@@ -314,7 +314,7 @@ export default function MySurveys() {
                         fontWeight: 600,
                         fontSize: 13,
                         background: "var(--lime)",
-                        color: "#ffffff",
+                        color: "var(--bg)",
                         opacity: submitting ? 0.6 : 1,
                       }}
                     >

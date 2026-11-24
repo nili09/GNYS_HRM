@@ -68,7 +68,7 @@ export default function ChangePassword() {
           <div
             style={{
               width: 40, height: 40, borderRadius: "var(--r-pill)",
-              background: "var(--lime)", color: "#ffffff",
+              background: "var(--lime)", color: "var(--bg)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontWeight: 800, fontSize: 18, fontFamily: "var(--font-display)",
             }}

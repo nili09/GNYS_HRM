@@ -33,17 +33,17 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "#ffffff",
+  background: "var(--lime)", color: "var(--bg)",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
 const tabStyle = (active) => ({
-  padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
-  border: "none", borderRadius: "var(--r-sm)",
-  background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "#ffffff" : "var(--text-faint)",
-  textTransform: "uppercase", letterSpacing: ".06rem",
-  transition: "all .15s",
+  padding: "8px 2px", marginRight: 22, fontSize: 13, fontWeight: active ? 600 : 500, cursor: "pointer",
+  border: "none", borderBottom: active ? "2px solid var(--text)" : "2px solid transparent", borderRadius: 0,
+  background: "transparent",
+  color: active ? "var(--text)" : "var(--text-muted)",
+  letterSpacing: "-.005em",
+  transition: "color .15s linear, border-color .15s linear",
 });
 
 export default function MyPerformance() {
@@ -133,7 +133,7 @@ export default function MyPerformance() {
 
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
         {["goals", "reviews", "1-on-1s"].map(t => (
-          <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>{t}</button>
+          <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>
         ))}
       </div>
 
@@ -194,7 +194,7 @@ export default function MyPerformance() {
                       {["IN_PROGRESS", "COMPLETED", "DEFERRED"].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                     <button style={btnPrimary} onClick={() => submitSelfRating(g.id)}>Save</button>
-                    <button style={{ ...btnPrimary, background: "var(--charcoal)", color: "var(--text-faint)" }} onClick={() => setRatingForm(null)}>Cancel</button>
+                    <button style={{ ...btnPrimary, background: "transparent", color: "var(--text)", border: "1px solid var(--line)" }} onClick={() => setRatingForm(null)}>Cancel</button>
                   </div>
                 ) : (
                   <button style={{ ...btnPrimary, marginTop: 10, padding: "4px 12px", fontSize: 10 }}

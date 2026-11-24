@@ -148,7 +148,7 @@ export default function TeamAttendanceApprovals() {
                           {isExpanded ? "Hide" : "View"}
                         </button>
                         <button onClick={() => act(row, "approve")} disabled={acting === key}
-                          style={{ ...btnStyle, background: "var(--charcoal)", color: "#fff" }}>
+                          style={{ ...btnStyle, background: "var(--charcoal)", color: "var(--bg)" }}>
                           Approve
                         </button>
                         <button onClick={() => act(row, "reject")} disabled={acting === key}

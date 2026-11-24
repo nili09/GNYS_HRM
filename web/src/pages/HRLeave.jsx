@@ -148,7 +148,7 @@ export default function HRLeave() {
           <button key={k} onClick={() => setTab(k)} style={{
             padding: "8px 20px", background: "none", border: "none", cursor: "pointer",
             fontWeight: tab === k ? 700 : 400,
-            color: tab === k ? "var(--ink)" : "var(--text-muted)",
+            color: tab === k ? "var(--text)" : "var(--text-muted)",
             borderBottom: tab === k ? "2px solid var(--lime)" : "2px solid transparent",
             marginBottom: -2, fontSize: 13.5, fontFamily: "inherit",
           }}>
@@ -191,7 +191,7 @@ export default function HRLeave() {
                     {l.status === "PENDING" && (
                       <div style={{ display: "flex", gap: 6 }}>
                         <button onClick={() => act(l.id, "approve")} disabled={acting === l.id}
-                          style={{ ...btnStyle, background: "var(--charcoal)", color: "#fff" }}>Approve</button>
+                          style={{ ...btnStyle, background: "var(--charcoal)", color: "var(--bg)" }}>Approve</button>
                         <button onClick={() => act(l.id, "reject")} disabled={acting === l.id}
                           style={{ ...btnStyle, background: "var(--danger)", color: "#fff" }}>Reject</button>
                       </div>
@@ -266,7 +266,7 @@ export default function HRLeave() {
                         const b = row.balances[t.code];
                         return (
                           <td key={t.code} style={{ ...tdStyle, textAlign: "center" }}>
-                            <span style={{ fontWeight: 700, color: (b?.available ?? 0) < 0 ? "var(--danger)" : "var(--ink)" }}>
+                            <span style={{ fontWeight: 700, color: (b?.available ?? 0) < 0 ? "var(--danger)" : "var(--text)" }}>
                               {b?.available ?? 0}
                             </span>
                             <span style={{ fontSize: 11, color: "var(--text-faint)", marginLeft: 4 }}>

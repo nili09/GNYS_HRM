@@ -165,7 +165,7 @@ export default function MyAttendance() {
                 disabled={missingCount > 0 || saving}
                 style={{
                   background: missingCount > 0 ? "var(--line)" : "var(--lime)",
-                  color: missingCount > 0 ? "var(--text-faint)" : "#ffffff",
+                  color: missingCount > 0 ? "var(--text-faint)" : "var(--bg)",
                   border: "none", borderRadius: "var(--r-pill)", padding: "6px 16px",
                   fontWeight: 700, fontSize: 12.5, cursor: missingCount > 0 || saving ? "default" : "pointer",
                 }}
@@ -309,7 +309,7 @@ export default function MyAttendance() {
       {toast && (
         <div style={{
           position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
-          background: "var(--text)", color: "#fff",
+          background: "var(--text)", color: "var(--bg)",
           padding: "10px 20px", borderRadius: "var(--r-pill)", fontSize: 13.5, fontWeight: 500,
           zIndex: 9999,
         }}>

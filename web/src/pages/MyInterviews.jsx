@@ -27,7 +27,7 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "#ffffff",
+  background: "var(--lime)", color: "var(--bg)",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
@@ -120,7 +120,7 @@ export default function MyInterviews() {
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button style={btnPrimary} onClick={() => submitFeedback(i.id)}>Submit</button>
-                    <button style={{ ...btnPrimary, background: "var(--charcoal)", color: "var(--text-faint)" }} onClick={() => setFeedbackForm(null)}>Cancel</button>
+                    <button style={{ ...btnPrimary, background: "transparent", color: "var(--text)", border: "1px solid var(--line)" }} onClick={() => setFeedbackForm(null)}>Cancel</button>
                   </div>
                 </div>
               ) : (

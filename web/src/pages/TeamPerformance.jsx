@@ -30,17 +30,17 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "#ffffff",
+  background: "var(--lime)", color: "var(--bg)",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
 const tabStyle = (active) => ({
-  padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
-  border: "none", borderRadius: "var(--r-sm)",
-  background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "#ffffff" : "var(--text-faint)",
-  textTransform: "uppercase", letterSpacing: ".06rem",
-  transition: "all .15s",
+  padding: "8px 2px", marginRight: 22, fontSize: 13, fontWeight: active ? 600 : 500, cursor: "pointer",
+  border: "none", borderBottom: active ? "2px solid var(--text)" : "2px solid transparent", borderRadius: 0,
+  background: "transparent",
+  color: active ? "var(--text)" : "var(--text-muted)",
+  letterSpacing: "-.005em",
+  transition: "color .15s linear, border-color .15s linear",
 });
 
 export default function TeamPerformance() {
@@ -135,7 +135,7 @@ export default function TeamPerformance() {
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
         {["goals", "reviews", "1-on-1s"].map(t => (
           <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>
-            {t}{t === "reviews" && pendingReviews.length > 0 ? ` (${pendingReviews.length})` : ""}
+            {t[0].toUpperCase() + t.slice(1)}{t === "reviews" && pendingReviews.length > 0 ? ` (${pendingReviews.length})` : ""}
           </button>
         ))}
       </div>
@@ -168,7 +168,7 @@ export default function TeamPerformance() {
                         {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                       </select>
                       <button style={btnPrimary} onClick={() => submitManagerRating(g.id)}>Save</button>
-                      <button style={{ ...btnPrimary, background: "var(--charcoal)", color: "var(--text-faint)" }} onClick={() => setRatingForm(null)}>Cancel</button>
+                      <button style={{ ...btnPrimary, background: "transparent", color: "var(--text)", border: "1px solid var(--line)" }} onClick={() => setRatingForm(null)}>Cancel</button>
                     </div>
                   ) : (
                     <button style={{ ...btnPrimary, marginTop: 10, padding: "4px 12px", fontSize: 10 }}
@@ -213,7 +213,7 @@ export default function TeamPerformance() {
                       <textarea placeholder="Comments" value={ratingForm.comments || ""} onChange={e => setRatingForm({ ...ratingForm, comments: e.target.value })} style={{ ...inputStyle, minHeight: 60 }} />
                       <div style={{ display: "flex", gap: 8 }}>
                         <button style={btnPrimary} onClick={() => submitReview(r.id)}>Submit Review</button>
-                        <button style={{ ...btnPrimary, background: "var(--charcoal)", color: "var(--text-faint)" }} onClick={() => setRatingForm(null)}>Cancel</button>
+                        <button style={{ ...btnPrimary, background: "transparent", color: "var(--text)", border: "1px solid var(--line)" }} onClick={() => setRatingForm(null)}>Cancel</button>
                       </div>
                     </div>
                   ) : r.status === "PENDING" ? (

@@ -32,17 +32,17 @@ const inputStyle = {
 const btnPrimary = {
   padding: "7px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
   border: "none", borderRadius: "var(--r-sm)",
-  background: "var(--lime)", color: "#ffffff",
+  background: "var(--lime)", color: "var(--bg)",
   textTransform: "uppercase", letterSpacing: ".04rem",
 };
 
 const tabStyle = (active) => ({
-  padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer",
-  border: "none", borderRadius: "var(--r-sm)",
-  background: active ? "var(--lime)" : "var(--charcoal)",
-  color: active ? "#ffffff" : "var(--text-faint)",
-  textTransform: "uppercase", letterSpacing: ".06rem",
-  transition: "all .15s",
+  padding: "8px 2px", marginRight: 22, fontSize: 13, fontWeight: active ? 600 : 500, cursor: "pointer",
+  border: "none", borderBottom: active ? "2px solid var(--text)" : "2px solid transparent", borderRadius: 0,
+  background: "transparent",
+  color: active ? "var(--text)" : "var(--text-muted)",
+  letterSpacing: "-.005em",
+  transition: "color .15s linear, border-color .15s linear",
 });
 
 export default function HRPerformance() {
@@ -163,7 +163,7 @@ export default function HRPerformance() {
       {/* Tabs */}
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
         {["cycles", "goals", "reviews"].map(t => (
-          <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>{t}</button>
+          <button key={t} style={tabStyle(tab === t)} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>
         ))}
       </div>
 

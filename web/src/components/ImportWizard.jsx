@@ -110,7 +110,7 @@ export default function ImportWizard({ onClose, onDone }) {
           {step === 2 && !result && (
             <div>
               <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 14 }}>
-                Map your CSV columns to employee fields. <strong style={{ color: "var(--ink)" }}>{rows.length}</strong> data row{rows.length !== 1 ? "s" : ""} found.
+                Map your CSV columns to employee fields. <strong style={{ color: "var(--text)" }}>{rows.length}</strong> data row{rows.length !== 1 ? "s" : ""} found.
               </p>
 
               <div style={{ overflowX: "auto", marginBottom: 16 }}>

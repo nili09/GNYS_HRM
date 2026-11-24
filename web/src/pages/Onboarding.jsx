@@ -166,7 +166,7 @@ export default function Onboarding() {
                 disabled={busy}
                 style={{
                   padding: "5px 14px", fontSize: 12, fontWeight: 600,
-                  background: "var(--lime)", color: "#ffffff", border: "none",
+                  background: "var(--lime)", color: "var(--bg)", border: "none",
                   borderRadius: 0, cursor: "pointer",
                 }}
               >
