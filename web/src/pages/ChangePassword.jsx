@@ -39,7 +39,7 @@ export default function ChangePassword() {
         position: "absolute", top: -140, right: -100,
         width: 400, height: 400,
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(25,25,112,.14) 0%, transparent 65%)",
+        background: "none",
         pointerEvents: "none",
       }} />
       {/* Ambient bottom-left glow */}
@@ -47,7 +47,7 @@ export default function ChangePassword() {
         position: "absolute", bottom: -100, left: -60,
         width: 340, height: 340,
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(25,25,112,.10) 0%, transparent 65%)",
+        background: "none",
         pointerEvents: "none",
       }} />
 

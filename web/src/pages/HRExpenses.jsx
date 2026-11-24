@@ -138,7 +138,7 @@ export default function HRExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Expense Management</h2>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>Expense Management</h2>
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 0, borderBottom: "2px solid var(--line)", marginBottom: 18 }}>
@@ -322,11 +322,11 @@ const inputStyle = {
   width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
-const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
+const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };
 const smallBtn = {
   padding: "6px 16px", borderRadius: "var(--r-pill)", border: "none",
-  background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 12,
+  background: "var(--text)", color: "var(--bg)", fontWeight: 700, fontSize: 12,
   cursor: "pointer", fontFamily: "inherit",
 };
 function actionBtn(type) {

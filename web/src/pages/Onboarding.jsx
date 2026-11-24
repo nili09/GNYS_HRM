@@ -11,9 +11,9 @@ function ProgressBar({ done, total, label }) {
         <span>{label}</span>
         <span style={{ color: "var(--text-muted)" }}>{done}/{total}</span>
       </div>
-      <div style={{ height: 6, background: "var(--border)", borderRadius: 3 }}>
+      <div style={{ height: 6, background: "var(--border)", borderRadius: 0 }}>
         <div style={{
-          height: "100%", borderRadius: 3, transition: "width .3s",
+          height: "100%", borderRadius: 0, transition: "width .3s",
           width: `${pct}%`,
           background: pct === 100 ? "var(--success, #10b981)" : "var(--lime)",
         }} />
@@ -87,8 +87,8 @@ export default function Onboarding() {
     <div style={{ maxWidth: 680 }}>
       {/* Welcome header */}
       <div style={{
-        background: "linear-gradient(135deg, var(--ink) 0%, #1a1a2e 100%)",
-        borderRadius: 10, padding: "28px 28px 24px", marginBottom: 24,
+        background: "var(--ink)", border: "1px solid var(--line)",
+        borderRadius: 0, padding: "28px 28px 24px", marginBottom: 24,
         color: "#fff",
       }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 6px" }}>
@@ -103,7 +103,7 @@ export default function Onboarding() {
         {progress.complete && (
           <div style={{
             marginTop: 12, background: "#10b98122", color: "#10b981",
-            padding: "8px 14px", borderRadius: 6, fontSize: 13, fontWeight: 600,
+            padding: "8px 14px", borderRadius: 0, fontSize: 13, fontWeight: 600,
           }}>
             All steps completed!
           </div>
@@ -113,7 +113,7 @@ export default function Onboarding() {
       {/* Progress overview */}
       <div style={{
         background: "var(--card)", border: "1px solid var(--border)",
-        borderRadius: 8, padding: 20, marginBottom: 20,
+        borderRadius: 0, padding: 20, marginBottom: 20,
       }}>
         <ProgressBar done={progress.docs_done} total={progress.docs_total} label="Documents" />
         <ProgressBar done={progress.policies_done} total={progress.policies_total} label="Policies" />
@@ -122,7 +122,7 @@ export default function Onboarding() {
       {/* Document checklist */}
       <div style={{
         background: "var(--card)", border: "1px solid var(--border)",
-        borderRadius: 8, padding: 20, marginBottom: 20,
+        borderRadius: 0, padding: 20, marginBottom: 20,
       }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Document Checklist</h2>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 12 }}>
@@ -142,7 +142,7 @@ export default function Onboarding() {
       {/* Policy acknowledgments */}
       <div style={{
         background: "var(--card)", border: "1px solid var(--border)",
-        borderRadius: 8, padding: 20, marginBottom: 20,
+        borderRadius: 0, padding: 20, marginBottom: 20,
       }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Policy Acknowledgments</h2>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 12 }}>
@@ -167,7 +167,7 @@ export default function Onboarding() {
                 style={{
                   padding: "5px 14px", fontSize: 12, fontWeight: 600,
                   background: "var(--lime)", color: "#ffffff", border: "none",
-                  borderRadius: 5, cursor: "pointer",
+                  borderRadius: 0, cursor: "pointer",
                 }}
               >
                 Acknowledge
@@ -181,7 +181,7 @@ export default function Onboarding() {
       {isOnboarding && (
         <div style={{
           background: "var(--card)", border: "1px solid var(--border)",
-          borderRadius: 8, padding: 20,
+          borderRadius: 0, padding: 20,
         }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>First Week Steps</h2>
           <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.8, color: "var(--text)" }}>

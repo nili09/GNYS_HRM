@@ -130,7 +130,7 @@ export default function HRHelpdesk() {
   });
 
   const inputStyle = {
-    display: "block", width: "100%", marginTop: 4, padding: "7px 10px", borderRadius: 4,
+    display: "block", width: "100%", marginTop: 4, padding: "7px 10px", borderRadius: 0,
     border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13,
   };
 
@@ -138,7 +138,7 @@ export default function HRHelpdesk() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: "var(--font-display)" }}>
+      <h2 className="page-title" style={{ marginBottom: 16 }}>
         Helpdesk
       </h2>
 
@@ -205,13 +205,13 @@ export default function HRHelpdesk() {
                     <td style={{ padding: "8px 10px" }}>
                       {t.status === "OPEN" && (
                         <button onClick={() => updateTicket(t.id, { status: "IN_PROGRESS" })} disabled={acting === `ticket-${t.id}`}
-                          style={{ padding: "3px 10px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer", marginRight: 4 }}>
+                          style={{ padding: "3px 10px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 11, cursor: "pointer", marginRight: 4 }}>
                           Start
                         </button>
                       )}
                       {(t.status === "OPEN" || t.status === "IN_PROGRESS") && (
                         <button onClick={() => updateTicket(t.id, { status: "RESOLVED" })} disabled={acting === `ticket-${t.id}`}
-                          style={{ padding: "3px 10px", borderRadius: 4, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 11, cursor: "pointer" }}>
+                          style={{ padding: "3px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontWeight: 600, fontSize: 11, cursor: "pointer" }}>
                           Resolve
                         </button>
                       )}
@@ -233,7 +233,7 @@ export default function HRHelpdesk() {
             style={{ marginBottom: 16, border: "none", background: "none", color: "var(--lime)", cursor: "pointer", fontWeight: 600, fontSize: 12, padding: 0 }}>
             &larr; Back to all tickets
           </button>
-          <div style={{ background: "var(--card)", borderRadius: 8, padding: 20, marginBottom: 20, border: "1px solid var(--border)" }}>
+          <div style={{ background: "var(--card)", borderRadius: 0, padding: 20, marginBottom: 20, border: "1px solid var(--border)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
               <span style={{ fontWeight: 700, fontSize: 16 }}>#{selected.id} — {selected.subject}</span>
               <Badge map={STATUS_BADGE} value={selected.status} />
@@ -259,13 +259,13 @@ export default function HRHelpdesk() {
             </div>
           </div>
 
-          <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-muted)" }}>Comments</h4>
+          <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text)" }}>Comments</h4>
           {comments.length === 0 ? (
             <p style={{ color: "var(--text-faint)", fontSize: 13, marginBottom: 16 }}>No comments yet.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
               {comments.map(c => (
-                <div key={c.id} style={{ background: "var(--card)", borderRadius: 6, padding: "10px 14px", border: "1px solid var(--border)" }}>
+                <div key={c.id} style={{ background: "var(--card)", borderRadius: 0, padding: "10px 14px", border: "1px solid var(--border)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 12 }}>{c.author_name}</span>
                     <span style={{ fontSize: 11, color: "var(--text-faint)" }}>{fmtDate(c.created_at)}</span>
@@ -278,9 +278,9 @@ export default function HRHelpdesk() {
 
           <form onSubmit={addComment} style={{ display: "flex", gap: 8 }}>
             <input value={commentBody} onChange={e => setCommentBody(e.target.value)} placeholder="Add a comment..."
-              style={{ flex: 1, padding: "7px 10px", borderRadius: 4, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13 }} />
+              style={{ flex: 1, padding: "7px 10px", borderRadius: 0, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13 }} />
             <button type="submit"
-              style={{ padding: "7px 18px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+              style={{ padding: "7px 18px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
               Send
             </button>
           </form>
@@ -304,7 +304,7 @@ export default function HRHelpdesk() {
                 style={{ marginTop: 4 }}
               />
             </label>
-            <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 4, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+            <button type="submit" style={{ alignSelf: "flex-start", padding: "7px 16px", borderRadius: 0, border: "none", background: "var(--lime)", color: "#ffffff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
               Add Category
             </button>
           </form>
@@ -330,15 +330,15 @@ export default function HRHelpdesk() {
       {tab === "dashboard" && dashboard && (
         <div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-            <div style={{ background: "var(--card)", borderRadius: 8, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
+            <div style={{ background: "var(--card)", borderRadius: 0, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
               <div style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Open Tickets</div>
               <div style={{ fontSize: 28, fontWeight: 700 }}>{dashboard.totalOpen}</div>
             </div>
-            <div style={{ background: "var(--card)", borderRadius: 8, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
+            <div style={{ background: "var(--card)", borderRadius: 0, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 140 }}>
               <div style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Resolved</div>
               <div style={{ fontSize: 28, fontWeight: 700 }}>{dashboard.totalResolved}</div>
             </div>
-            <div style={{ background: "var(--card)", borderRadius: 8, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 160 }}>
+            <div style={{ background: "var(--card)", borderRadius: 0, padding: "16px 24px", border: "1px solid var(--border)", minWidth: 160 }}>
               <div style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Avg Resolution</div>
               <div style={{ fontSize: 28, fontWeight: 700 }}>{dashboard.avgResolutionTime}h</div>
             </div>

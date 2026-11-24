@@ -171,7 +171,7 @@ export default function RecognitionWall() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Recognition Wall</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>Recognition Wall</h1>
 
       {/* Give Recognition Form */}
       <div style={{
@@ -297,7 +297,7 @@ export default function RecognitionWall() {
               padding: "10px 20px", borderRadius: "var(--r-pill)", border: "none",
               cursor: submitting ? "not-allowed" : "pointer",
               fontWeight: 700, fontSize: 13,
-              background: "var(--ink)", color: "var(--lime-light)",
+              background: "var(--text)", color: "var(--bg)",
               opacity: submitting ? 0.6 : 1, fontFamily: "inherit",
               width: isMobile ? "100%" : "auto", minHeight: 40,
             }}
@@ -331,7 +331,7 @@ export default function RecognitionWall() {
               marginBottom: 12, display: "flex", gap: 14, alignItems: "flex-start",
             }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 12,
+                width: 48, height: 48, borderRadius: 0,
                 background: "var(--bg)", border: "1px solid var(--line)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 24, flexShrink: 0,

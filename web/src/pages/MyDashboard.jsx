@@ -74,7 +74,7 @@ export default function MyDashboard() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24, letterSpacing: "-.02rem" }}>Welcome, {user?.name}</h2>
+      <h2 className="page-title" style={{ marginBottom: 24 }}>Welcome, {user?.name}</h2>
 
       {/* KPI cards */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 20 }}>
@@ -175,7 +175,7 @@ export default function MyDashboard() {
       {/* Announcements feed */}
       {data?.announcementsFeed?.length > 0 && (
         <div style={{ marginTop: 22 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Announcements</div>
+          <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 14, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Announcements</div>
           <div style={{ display: "grid", gap: 12 }}>
             {data.announcementsFeed.map((a) => (
               <div key={a.id} style={{
@@ -198,7 +198,7 @@ export default function MyDashboard() {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
                     {a.attachments.filter(att => att.mime.startsWith("image/")).map(att => (
                       <img key={att.id} src={`/api/attachments/${att.id}/thumb`} alt={att.filename}
-                        style={{ maxWidth: 180, maxHeight: 120, borderRadius: 6, objectFit: "cover", border: "1px solid var(--line)" }} />
+                        style={{ maxWidth: 180, maxHeight: 120, borderRadius: 0, objectFit: "cover", border: "1px solid var(--line)" }} />
                     ))}
                     {a.attachments.filter(att => !att.mime.startsWith("image/")).map(att => (
                       <a key={att.id} href={`/api/attachments/${att.id}/download`} target="_blank" rel="noopener noreferrer"
@@ -225,7 +225,7 @@ export default function MyDashboard() {
       {/* Manager section */}
       {mgrData?.isManager && (
         <div style={{ marginTop: 22 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Team Overview</div>
+          <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 14, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".07rem" }}>Team Overview</div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(155px, 1fr))", gap: 10, marginBottom: 14 }}>
             <KPI label="Team Size" value={mgrData.teamSize} sub="direct reports" />
             <KPI label="Out Today" value={mgrData.outToday.length} sub="on leave" />
@@ -295,23 +295,22 @@ function KPI({ label, value, sub, onClick }) {
         borderRadius: "var(--r-card)",
         padding: "16px 18px",
         cursor: onClick ? "pointer" : "default",
-        transition: "box-shadow .2s, transform .15s",
-        boxShadow: "var(--shadow-sm)",
+        transition: "border-color .15s linear",
       }}
-      onMouseEnter={(e) => { if (onClick) { e.currentTarget.style.boxShadow = "var(--lime-glow)"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
-      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "var(--shadow-sm)"; e.currentTarget.style.transform = ""; }}
+      onMouseEnter={(e) => { if (onClick) e.currentTarget.style.borderColor = "var(--text)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--line)"; }}
     >
-      <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".055rem" }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "var(--font-display)", letterSpacing: "-.025rem", lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontSize: 11, color: "var(--text-faint)", marginTop: 4 }}>{sub}</div>
+      <div style={{ fontSize: 10.5, color: "var(--text)", fontWeight: 600, marginBottom: 18, textTransform: "uppercase", letterSpacing: ".08em" }}>{label}</div>
+      <div style={{ fontSize: 40, fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-.045em", lineHeight: .95, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>{sub}</div>
     </div>
   );
 }
 
 function Card({ title, children }) {
   return (
-    <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
-      <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".07rem" }}>{title}</h4>
+    <div style={{ background: "var(--card)", borderTop: "2px solid var(--text)", padding: "12px 0 0" }}>
+      <h4 style={{ fontSize: 11, fontWeight: 600, marginBottom: 16, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".08em" }}>{title}</h4>
       {children}
     </div>
   );
@@ -324,7 +323,7 @@ function Empty({ text }) {
 function Avatar({ name }) {
   const initials = (name || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--lime-light)", flexShrink: 0 }}>
+    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--text)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--bg)", flexShrink: 0 }}>
       {initials}
     </div>
   );

@@ -84,7 +84,7 @@ export default function TeamExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Team Expenses</h2>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>Team Expenses</h2>
 
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--text)" }}>
         Pending Expenses ({expenses.length})
@@ -161,7 +161,7 @@ export default function TeamExpenses() {
   );
 }
 
-const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
+const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };
 function actionBtn(type) {
   return {

@@ -11,8 +11,8 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
+  WFH: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
@@ -100,7 +100,7 @@ export default function TeamAttendanceApprovals() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Attendance Approvals</h2>
+      <h2 className="page-title" style={{ margin: "0 0 4px" }}>Attendance Approvals</h2>
       <p style={{ margin: "0 0 20px", color: "var(--text-muted)", fontSize: 13 }}>
         Months your direct reports have submitted, awaiting your approval
       </p>
@@ -216,7 +216,7 @@ export default function TeamAttendanceApprovals() {
   );
 }
 
-const thStyle = { padding: "6px 8px", fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase" };
+const thStyle = { padding: "6px 8px", fontSize: 11, fontWeight: 600, color: "var(--text)", textTransform: "uppercase" };
 const tdStyle = { padding: "8px 10px" };
 const btnStyle = {
   padding: "4px 12px", borderRadius: "var(--r-card)", border: "none", cursor: "pointer",

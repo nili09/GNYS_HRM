@@ -203,11 +203,11 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
           {completeness && (
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
-                <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem" }}>Profile Completeness</span>
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05rem" }}>Profile Completeness</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: completeness.pct === 100 ? "var(--charcoal)" : "var(--badge-tan-text)" }}>{completeness.pct}%</span>
               </div>
-              <div style={{ height: 4, background: "var(--line)", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${completeness.pct}%`, background: "var(--lime)", borderRadius: 2, transition: "width .3s" }} />
+              <div style={{ height: 4, background: "var(--line)", borderRadius: 0, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${completeness.pct}%`, background: "var(--lime)", borderRadius: 0, transition: "width .3s" }} />
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
                 {SECTION_STATUS_FIELDS.map(([k, label]) => {
@@ -276,7 +276,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
               <Field label="Location"        value={form.location_id}    onChange={v => setField("location_id", v)}    type="select" options={locations.map(l => ({ value: l.id, label: l.name }))} />
               <Field label="Sub Branch"      value={form.sub_branch}     onChange={v => setField("sub_branch", v)}     disabled={!isHR} />
               <div style={{ marginBottom: 2 }}>
-                <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".04rem" }}>
+                <label style={{ display: "block", fontSize: 10.5, fontWeight: 600, color: "var(--text)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".04rem" }}>
                   Manager
                 </label>
                 <EmployeePicker
@@ -367,7 +367,7 @@ export default function EmployeeDrawer({ empId, isNew, departments, locations, o
 
               {emp?.salary_structures?.length > 1 && (
                 <div style={{ marginTop: 18 }}>
-                  <h4 style={{ fontSize: 11, fontWeight: 700, marginBottom: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05rem" }}>Salary History</h4>
+                  <h4 style={{ fontSize: 11, fontWeight: 600, marginBottom: 10, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05rem" }}>Salary History</h4>
                   <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse" }}>
                     <thead>
                       <tr>
@@ -430,7 +430,7 @@ function Divider() {
 function Field({ label, value, onChange, type = "text", options, required, disabled, full }) {
   const wrapper = { ...(full ? { gridColumn: "1 / -1" } : {}), marginBottom: 2 };
   const lbl = (
-    <label style={{ display: "block", fontSize: 10.5, fontWeight: 700, color: "var(--text-muted)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".04rem" }}>
+    <label style={{ display: "block", fontSize: 10.5, fontWeight: 600, color: "var(--text)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".04rem" }}>
       {label}{required && <span style={{ color: "var(--danger)" }}> *</span>}
     </label>
   );

@@ -104,7 +104,7 @@ export default function FileUpload({ ownerType, ownerId, accept, label }) {
 
       {/* Progress bar */}
       {uploading && (
-        <div style={{ marginTop: 6, height: 3, background: "var(--line)", borderRadius: 2, overflow: "hidden" }}>
+        <div style={{ marginTop: 6, height: 3, background: "var(--line)", borderRadius: 0, overflow: "hidden" }}>
           <div style={{ width: `${progress}%`, height: "100%", background: "var(--lime)", transition: "width .2s" }} />
         </div>
       )}

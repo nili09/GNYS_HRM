@@ -122,7 +122,7 @@ export default function MyProfile() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 17, fontWeight: 650, marginBottom: 16 }}>My Profile</h2>
+      <h2 className="page-title" style={{ marginBottom: 16 }}>My Profile</h2>
 
       {msg && <MsgBanner msg={msg} />}
 
@@ -457,7 +457,7 @@ const labelStyle = { display: "block", fontSize: 11.5, fontWeight: 600, color: "
 const fldStyle = { width: "100%", padding: "10px 12px", border: "1px solid var(--line)", borderRadius: "var(--r-card)", fontSize: 14, outline: "none", boxSizing: "border-box" };
 
 const btnPrimary = {
-  padding: "10px 20px", background: "var(--ink)", color: "var(--lime-light)",
+  padding: "10px 20px", background: "var(--text)", color: "var(--bg)",
   border: "none", borderRadius: "var(--r-pill)", fontSize: 13, fontWeight: 600, cursor: "pointer", minHeight: 40,
 };
 const btnCancel = {

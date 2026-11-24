@@ -33,7 +33,7 @@ export default function MyPayslips() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>My Payslips</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>My Payslips</h1>
 
       {error && <div style={{ background: "var(--badge-danger-bg)", color: "var(--danger)", padding: "8px 14px", borderRadius: "var(--r-pill)", marginBottom: 12, fontSize: 13 }}>{error}</div>}
 

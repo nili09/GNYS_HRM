@@ -15,8 +15,8 @@ const CODE_COLORS = {
   P:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   A:   { bg: "var(--badge-danger-bg)", color: "var(--danger)" },
   HD:  { bg: "var(--badge-tan-bg)", color: "var(--badge-tan-text)" },
-  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)" },
+  WFH: { bg: "var(--lime-pale)", color: "var(--charcoal)" },
+  OD:  { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" },
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)" },
   WO:  { bg: "var(--bg)", color: "var(--text-muted)" },
@@ -254,7 +254,7 @@ function DailyRegister({ onSseEvent }) {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{
                           width: 30, height: 30, borderRadius: "50%",
-                          background: "var(--ink)", color: "var(--lime-light)",
+                          background: "var(--text)", color: "var(--bg)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontWeight: 700, fontSize: 11, flexShrink: 0,
                         }}>
@@ -509,7 +509,7 @@ export default function HRAttendance() {
   }, []);
 
   const tabStyle = (t) => ({
-    padding: "8px 18px", borderRadius: "8px 8px 0 0",
+    padding: "8px 18px", borderRadius: 0,
     border: "none", background: tab === t ? "var(--card)" : "transparent",
     color: tab === t ? "var(--text)" : "var(--text-muted)",
     fontWeight: tab === t ? 700 : 400, fontSize: 13.5,
@@ -519,7 +519,7 @@ export default function HRAttendance() {
   return (
     <div style={{ maxWidth: 1400 }}>
       <div style={{ marginBottom: 4 }}>
-        <h2 style={{ margin: "0 0 2px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Attendance</h2>
+        <h2 className="page-title" style={{ margin: "0 0 2px" }}>Attendance</h2>
         <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 13 }}>Daily register and monthly view</p>
       </div>
 
@@ -531,7 +531,7 @@ export default function HRAttendance() {
 
       <div style={{
         background: "var(--card)", border: "1px solid var(--line)", borderTop: "none",
-        borderRadius: "0 0 10px 10px", padding: 20,
+        borderRadius: 0, padding: 20,
       }}>
         {tab === "daily"   && <DailyRegister onSseEvent={sseEvent} />}
         {tab === "monthly" && <MonthlyGrid />}

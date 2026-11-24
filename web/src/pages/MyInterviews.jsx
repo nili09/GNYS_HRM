@@ -77,7 +77,7 @@ export default function MyInterviews() {
 
   return (
     <div>
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>My Interviews</h2>
+      <h2 className="page-title" style={{ margin: 0 }}>My Interviews</h2>
       <p style={{ color: "var(--text-faint)", fontSize: 12, margin: "4px 0 20px" }}>Interviews assigned to you</p>
 
       {/* Upcoming */}

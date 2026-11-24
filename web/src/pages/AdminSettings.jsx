@@ -134,7 +134,7 @@ export default function AdminSettings() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Settings</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>Settings</h1>
 
       {/* Toast */}
       {toast && (
@@ -313,14 +313,14 @@ function Btn({ label, onClick, disabled, secondary }) {
     <button onClick={onClick} disabled={disabled} style={{
       marginTop: 12, padding: "7px 18px", border: secondary ? "1px solid var(--line)" : "none",
       borderRadius: "var(--r-card)", cursor: "pointer", fontSize: 12.5, fontWeight: 600,
-      background: secondary ? "var(--card)" : "var(--ink)", color: secondary ? "var(--charcoal)" : "var(--lime-light)",
+      background: secondary ? "var(--card)" : "var(--text)", color: secondary ? "var(--charcoal)" : "var(--bg)",
       opacity: disabled ? 0.5 : 1,
     }}>{label}</button>
   );
 }
 
 function RoleBadge({ role }) {
-  const colors = { ADMIN: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" }, HR: { bg: "rgba(25,25,112,.12)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
+  const colors = { ADMIN: { bg: "var(--badge-amber-bg)", c: "var(--badge-amber-text)" }, HR: { bg: "var(--lime-pale)", c: "var(--charcoal)" }, EMPLOYEE: { bg: "var(--bg)", c: "var(--text-muted)" } };
   const { bg, c } = colors[role] || colors.EMPLOYEE;
   return <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: "var(--r-pill)", background: bg, color: c }}>{role}</span>;
 }

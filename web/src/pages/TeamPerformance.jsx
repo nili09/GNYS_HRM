@@ -129,7 +129,7 @@ export default function TeamPerformance() {
 
   return (
     <div>
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "var(--font-display)" }}>Team Performance</h2>
+      <h2 className="page-title" style={{ margin: 0 }}>Team Performance</h2>
       <p style={{ color: "var(--text-faint)", fontSize: 12, margin: "4px 0 20px" }}>Rate goals, submit reviews & manage 1-on-1s for your direct reports</p>
 
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>

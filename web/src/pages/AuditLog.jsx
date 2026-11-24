@@ -40,7 +40,7 @@ export default function AuditLog() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 18 }}>Audit Log</h1>
+      <h1 className="page-title" style={{ marginBottom: 18 }}>Audit Log</h1>
 
       {/* Filters */}
       <div style={{ display: "flex", gap: 10, marginBottom: 16, alignItems: "center" }}>
@@ -111,7 +111,7 @@ export default function AuditLog() {
 function ActionBadge({ action }) {
   const colors = {
     create: { bg: "var(--lime-pale)", c: "var(--charcoal)" },
-    update: { bg: "rgba(25,25,112,.12)", c: "var(--charcoal)" },
+    update: { bg: "var(--lime-pale)", c: "var(--charcoal)" },
     delete: { bg: "var(--badge-danger-bg)", c: "var(--danger)" },
     login: { bg: "var(--badge-tan-bg)", c: "var(--badge-tan-text)" },
     finalize: { bg: "var(--badge-indigo-bg)", c: "var(--badge-indigo-text)" },

@@ -19,43 +19,47 @@ function NavItem({ to, icon, label, badge, onNav }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={({ isActive }) => ({
-        display: "flex", alignItems: "center", gap: 11,
-        padding: "9px 12px 9px 10px",
-        borderRadius: 8,
+        display: "flex", alignItems: "center", gap: 10,
+        padding: "6px 10px 6px 12px",
+        borderRadius: 0,
         color: isActive ? "var(--sidebar-fg-active)" : hovered ? "var(--sidebar-fg-hover)" : "var(--sidebar-fg)",
-        fontSize: 12, textDecoration: "none",
+        fontSize: 13.5, textDecoration: "none",
         cursor: "pointer",
-        transition: "background .2s, color .2s",
-        borderLeft: isActive ? "3px solid var(--sidebar-fg-active)" : "3px solid transparent",
-        background: isActive ? "var(--sidebar-active-bg)" : hovered ? "var(--sidebar-hover-bg)" : "transparent",
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: ".05rem",
-        minHeight: 40,
+        transition: "color .15s linear",
+        borderLeft: isActive ? "3px solid var(--signal)" : "3px solid transparent",
+        background: "transparent",
+        fontWeight: isActive ? 600 : 400,
+        letterSpacing: "-.01em",
+        minHeight: 34,
       })}
     >
-      <Icon name={icon} style={{ flexShrink: 0 }} />
+      {({ isActive }) => (<>
+      <Icon name={icon} style={{ flexShrink: 0, fontSize: 17, opacity: isActive ? 1 : .55 }} />
       <span style={{ flex: 1 }}>{label}</span>
       {badge > 0 && (
         <span style={{
-          minWidth: 18, height: 18, borderRadius: "var(--r-pill)",
-          background: "var(--danger)",
-          color: "#fff", fontSize: 10, fontWeight: 700,
+          minWidth: 20, height: 18, borderRadius: 0,
+          background: "var(--signal)",
+          color: "var(--signal-ink)", fontSize: 10.5, fontWeight: 600,
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "0 5px",
         }}>{badge}</span>
       )}
+      </>)}
     </NavLink>
   );
 }
 
-function SectionLabel({ children }) {
+function SectionLabel({ n, children }) {
   return (
     <div style={{
-      fontSize: 9.5, fontWeight: 700, letterSpacing: ".12em",
-      color: "var(--sidebar-muted)", textTransform: "uppercase",
-      padding: "12px 14px 4px", marginTop: 4,
+      display: "flex", gap: 10, alignItems: "baseline",
+      fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em",
+      color: "var(--sidebar-fg-hover)", textTransform: "uppercase",
+      padding: "8px 12px 6px 15px", margin: "18px 0 4px",
+      borderTop: "1px solid var(--sidebar-fg-hover)",
     }}>
+      <span style={{ color: "var(--sidebar-muted)", fontVariantNumeric: "tabular-nums" }}>{n}</span>
       {children}
     </div>
   );
@@ -173,9 +177,8 @@ export default function AppShell() {
       {/* Logo */}
       <div
         style={{
-          padding: "22px 6px 18px",
-          borderBottom: "1px solid var(--sidebar-border)",
-          marginBottom: 6,
+          padding: "24px 6px 20px 15px",
+          marginBottom: 0,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}
       >
@@ -186,11 +189,12 @@ export default function AppShell() {
             style={{
               height: 22, width: "auto",
               filter: theme === "dark" ? "brightness(0) invert(1)" : "none",
-              opacity: 0.9, display: "block",
+              opacity: 1, display: "block",
             }}
           />
-          <span style={{ fontSize: 10, color: "var(--sidebar-muted)", letterSpacing: ".02em", marginTop: 4, display: "block" }}>
-            International Corp Ltd
+          <span style={{ fontSize: 11, color: "var(--sidebar-muted)", marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 7, height: 7, background: "var(--signal)", display: "inline-block" }} />
+            People Operations
           </span>
         </div>
         {isMobile && (
@@ -209,7 +213,7 @@ export default function AppShell() {
 
       {/* Nav */}
       <nav className="sidebar-scroll" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 1, overflowY: "auto" }}>
-        <SectionLabel>My Space</SectionLabel>
+        <SectionLabel n="01">My Space</SectionLabel>
         <NavItem to="/my/dashboard"   icon="dashboard"              label="Dashboard"  onNav={closeDrawer} />
         <NavItem to="/my/attendance"  icon="schedule"               label="Attendance" onNav={closeDrawer} />
         <NavItem to="/my/leave"       icon="beach_access"           label="Apply Leave" onNav={closeDrawer} />
@@ -224,13 +228,13 @@ export default function AppShell() {
         <NavItem to="/my/resignation" icon="description"            label="Resignation" onNav={closeDrawer} />
         {user?.status === "ONBOARDING" && <NavItem to="/my/onboarding" icon="rocket_launch" label="Onboarding" onNav={closeDrawer} />}
 
-        <SectionLabel>Engage</SectionLabel>
+        <SectionLabel n="02">Engage</SectionLabel>
         <NavItem to="/announcements" icon="campaign"     label="Announcements" onNav={closeDrawer} />
         <NavItem to="/recognition"   icon="emoji_events" label="Recognition"   onNav={closeDrawer} />
 
         {showTeam && (
           <>
-            <SectionLabel>Team</SectionLabel>
+            <SectionLabel n="03">Team</SectionLabel>
             <NavItem to="/team/approvals"    icon="task_alt"               label="Approvals" badge={pendingCount} onNav={closeDrawer} />
             <NavItem to="/team/calendar"     icon="calendar_month"         label="Calendar"  onNav={closeDrawer} />
             <NavItem to="/team/attendance"   icon="schedule"               label="Team Attendance" onNav={closeDrawer} />
@@ -242,7 +246,7 @@ export default function AppShell() {
 
         {isHR && (
           <>
-            <SectionLabel>HR</SectionLabel>
+            <SectionLabel n={showTeam ? "04" : "03"}>HR</SectionLabel>
             <NavItem to="/hr/dashboard"   icon="dashboard"              label="HR Dashboard" onNav={closeDrawer} />
             <NavItem to="/hr/employees"   icon="groups"                 label="Employees"    onNav={closeDrawer} />
             <NavItem to="/hr/attendance"  icon="schedule"               label="Attendance"   onNav={closeDrawer} />
@@ -259,7 +263,7 @@ export default function AppShell() {
 
         {isAdmin && (
           <>
-            <SectionLabel>Admin</SectionLabel>
+            <SectionLabel n={showTeam ? "05" : "04"}>Admin</SectionLabel>
             <NavItem to="/admin/settings" icon="settings"     label="Settings"  onNav={closeDrawer} />
             <NavItem to="/admin/audit"    icon="receipt_long" label="Audit Log" onNav={closeDrawer} />
           </>
@@ -269,15 +273,15 @@ export default function AppShell() {
       {/* User footer */}
       <div
         style={{
-          padding: "14px 6px 18px",
-          borderTop: "1px solid var(--sidebar-border)",
+          padding: "12px 6px 16px 12px",
+          borderTop: "1px solid var(--sidebar-fg-hover)",
           display: "flex", alignItems: "center", gap: 10,
         }}
       >
-        <ProfilePhoto employee={user} size={30} style={{ background: "var(--sidebar-hover-bg)", color: "var(--sidebar-fg-active)" }} />
+        <ProfilePhoto employee={user} size={30} style={{ background: "var(--text)", color: "var(--bg)" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: "var(--sidebar-fg-hover)", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</div>
-          <div style={{ fontSize: 10, color: "var(--sidebar-muted)", letterSpacing: ".06em", textTransform: "uppercase" }}>{user?.role}</div>
+          <div style={{ color: "var(--sidebar-fg-hover)", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</div>
+          <div style={{ fontSize: 10.5, color: "var(--sidebar-muted)", letterSpacing: ".08em", textTransform: "uppercase" }}>{user?.role}</div>
         </div>
         <button
           onClick={toggleTheme}
@@ -290,7 +294,7 @@ export default function AppShell() {
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--sidebar-fg-active)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--signal)"}
           onMouseLeave={(e) => e.currentTarget.style.color = "var(--sidebar-fg)"}
         >
           <Icon name={theme === "dark" ? "light_mode" : "dark_mode"} />
@@ -307,7 +311,7 @@ export default function AppShell() {
             transition: "color .3s",
             flexShrink: 0,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--sidebar-fg-active)"}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--signal)"}
           onMouseLeave={(e) => e.currentTarget.style.color = "var(--sidebar-fg)"}
         >
           <Icon name="logout" />
@@ -371,11 +375,11 @@ export default function AppShell() {
           >
             <div style={{
               position: "absolute", top: 0, bottom: 0,
-              left: 2, width: 2, borderRadius: 1,
+              left: 2, width: 2, borderRadius: 0,
               background: "transparent",
               transition: "background .2s",
             }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "var(--sidebar-fg-active)"}
+              onMouseEnter={(e) => e.currentTarget.style.background = "var(--signal)"}
               onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             />
           </div>
@@ -387,7 +391,7 @@ export default function AppShell() {
         <div style={{
           display: "flex", alignItems: "center",
           justifyContent: isMobile ? "space-between" : "flex-end",
-          padding: isMobile ? "10px 14px 10px" : "12px 28px 12px", flexShrink: 0,
+          padding: isMobile ? "10px 14px 10px" : "12px 40px 12px", flexShrink: 0,
           gap: 10,
           borderBottom: "1px solid var(--line)",
           background: "var(--bg)",
@@ -413,7 +417,7 @@ export default function AppShell() {
           {!isMobile && <SearchBar />}
           <NotificationBell />
         </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "16px 14px 24px" : "24px 32px 32px" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "20px 16px 28px" : "36px 40px 48px" }}>
           <Outlet />
         </div>
       </div>

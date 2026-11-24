@@ -3,8 +3,8 @@ import { api } from "../lib/api.js";
 
 const STATUS_STYLE = {
   L:   { bg: "var(--badge-tan-bg)", color: "var(--text-muted)", label: "Leave" },
-  WFH: { bg: "rgba(25,25,112,.15)", color: "var(--charcoal)", label: "WFH" },
-  OD:  { bg: "var(--charcoal)", color: "var(--lime-light)", label: "On Duty" },
+  WFH: { bg: "var(--lime-pale)", color: "var(--charcoal)", label: "WFH" },
+  OD:  { bg: "var(--badge-blue-bg)", color: "var(--badge-blue-text)", label: "On Duty" },
   H:   { bg: "var(--lime-pale)", color: "var(--charcoal)", label: "Holiday" },
 };
 
@@ -93,8 +93,8 @@ export default function TeamCalendar() {
                   display: "flex",
                   gap: 12,
                   padding: "8px 12px",
-                  borderRadius: 3,
-                  background: hol ? "rgba(25,25,112,.06)" : weekend ? "rgba(0,0,0,.02)" : "var(--card)",
+                  borderRadius: 0,
+                  background: hol ? "var(--lime-subtle)" : weekend ? "rgba(0,0,0,.02)" : "var(--card)",
                   border: "1px solid var(--border)",
                   opacity: !hasContent && weekend ? 0.5 : 1,
                   minHeight: 38,

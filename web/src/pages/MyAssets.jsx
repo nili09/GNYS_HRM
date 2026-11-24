@@ -57,7 +57,7 @@ export default function MyAssets() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, fontFamily: "var(--font-display)" }}>
+      <h2 className="page-title" style={{ marginBottom: 20 }}>
         My Assets
       </h2>
 
@@ -67,7 +67,7 @@ export default function MyAssets() {
         <>
           {current.length > 0 && (
             <>
-              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-muted)" }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text)" }}>
                 Currently Assigned
               </h3>
               <div style={{ overflowX: "auto", marginBottom: 24 }}>
@@ -103,7 +103,7 @@ export default function MyAssets() {
 
           {history.length > 0 && (
             <>
-              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-muted)" }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text)" }}>
                 Past Assignments
               </h3>
               <div style={{ overflowX: "auto" }}>

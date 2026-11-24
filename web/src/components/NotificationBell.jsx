@@ -116,7 +116,7 @@ export default function NotificationBell() {
             background: "var(--danger)", color: "#fff",
             fontSize: 10, fontWeight: 700,
             minWidth: 16, height: 16,
-            borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
+            borderRadius: 0, display: "flex", alignItems: "center", justifyContent: "center",
             padding: "0 4px",
           }}>
             {count > 99 ? "99+" : count}
@@ -133,7 +133,7 @@ export default function NotificationBell() {
           width: isMobile ? "auto" : 360,
           maxHeight: isMobile ? "70vh" : 440,
           background: "var(--surface)", border: "1px solid var(--border)",
-          borderRadius: 8, boxShadow: "0 8px 32px rgba(0,0,0,.3)",
+          borderRadius: 0, boxShadow: "0 8px 32px rgba(0,0,0,.3)",
           zIndex: 1000, display: "flex", flexDirection: "column",
           overflow: "hidden",
         }}>
@@ -170,11 +170,11 @@ export default function NotificationBell() {
                   padding: "10px 16px",
                   cursor: n.link ? "pointer" : "default",
                   borderBottom: "1px solid var(--border)",
-                  background: n.read ? "transparent" : "rgba(25,25,112,.06)",
+                  background: n.read ? "transparent" : "var(--lime-subtle)",
                   transition: "background .15s",
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,.04)"}
-                onMouseLeave={(e) => e.currentTarget.style.background = n.read ? "transparent" : "rgba(25,25,112,.06)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = n.read ? "transparent" : "var(--lime-subtle)"}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
                   <span style={{
@@ -182,7 +182,7 @@ export default function NotificationBell() {
                     fontSize: 13, color: "var(--text)",
                     flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                   }}>
-                    {!n.read && <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: 3, background: "var(--lime)", marginRight: 6, verticalAlign: "middle" }} />}
+                    {!n.read && <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: 0, background: "var(--lime)", marginRight: 6, verticalAlign: "middle" }} />}
                     {n.title}
                   </span>
                   <span style={{ fontSize: 11, color: "var(--text-faint)", whiteSpace: "nowrap", flexShrink: 0 }}>

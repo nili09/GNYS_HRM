@@ -3,7 +3,7 @@ import Icon from "../components/Icon.jsx";
 export default function Placeholder({ title }) {
   return (
     <div>
-      <h2 style={{ fontSize: 17, fontWeight: 650, marginBottom: 20 }}>{title}</h2>
+      <h2 className="page-title" style={{ marginBottom: 20 }}>{title}</h2>
       <div
         style={{
           background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)",

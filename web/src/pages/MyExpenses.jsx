@@ -117,7 +117,7 @@ export default function MyExpenses() {
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700, letterSpacing: "-.02rem" }}>Expenses</h2>
+      <h2 className="page-title" style={{ margin: "0 0 20px" }}>Expenses</h2>
 
       {/* Summary cards */}
       <div style={{ display: "flex", gap: 14, marginBottom: 18 }}>
@@ -129,7 +129,7 @@ export default function MyExpenses() {
           <div key={c.label} style={{
             flex: 1, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "var(--r-card)", padding: "14px 16px", boxShadow: "var(--shadow-card)",
           }}>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".05em" }}>{c.label}</div>
+            <div style={{ fontSize: 11, color: "var(--text)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".05em" }}>{c.label}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: c.color, marginTop: 4 }}>{c.value}</div>
           </div>
         ))}
@@ -279,12 +279,12 @@ const inputStyle = {
   width: "100%", padding: "7px 10px", borderRadius: "var(--r-card)", border: "1px solid var(--line)",
   fontSize: 13, fontFamily: "inherit", boxSizing: "border-box",
 };
-const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".05em" };
+const thStyle = { padding: "8px 12px", fontSize: 11.5, fontWeight: 600, color: "var(--text)", textTransform: "uppercase", letterSpacing: ".05em" };
 const tdStyle = { padding: "10px 12px" };
 function btnStyle(disabled) {
   return {
     marginTop: 16, padding: "9px 28px", borderRadius: "var(--r-pill)", border: "none",
-    background: "var(--ink)", color: "var(--lime-light)", fontWeight: 700, fontSize: 13.5,
+    background: "var(--text)", color: "var(--bg)", fontWeight: 700, fontSize: 13.5,
     cursor: "pointer", opacity: disabled ? 0.6 : 1, fontFamily: "inherit",
   };
 }
